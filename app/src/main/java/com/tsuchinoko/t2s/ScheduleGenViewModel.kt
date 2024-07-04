@@ -41,7 +41,8 @@ class ScheduleGenViewModel : ViewModel() {
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.apiKey,
-        tools = listOf(Tool(listOf(getScheduleStructure)))
+        tools = listOf(Tool(listOf(getScheduleStructure))),
+        systemInstruction = content { text("あなたはGoogle Calendarに予定を登録しようとしている人です。") }
     )
 
     fun sendPrompt(prompt: String) {
@@ -72,8 +73,7 @@ class ScheduleGenViewModel : ViewModel() {
 
     companion object {
         const val SCHEDULE_GENERATIVE_PROMPT = """
-あなたはGoogle Calendarに予定を登録したい人です。
-以下の予定のリストを### フォーマット ###に変換してください。
+以下の予定のリストをGoogle Calendarに登録するために### フォーマット ###の形に変換してください。
 変換方法は### 例 ### のように行ってください。
 
 ### フォーマット ###
@@ -92,9 +92,9 @@ class ScheduleGenViewModel : ViewModel() {
 　OFF①
 
 - 変換後: 
-　タイトル: OFF①
-　開始日時: 2024-06-25 00:00
-　終了日時: 2024-06-25 23:59
+　title: OFF①
+　start: 2024-06-25 00:00
+　end: 2024-06-25 23:59
 
 <例2>
 - 変換前: 
@@ -106,13 +106,13 @@ class ScheduleGenViewModel : ViewModel() {
 　▼【武田】TKM「Youtube」撮影
 
 - 変換後:
-　タイトル:【武田】TKM「ラジオ」＠TKM
-　開始日時: 2024-06-26 11:20
-　終了日時: 2024-06-26 14:45
+　title:【武田】TKM「ラジオ」＠TKM
+　start: 2024-06-26 11:20
+　end: 2024-06-26 14:45
 
-　タイトル:【武田】TKM「Youtube」撮影
-　開始日時: 2024-06-26 00:00
-　終了日時: 2024-06-26 23:59
+　title:【武田】TKM「Youtube」撮影
+　start: 2024-06-26 00:00
+　end: 2024-06-26 23:59
 
 <例3>
 - 変換前: 
@@ -122,9 +122,9 @@ class ScheduleGenViewModel : ViewModel() {
 　11:55-13:30生放送
 
 - 変換後:
-　タイトル:【武田】HBC「サタブラ」＠HBC
-　開始日時: 2024-06-30 10:30
-　終了日時: 2024-06-30 13:30
+　title:【武田】HBC「サタブラ」＠HBC
+　start: 2024-06-30 10:30
+　end: 2024-06-30 13:30
 
 <例4>
 - 変換前: 
@@ -134,13 +134,13 @@ class ScheduleGenViewModel : ViewModel() {
 　10:15-18:55 生放送
 
 - 変換後:
-　タイトル: 【武田】TJK「BreakingDown」＠荻窪
-　開始日時: 2024-07-04 08:00
-　終了日時: 2024-07-04 18:55
+　title: 【武田】TJK「BreakingDown」＠荻窪
+　start: 2024-07-04 08:00
+　end: 2024-07-04 18:55
 
 #######
 
------ 以下、予定のリスト -----
+----- 予定のリスト -----
 """
     }
 }
