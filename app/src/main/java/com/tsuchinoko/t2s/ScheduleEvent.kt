@@ -27,12 +27,6 @@ data class ScheduleEvent(
     private val isAllDay =
         start.hour == 0 && start.minute == 0 && end.hour == 23 && end.minute == 59
 
-    val simpleStartDate = start.format(DateTimeFormatter.ofPattern("yyyy/MM/dd(E)"))
-    val simpleStartTime = start.format(DateTimeFormatter.ofPattern("HH:mm"))
-
-    val simpleEndDate = end.format(DateTimeFormatter.ofPattern("yyyy/MM/dd(E)"))
-    val simpleEndTime = end.format(DateTimeFormatter.ofPattern("HH:mm"))
-
     val displayDateTime: DisplayDateTime = if (isAllDay) {
         DisplayDateTime.AllDay(localDate = start.toLocalDate())
     } else {

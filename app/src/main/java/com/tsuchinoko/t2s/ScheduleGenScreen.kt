@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -60,7 +59,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
+import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ScheduleGenScreen(
@@ -221,19 +224,27 @@ private fun EditableEventContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 24.dp,
-                    vertical = 24.dp
+                    horizontal = 24.dp, vertical = 24.dp
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val start = event.start
             EventDateTime(
-                date = event.simpleStartDate,
-                time = event.simpleStartTime
+                localDateTime = start,
+                onDateChange = {
+                    val newDateTime = it.atTime(start.hour, start.minute)
+                    val new = event.copy(start = newDateTime)
+                    onEventChange(new)
+                }
             )
-            EventDateTime(
-                date = event.simpleEndDate,
-                time = event.simpleEndTime,
-                modifier = Modifier.padding(top = 8.dp)
+            val end = event.end
+            EventDateTime(localDateTime = end,
+                modifier = Modifier.padding(top = 8.dp),
+                onDateChange = {
+                    val newDateTime = it.atTime(end.hour, end.minute)
+                    val new = event.copy(end = newDateTime)
+                    onEventChange(new)
+                }
             )
 
             OutlinedTextField(
@@ -269,7 +280,11 @@ private fun EditableEventContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EventDateTime(date: String, time: String, modifier: Modifier = Modifier) {
+private fun EventDateTime(
+    localDateTime: LocalDateTime,
+    modifier: Modifier = Modifier,
+    onDateChange: (LocalDate) -> Unit
+) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
@@ -278,7 +293,7 @@ private fun EventDateTime(date: String, time: String, modifier: Modifier = Modif
         horizontalArrangement = Arrangement.Absolute.SpaceBetween
     ) {
         Text(
-            text = date,
+            text = localDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd(E)")),
             modifier = Modifier
                 .weight(1f, true)
                 .clickable {
@@ -286,18 +301,30 @@ private fun EventDateTime(date: String, time: String, modifier: Modifier = Modif
                 }
         )
         Text(
-            text = time,
+            text = localDateTime.format(DateTimeFormatter.ofPattern("HH:mm")),
             modifier = Modifier.clickable {
                 showTimePicker = true
             }
         )
     }
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState()
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis =
+            localDateTime.atZone(TimeZoneUTC).toInstant().toEpochMilli()
+        )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(onClick = { showDatePicker = false }) {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let {
+                            val instant = Instant.ofEpochMilli(it)
+                            val localDate = instant.atZone(TimeZoneUTC).toLocalDate()
+                            onDateChange(localDate)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
                     Text("OK")
                 }
             },
@@ -346,10 +373,7 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .padding(
-                    start = 8.dp,
-                    end = 4.dp,
-                    top = 4.dp,
-                    bottom = 4.dp
+                    start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp
                 )
                 .weight(0.9f)
         ) {
@@ -391,6 +415,8 @@ private fun RegistryButton(modifier: Modifier = Modifier) {
         Text("Google Calendarに登録")
     }
 }
+
+private val TimeZoneUTC = ZoneId.of("UTC")
 
 @Preview
 @Composable
