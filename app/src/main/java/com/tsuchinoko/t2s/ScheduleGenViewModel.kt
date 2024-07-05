@@ -32,7 +32,7 @@ class ScheduleGenViewModel : ViewModel() {
     ) { title, memo, start, end ->
         JSONObject().apply {
             put("title", title)
-            put("memo", memo)
+            if (memo == EMPTY_SYMBOL) put("memo", "") else put("memo", memo)
             put("start", start)
             put("end", end)
         }.also {
@@ -74,6 +74,7 @@ class ScheduleGenViewModel : ViewModel() {
     }
 
     companion object {
+        private const val EMPTY_SYMBOL = "@EMPTY"
         const val SCHEDULE_GENERATIVE_PROMPT = """
 以下の予定のリストをGoogle Calendarに登録するために### フォーマット ###の形に変換してください。
 変換方法は### 例 ### のように行ってください。
@@ -97,7 +98,7 @@ class ScheduleGenViewModel : ViewModel() {
 
 - 変換後: 
 　title: OFF①
-  memo: -
+  memo: $EMPTY_SYMBOL
 　start: 2024-06-25 00:00
 　end: 2024-06-25 23:59
 
