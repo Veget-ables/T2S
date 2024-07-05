@@ -3,6 +3,7 @@ package com.tsuchinoko.t2s
 import android.content.Intent
 import android.provider.CalendarContract
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -26,7 +27,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -53,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
 import java.time.Instant
@@ -93,8 +95,11 @@ private fun ScheduleGenScreen(
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(16.dp)
                     )
-                }
+                },
             )
+        },
+        floatingActionButton = {
+            RegistryButton()
         }
     ) { paddingValues ->
         Column(
@@ -141,22 +146,20 @@ private fun ScheduleGenScreen(
                             .align(Alignment.CenterHorizontally)
                             .padding(16.dp)
                     )
-
                 } else if (uiState is UiState.Success) {
-                    Column {
-                        ScheduleEvents(
-                            scheduleEvents = uiState.scheduleEvents,
-                            modifier = Modifier
-                                .weight(0.8f)
-                                .fillMaxSize()
-                                .padding(start = 8.dp, top = 16.dp, end = 8.dp),
+                    ScheduleEvents(
+                        scheduleEvents = uiState.scheduleEvents,
+                        modifier = Modifier
+                            .weight(0.8f)
+                            .fillMaxSize()
+                            .padding(start = 8.dp, top = 16.dp, end = 8.dp),
+                        paddingValues = PaddingValues(
+                            start = 8.dp,
+                            end = 8.dp,
+                            top = 16.dp,
+                            bottom = 112.dp
                         )
-                        RegistryButton(
-                            modifier = Modifier
-                                .weight(0.2f)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
+                    )
                 }
             }
         }
@@ -164,14 +167,17 @@ private fun ScheduleGenScreen(
 }
 
 @Composable
-private fun ScheduleEvents(scheduleEvents: List<ScheduleEvent>, modifier: Modifier = Modifier) {
+private fun ScheduleEvents(
+    scheduleEvents: List<ScheduleEvent>,
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues = PaddingValues(16.dp)
+) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceTint,
         shape = RoundedCornerShape(8.dp)
     ) {
         LazyColumn(
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp)
+            contentPadding = paddingValues
         ) {
             items(scheduleEvents) { event ->
                 ScheduleEvent(
@@ -400,7 +406,7 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
 @Composable
 private fun RegistryButton(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    Button(
+    FloatingActionButton(
         modifier = modifier
             .padding(vertical = 16.dp),
         onClick = {
@@ -416,7 +422,10 @@ private fun RegistryButton(modifier: Modifier = Modifier) {
             context.startActivity(intent)
         },
     ) {
-        Text("Google Calendarに登録")
+        Icon(
+            painter = painterResource(R.drawable.event_upcoming),
+            contentDescription = "カレンダーに登録"
+        )
     }
 }
 
