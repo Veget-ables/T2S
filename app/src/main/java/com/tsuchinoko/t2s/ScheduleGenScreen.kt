@@ -194,17 +194,28 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                     )
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    MemoIconWithBadge(event.memo != null)
                     Column(
-                        modifier = Modifier.padding(
-                            start = 4.dp,
-                            end = 8.dp,
-                            top = 4.dp,
-                            bottom = 4.dp
-                        )
+                        modifier = Modifier
+                            .padding(
+                                start = 8.dp,
+                                end = 4.dp,
+                                top = 4.dp,
+                                bottom = 4.dp
+                            )
+                            .weight(0.9f)
                     ) {
                         Text(text = event.displayDate)
                         Text(text = event.title)
+                    }
+                    if (event.memo != null) {
+                        Icon(
+                            painter = painterResource(R.drawable.memo),
+                            contentDescription = "memo",
+                            modifier = Modifier
+                                .weight(0.1f)
+                        )
+                    } else {
+                        Spacer(Modifier.weight(0.1f))
                     }
                 }
             }
@@ -220,13 +231,15 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                     )
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    MemoIconWithBadge(event.memo != null)
                     Column(
-                        modifier = Modifier.padding(
-                            end = 8.dp,
-                            top = 4.dp,
-                            bottom = 4.dp
-                        )
+                        modifier = Modifier
+                            .padding(
+                                start = 8.dp,
+                                end = 4.dp,
+                                top = 4.dp,
+                                bottom = 4.dp
+                            )
+                            .weight(0.9f)
                     ) {
                         Row {
                             Text(text = event.displayStart)
@@ -235,36 +248,19 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                         }
                         Text(text = event.title)
                     }
+                    if (event.memo != null) {
+                        Icon(
+                            painter = painterResource(R.drawable.memo),
+                            contentDescription = "memo",
+                            modifier = Modifier
+                                .weight(0.1f)
+                        )
+                    } else {
+                        Spacer(Modifier.weight(0.1f))
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun MemoIconWithBadge(hasMemo: Boolean) {
-    if (hasMemo) {
-        BadgedBox(
-            badge = {
-                Badge(
-                    modifier = Modifier.offset(x = (-4.0).dp, y = (-2.0).dp),
-                    containerColor = MaterialTheme.colorScheme.onTertiary
-                )
-            },
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.memo),
-                contentDescription = "memo",
-            )
-        }
-    } else {
-        Icon(
-            painter = painterResource(R.drawable.memo),
-            contentDescription = "memo",
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
     }
 }
 
@@ -275,6 +271,7 @@ fun ScheduleGenPreview() {
         val events = listOf(
             AllDayEvent(
                 title = "終日予定",
+                memo = "これはメモです",
                 date = LocalDate.parse("2020-02-15"),
             ),
             RegularEvent(
@@ -285,6 +282,11 @@ fun ScheduleGenPreview() {
             ),
             RegularEvent(
                 title = "日をまたぐ予定",
+                start = LocalDateTime.parse("2020-02-15T21:30"),
+                end = LocalDateTime.parse("2020-02-16T21:30")
+            ),
+            RegularEvent(
+                title = "タイトルがとても長くて2行以上になってしまう予定",
                 start = LocalDateTime.parse("2020-02-15T21:30"),
                 end = LocalDateTime.parse("2020-02-16T21:30")
             )
