@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -35,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
@@ -270,6 +272,7 @@ private fun EditableEventContent(
 private fun EventDateTime(date: String, time: String, modifier: Modifier = Modifier) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Absolute.SpaceBetween
@@ -293,8 +296,16 @@ private fun EventDateTime(date: String, time: String, modifier: Modifier = Modif
         val datePickerState = rememberDatePickerState()
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = { showDatePicker = false },
-            dismissButton = { showDatePicker = false }
+            confirmButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("キャンセル")
+                }
+            }
         ) {
             DatePicker(state = datePickerState)
         }
@@ -322,9 +333,9 @@ private fun TimePickerDialog(
         modifier = modifier.wrapContentHeight(),
         properties = properties
     ) {
-            Column(verticalArrangement = Arrangement.SpaceBetween) {
-                content()
-                // Buttons
+        Column(verticalArrangement = Arrangement.SpaceBetween) {
+            content()
+            // Buttons
         }
     }
 }
