@@ -11,15 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -133,50 +130,41 @@ private fun ScheduleGenScreen(
 
                 } else if (uiState is UiState.Success) {
                     Column {
-                        Surface(
+                        ScheduleEvents(
+                            scheduleEvents = uiState.scheduleEvents,
                             modifier = Modifier
                                 .weight(0.8f)
                                 .fillMaxSize()
                                 .padding(start = 8.dp, top = 16.dp, end = 8.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            LazyColumn(
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp)
-                            ) {
-                                items(uiState.scheduleEvents) { event ->
-                                    ScheduleEvent(
-                                        event = event,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    Spacer(Modifier.height(8.dp))
-                                }
-                            }
-                        }
-
-                        val context = LocalContext.current
-                        Button(
+                        )
+                        RegistryButton(
                             modifier = Modifier
                                 .weight(0.2f)
                                 .align(Alignment.CenterHorizontally)
-                                .padding(vertical = 16.dp),
-                            onClick = {
-                                val intent = Intent(Intent.ACTION_INSERT)
-                                intent.setData(CalendarContract.Events.CONTENT_URI)
-                                val startTimeMillis = System.currentTimeMillis() + 10 * 60 * 1000
-                                intent.putExtra(CalendarContract.Events.TITLE, "予定")
-                                intent.putExtra(CalendarContract.Events.DTSTART, startTimeMillis)
-                                intent.putExtra(
-                                    CalendarContract.Events.DTEND,
-                                    startTimeMillis + 30 * 60 * 1000
-                                )
-                                context.startActivity(intent)
-                            },
-                        ) {
-                            Text("Google Calendarに登録")
-                        }
+                        )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScheduleEvents(scheduleEvents: List<ScheduleEvent>, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp)
+        ) {
+            items(scheduleEvents) { event ->
+                ScheduleEvent(
+                    event = event,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
             }
         }
     }
@@ -261,6 +249,29 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RegistryButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    Button(
+        modifier = modifier
+            .padding(vertical = 16.dp),
+        onClick = {
+            val intent = Intent(Intent.ACTION_INSERT)
+            intent.setData(CalendarContract.Events.CONTENT_URI)
+            val startTimeMillis = System.currentTimeMillis() + 10 * 60 * 1000
+            intent.putExtra(CalendarContract.Events.TITLE, "予定")
+            intent.putExtra(CalendarContract.Events.DTSTART, startTimeMillis)
+            intent.putExtra(
+                CalendarContract.Events.DTEND,
+                startTimeMillis + 30 * 60 * 1000
+            )
+            context.startActivity(intent)
+        },
+    ) {
+        Text("Google Calendarに登録")
     }
 }
 
