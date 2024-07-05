@@ -43,8 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
+import java.time.LocalDate
 import java.time.LocalDateTime
-
 
 @Composable
 fun ScheduleGenScreen(
@@ -179,32 +179,42 @@ private fun ScheduleGenScreen(
 
 @Composable
 private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
-    val cardColors = if (event.isAllDay) {
-        CardDefaults.cardColors()
-            .copy(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            )
-    } else {
-        CardDefaults.cardColors()
-            .copy(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary
-            )
-    }
-    Card(modifier = modifier, colors = cardColors) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Text(text = event.title)
+    when (event) {
+        is AllDayEvent -> {
+            Card(
+                modifier = modifier, colors = CardDefaults.cardColors()
+                    .copy(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(text = event.displayDate)
+                    Text(text = event.title)
+                }
+            }
+        }
 
-            if (event.isAllDay) {
-                Text(text = event.start.toLocalDate().toString())
-            } else {
-                Row {
-                    Text(text = event.displayStart)
-                    Text(text = " 〜 ")
-                    Text(text = event.displayEnd)
+        is RegularEvent -> {
+            Card(
+                modifier = modifier,
+                colors = CardDefaults.cardColors()
+                    .copy(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Row {
+                        Text(text = event.displayStart)
+                        Text(text = " 〜 ")
+                        Text(text = event.displayEnd)
+                    }
+                    Text(text = event.title)
                 }
             }
         }
@@ -216,20 +226,19 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
 fun ScheduleGenPreview() {
     T2STheme {
         val events = listOf(
-            ScheduleEvent(
+            AllDayEvent(
                 title = "終日予定",
-                start = LocalDateTime.parse("2020-02-15T00:00:00"),
-                end = LocalDateTime.parse("2020-02-15T23:59:59")
+                date = LocalDate.parse("2020-02-15"),
             ),
-            ScheduleEvent(
-                title = "予定",
-                start = LocalDateTime.parse("2020-02-15T21:30:50"),
-                end = LocalDateTime.parse("2020-02-15T21:30:50")
+            RegularEvent(
+                title = "一日予定",
+                start = LocalDateTime.parse("2020-02-15T1:30:50"),
+                end = LocalDateTime.parse("2020-02-15T23:30:50")
             ),
-            ScheduleEvent(
-                title = "TKM[ラジオ] @TKM",
+            RegularEvent(
+                title = "日をまたぐ予定",
                 start = LocalDateTime.parse("2020-02-15T21:30:50"),
-                end = LocalDateTime.parse("2020-02-15T21:30:50")
+                end = LocalDateTime.parse("2020-02-16T21:30:50")
             )
         )
         ScheduleGenScreen(uiState = UiState.Success(events))
