@@ -179,22 +179,32 @@ private fun ScheduleEvents(scheduleEvents: List<ScheduleEvent>, modifier: Modifi
 @Composable
 private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
-
+    var _event by remember { mutableStateOf(event) }
     Card(
         modifier = modifier
             .animateContentSize(),
         onClick = { isExpanded = !isExpanded }
     ) {
         if (isExpanded) {
-            EditableEventContent(event = event, modifier = Modifier.fillMaxWidth())
+            EditableEventContent(
+                event = _event,
+                modifier = Modifier.fillMaxWidth(),
+                onEventChange = { _event = it },
+            )
         } else {
-            EventContent(event)
+            EventContent(
+                event = _event,
+            )
         }
     }
 }
 
 @Composable
-private fun EditableEventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
+private fun EditableEventContent(
+    event: ScheduleEvent,
+    modifier: Modifier = Modifier,
+    onEventChange: (ScheduleEvent) -> Unit = {},
+) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -211,14 +221,20 @@ private fun EditableEventContent(event: ScheduleEvent, modifier: Modifier = Modi
             OutlinedTextField(
                 value = event.title,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChange = { },
+                onValueChange = {
+                    val new = event.copy(title = it)
+                    onEventChange(new)
+                },
                 label = {
                     Text("予定のタイトル")
                 }
             )
             OutlinedTextField(
                 value = event.memo ?: "",
-                onValueChange = { },
+                onValueChange = {
+                    val new = event.copy(memo = it)
+                    onEventChange(new)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -245,7 +261,7 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                 )
                 .weight(0.9f)
         ) {
-            ScheduleEventDateTime(event)
+            Text(text = event.displayDateTime.value)
             Text(text = event.title)
         }
         if (event.memo != null) {
@@ -257,23 +273,6 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
             )
         } else {
             Spacer(Modifier.weight(0.1f))
-        }
-    }
-}
-
-@Composable
-private fun ScheduleEventDateTime(event: ScheduleEvent) {
-    when (event) {
-        is AllDayEvent -> {
-            Text(text = event.displayDate)
-        }
-
-        is RegularEvent -> {
-            Row {
-                Text(text = event.displayStart)
-                Text(text = " 〜 ")
-                Text(text = event.displayEnd)
-            }
         }
     }
 }
@@ -306,24 +305,27 @@ private fun RegistryButton(modifier: Modifier = Modifier) {
 fun ScheduleGenScreenPreview() {
     T2STheme {
         val events = listOf(
-            AllDayEvent(
+            ScheduleEvent(
                 title = "終日予定",
                 memo = "これはメモです",
-                date = LocalDate.parse("2020-02-15"),
+                start = LocalDateTime.parse("2020-02-15T00:00"),
+                end = LocalDateTime.parse("2020-02-15T23:59")
             ),
-            RegularEvent(
+            ScheduleEvent(
                 title = "一日予定",
                 memo = "これはメモです",
                 start = LocalDateTime.parse("2020-02-15T01:30"),
                 end = LocalDateTime.parse("2020-02-15T23:30")
             ),
-            RegularEvent(
+            ScheduleEvent(
                 title = "日をまたぐ予定",
+                memo = null,
                 start = LocalDateTime.parse("2020-02-15T21:30"),
                 end = LocalDateTime.parse("2020-02-16T21:30")
             ),
-            RegularEvent(
+            ScheduleEvent(
                 title = "タイトルがとても長くて2行以上になってしまう予定",
+                memo = null,
                 start = LocalDateTime.parse("2020-02-15T21:30"),
                 end = LocalDateTime.parse("2020-02-16T21:30")
             )
@@ -339,10 +341,11 @@ fun EditableEventContentPreview() {
         Column {
             Card {
                 EditableEventContent(
-                    event = RegularEvent(
-                        title = "日をまたぐ予定",
-                        start = LocalDateTime.parse("2020-02-15T21:30"),
-                        end = LocalDateTime.parse("2020-02-16T21:30")
+                    event = ScheduleEvent(
+                        title = "終日予定",
+                        memo = "これはメモです",
+                        start = LocalDateTime.parse("2020-02-15T00:00"),
+                        end = LocalDateTime.parse("2020-02-15T23:59")
                     )
                 )
             }
@@ -351,7 +354,7 @@ fun EditableEventContentPreview() {
 
             Card {
                 EditableEventContent(
-                    event = RegularEvent(
+                    event = ScheduleEvent(
                         title = "タイトルがとても長くて2行以上になってしまう予定",
                         memo = "11:00 入り \n12:00 - 13:00 解散",
                         start = LocalDateTime.parse("2020-02-15T21:30"),
@@ -364,7 +367,7 @@ fun EditableEventContentPreview() {
 
             Card {
                 EditableEventContent(
-                    event = RegularEvent(
+                    event = ScheduleEvent(
                         title = "予定",
                         memo = "6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。",
                         start = LocalDateTime.parse("2020-02-15T21:30"),
@@ -382,8 +385,9 @@ fun EventContentPreview() {
     T2STheme {
         Card {
             EventContent(
-                event = RegularEvent(
+                event = ScheduleEvent(
                     title = "日をまたぐ予定",
+                    memo = null,
                     start = LocalDateTime.parse("2020-02-15T21:30"),
                     end = LocalDateTime.parse("2020-02-16T21:30")
                 )
