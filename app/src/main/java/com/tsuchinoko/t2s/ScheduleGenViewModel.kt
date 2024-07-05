@@ -78,8 +78,8 @@ class ScheduleGenViewModel : ViewModel() {
 
 ### フォーマット ###
 - title: <予定のタイトル>
-- start(yyyy-mm-dd hh:mm): <予定の開始日時>
-- end(yyyy-mm-dd hh:mm): <予定の終了日時>
+- start(yyyy-MM-ddTHH:mm:ss): <予定の開始日時>
+- end(yyyy-MM-ddTHH:mm:ss): <予定の終了日時>
 ※ start、endが不明な場合は省略
 
 #######

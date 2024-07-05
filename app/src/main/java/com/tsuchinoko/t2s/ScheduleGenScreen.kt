@@ -4,8 +4,8 @@ import android.content.Intent
 import android.provider.CalendarContract
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,12 +16,15 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -40,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
+import java.time.LocalDateTime
 
 
 @Composable
@@ -82,8 +86,7 @@ private fun ScheduleGenScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .scrollable(
-                    state = rememberScrollState(),
-                    orientation = Orientation.Vertical
+                    state = rememberScrollState(), orientation = Orientation.Vertical
                 ),
         ) {
             var prompt by rememberSaveable { mutableStateOf(TEST_SCHEDULE) }
@@ -124,32 +127,49 @@ private fun ScheduleGenScreen(
                     )
 
                 } else if (uiState is UiState.Success) {
-                    LazyColumn(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp)
-                    ) {
-                        items(uiState.scheduleEvents) { event ->
-                            ScheduleEvent(event)
-                            Spacer(Modifier.height(8.dp))
+                    Column {
+                        Surface(
+                            modifier = Modifier
+                                .weight(0.8f)
+                                .fillMaxSize()
+                                .padding(start = 8.dp, top = 16.dp, end = 8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            LazyColumn(
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp)
+                            ) {
+                                items(uiState.scheduleEvents) { event ->
+                                    ScheduleEvent(
+                                        event = event,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                }
+                            }
                         }
-                    }
 
-                    val context = LocalContext.current
-                    Button(
-                        onClick = {
-                            val intent = Intent(Intent.ACTION_INSERT)
-                            intent.setData(CalendarContract.Events.CONTENT_URI)
-                            val startTimeMillis = System.currentTimeMillis() + 10 * 60 * 1000
-                            intent.putExtra(CalendarContract.Events.TITLE, "予定")
-                            intent.putExtra(CalendarContract.Events.DTSTART, startTimeMillis)
-                            intent.putExtra(
-                                CalendarContract.Events.DTEND,
-                                startTimeMillis + 30 * 60 * 1000
-                            )
-                            context.startActivity(intent)
-                        },
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text("Google Calendarに登録")
+                        val context = LocalContext.current
+                        Button(
+                            modifier = Modifier
+                                .weight(0.2f)
+                                .align(Alignment.CenterHorizontally)
+                                .padding(vertical = 16.dp),
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_INSERT)
+                                intent.setData(CalendarContract.Events.CONTENT_URI)
+                                val startTimeMillis = System.currentTimeMillis() + 10 * 60 * 1000
+                                intent.putExtra(CalendarContract.Events.TITLE, "予定")
+                                intent.putExtra(CalendarContract.Events.DTSTART, startTimeMillis)
+                                intent.putExtra(
+                                    CalendarContract.Events.DTEND,
+                                    startTimeMillis + 30 * 60 * 1000
+                                )
+                                context.startActivity(intent)
+                            },
+                        ) {
+                            Text("Google Calendarに登録")
+                        }
                     }
                 }
             }
@@ -159,13 +179,34 @@ private fun ScheduleGenScreen(
 
 @Composable
 private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(text = event.title)
+    val cardColors = if (event.isAllDay) {
+        CardDefaults.cardColors()
+            .copy(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            )
+    } else {
+        CardDefaults.cardColors()
+            .copy(
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary
+            )
+    }
+    Card(modifier = modifier, colors = cardColors) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(text = event.title)
 
-        Row {
-            Text(text = event.start)
-            Text(text = " 〜 ")
-            Text(text = event.end)
+            if (event.isAllDay) {
+                Text(text = event.start.toLocalDate().toString())
+            } else {
+                Row {
+                    Text(text = event.start.toString())
+                    Text(text = " 〜 ")
+                    Text(text = event.end.toString())
+                }
+            }
         }
     }
 }
@@ -176,14 +217,19 @@ fun ScheduleGenPreview() {
     T2STheme {
         val events = listOf(
             ScheduleEvent(
+                title = "終日予定",
+                start = LocalDateTime.parse("2020-02-15T00:00:00"),
+                end = LocalDateTime.parse("2020-02-15T23:59:59")
+            ),
+            ScheduleEvent(
                 title = "予定",
-                start = "2023-06-26 11:20:00",
-                end = "2023-06-26 12:20:00"
+                start = LocalDateTime.parse("2020-02-15T21:30:50"),
+                end = LocalDateTime.parse("2020-02-15T21:30:50")
             ),
             ScheduleEvent(
                 title = "TKM[ラジオ] @TKM",
-                start = "2023-06-26 11:20:00",
-                end = "2023-06-26 12:20:00"
+                start = LocalDateTime.parse("2020-02-15T21:30:50"),
+                end = LocalDateTime.parse("2020-02-15T21:30:50")
             )
         )
         ScheduleGenScreen(uiState = UiState.Success(events))
