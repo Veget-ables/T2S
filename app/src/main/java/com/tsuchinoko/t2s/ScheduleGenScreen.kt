@@ -202,9 +202,9 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                 Text(text = event.start.toLocalDate().toString())
             } else {
                 Row {
-                    Text(text = event.start.toString())
+                    Text(text = event.displayStart)
                     Text(text = " 〜 ")
-                    Text(text = event.end.toString())
+                    Text(text = event.displayEnd)
                 }
             }
         }
