@@ -8,7 +8,6 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -56,7 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.unit.min
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
 import java.time.Instant
@@ -235,6 +232,11 @@ private fun EditableEventContent(
                     val newDateTime = it.atTime(start.hour, start.minute)
                     val new = event.copy(start = newDateTime)
                     onEventChange(new)
+                },
+                onTimeChange = { hour, minute ->
+                    val newDateTime = start.withHour(hour).withMinute(minute)
+                    val new = event.copy(start = newDateTime)
+                    onEventChange(new)
                 }
             )
             val end = event.end
@@ -242,6 +244,11 @@ private fun EditableEventContent(
                 modifier = Modifier.padding(top = 8.dp),
                 onDateChange = {
                     val newDateTime = it.atTime(end.hour, end.minute)
+                    val new = event.copy(end = newDateTime)
+                    onEventChange(new)
+                },
+                onTimeChange = { hour, minute ->
+                    val newDateTime = end.withHour(hour).withMinute(minute)
                     val new = event.copy(end = newDateTime)
                     onEventChange(new)
                 }
@@ -283,7 +290,8 @@ private fun EditableEventContent(
 private fun EventDateTime(
     localDateTime: LocalDateTime,
     modifier: Modifier = Modifier,
-    onDateChange: (LocalDate) -> Unit
+    onDateChange: (LocalDate) -> Unit,
+    onTimeChange: (hour: Int, minute: Int) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -337,32 +345,28 @@ private fun EventDateTime(
             DatePicker(state = datePickerState)
         }
     }
+
     if (showTimePicker) {
         val timePickerState = rememberTimePickerState()
         TimePickerDialog(
             onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    onTimeChange(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Cancel")
+                }
+            }
         ) {
-            TimePicker(state = timePickerState)
-        }
-    }
-}
-
-@ExperimentalMaterial3Api
-@Composable
-private fun TimePickerDialog(
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
-    properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-    content: @Composable ColumnScope.() -> Unit
-) {
-    BasicAlertDialog(
-        onDismissRequest = onDismissRequest,
-        modifier = modifier.wrapContentHeight(),
-        properties = properties
-    ) {
-        Column(verticalArrangement = Arrangement.SpaceBetween) {
-            content()
-            // Buttons
+            TimePicker(
+                state = timePickerState,
+            )
         }
     }
 }
