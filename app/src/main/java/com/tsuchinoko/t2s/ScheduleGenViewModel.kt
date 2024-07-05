@@ -26,11 +26,13 @@ class ScheduleGenViewModel : ViewModel() {
         name = "getScheduleStructure",
         description = "予定を表す文字列から整理された予定のJson構造を取得する",
         Schema.str(name = "title", description = "予定のタイトル"),
+        Schema.str(name = "memo", description = "予定のメモ"),
         Schema.str(name = "start", description = "開始時間"),
         Schema.str(name = "end", description = "終了時間"),
-    ) { title, start, end ->
+    ) { title, memo, start, end ->
         JSONObject().apply {
             put("title", title)
+            put("memo", memo)
             put("start", start)
             put("end", end)
         }.also {
@@ -78,8 +80,10 @@ class ScheduleGenViewModel : ViewModel() {
 
 ### フォーマット ###
 - title: <予定のタイトル>
+- memo: <予定のメモ>
 - start(yyyy-MM-ddTHH:mm:ss): <予定の開始日時>
 - end(yyyy-MM-ddTHH:mm:ss): <予定の終了日時>
+※ memoは情報が無ければ省略
 ※ start、endが不明な場合は省略
 
 #######
@@ -93,6 +97,7 @@ class ScheduleGenViewModel : ViewModel() {
 
 - 変換後: 
 　title: OFF①
+  memo: -
 　start: 2024-06-25 00:00
 　end: 2024-06-25 23:59
 
@@ -107,6 +112,9 @@ class ScheduleGenViewModel : ViewModel() {
 
 - 変換後:
 　title:【武田】TKM「ラジオ」＠TKM
+　memo:　11:20 TOKYO FM入り
+　　　　　14:20 生放送出演
+　　　　　14:45 終了
 　start: 2024-06-26 11:20
 　end: 2024-06-26 14:45
 
@@ -123,6 +131,8 @@ class ScheduleGenViewModel : ViewModel() {
 
 - 変換後:
 　title:【武田】HBC「サタブラ」＠HBC
+  memo: 10:30入り
+        11:55-13:30生放送
 　start: 2024-06-30 10:30
 　end: 2024-06-30 13:30
 
@@ -135,6 +145,8 @@ class ScheduleGenViewModel : ViewModel() {
 
 - 変換後:
 　title: 【武田】TJK「BreakingDown」＠荻窪
+  memo: 08:00 入り
+　      10:15-18:55 生放送
 　start: 2024-07-04 08:00
 　end: 2024-07-04 18:55
 

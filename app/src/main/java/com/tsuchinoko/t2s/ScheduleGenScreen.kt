@@ -11,17 +11,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,7 +70,7 @@ fun ScheduleGenScreen(
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     uiState: UiState,
-    onClickConvert:(prompt: String) -> Unit = {}
+    onClickConvert: (prompt: String) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.padding(),
@@ -188,11 +193,19 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     )
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(text = event.displayDate)
-                    Text(text = event.title)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MemoIconWithBadge(event.memo != null)
+                    Column(
+                        modifier = Modifier.padding(
+                            start = 4.dp,
+                            end = 8.dp,
+                            top = 4.dp,
+                            bottom = 4.dp
+                        )
+                    ) {
+                        Text(text = event.displayDate)
+                        Text(text = event.title)
+                    }
                 }
             }
         }
@@ -206,18 +219,52 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                         contentColor = MaterialTheme.colorScheme.onTertiary
                     )
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Row {
-                        Text(text = event.displayStart)
-                        Text(text = " 〜 ")
-                        Text(text = event.displayEnd)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MemoIconWithBadge(event.memo != null)
+                    Column(
+                        modifier = Modifier.padding(
+                            end = 8.dp,
+                            top = 4.dp,
+                            bottom = 4.dp
+                        )
+                    ) {
+                        Row {
+                            Text(text = event.displayStart)
+                            Text(text = " 〜 ")
+                            Text(text = event.displayEnd)
+                        }
+                        Text(text = event.title)
                     }
-                    Text(text = event.title)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MemoIconWithBadge(hasMemo: Boolean) {
+    if (hasMemo) {
+        BadgedBox(
+            badge = {
+                Badge(
+                    modifier = Modifier.offset(x = (-4.0).dp, y = (-2.0).dp),
+                    containerColor = MaterialTheme.colorScheme.onTertiary
+                )
+            },
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.memo),
+                contentDescription = "memo",
+            )
+        }
+    } else {
+        Icon(
+            painter = painterResource(R.drawable.memo),
+            contentDescription = "memo",
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
     }
 }
 
@@ -232,13 +279,14 @@ fun ScheduleGenPreview() {
             ),
             RegularEvent(
                 title = "一日予定",
-                start = LocalDateTime.parse("2020-02-15T1:30:50"),
-                end = LocalDateTime.parse("2020-02-15T23:30:50")
+                memo = "これはメモです",
+                start = LocalDateTime.parse("2020-02-15T01:30"),
+                end = LocalDateTime.parse("2020-02-15T23:30")
             ),
             RegularEvent(
                 title = "日をまたぐ予定",
-                start = LocalDateTime.parse("2020-02-15T21:30:50"),
-                end = LocalDateTime.parse("2020-02-16T21:30:50")
+                start = LocalDateTime.parse("2020-02-15T21:30"),
+                end = LocalDateTime.parse("2020-02-16T21:30")
             )
         )
         ScheduleGenScreen(uiState = UiState.Success(events))
