@@ -2,6 +2,9 @@ package com.tsuchinoko.t2s
 
 import android.content.Intent
 import android.provider.CalendarContract
+import android.widget.EditText
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
@@ -24,15 +27,18 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -153,7 +159,7 @@ private fun ScheduleGenScreen(
 private fun ScheduleEvents(scheduleEvents: List<ScheduleEvent>, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceTint,
         shape = RoundedCornerShape(8.dp)
     ) {
         LazyColumn(
@@ -172,48 +178,96 @@ private fun ScheduleEvents(scheduleEvents: List<ScheduleEvent>, modifier: Modifi
 
 @Composable
 private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
+    var isExpanded by remember { mutableStateOf(false) }
+
     Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors()
-            .copy(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary
-            )
+        modifier = modifier
+            .animateContentSize(),
+        onClick = { isExpanded = !isExpanded }
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(
+        if (isExpanded) {
+            EditableEventContent(event = event, modifier = Modifier.fillMaxWidth())
+        } else {
+            EventContent(event)
+        }
+    }
+}
+
+@Composable
+private fun EditableEventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 24.dp,
+                    vertical = 24.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = event.title,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { },
+                label = {
+                    Text("予定のタイトル")
+                }
+            )
+            OutlinedTextField(
+                value = event.memo ?: "",
+                onValueChange = { },
                 modifier = Modifier
-                    .padding(
-                        start = 8.dp,
-                        end = 4.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-                    .weight(0.9f)
-            ) {
-                ScheduleEventDateTime(event)
-                Text(text = event.title)
-            }
-            if (event.memo != null) {
-                Icon(
-                    painter = painterResource(R.drawable.memo),
-                    contentDescription = "memo",
-                    modifier = Modifier
-                        .weight(0.1f)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                label = {
+                    Text("予定のメモ")
+                },
+                maxLines = 6
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Column(
+            modifier = Modifier
+                .padding(
+                    start = 8.dp,
+                    end = 4.dp,
+                    top = 4.dp,
+                    bottom = 4.dp
                 )
-            } else {
-                Spacer(Modifier.weight(0.1f))
-            }
+                .weight(0.9f)
+        ) {
+            ScheduleEventDateTime(event)
+            Text(text = event.title)
+        }
+        if (event.memo != null) {
+            Icon(
+                painter = painterResource(R.drawable.memo),
+                contentDescription = "memo",
+                modifier = Modifier
+                    .weight(0.1f)
+            )
+        } else {
+            Spacer(Modifier.weight(0.1f))
         }
     }
 }
 
 @Composable
 private fun ScheduleEventDateTime(event: ScheduleEvent) {
-    when(event) {
+    when (event) {
         is AllDayEvent -> {
             Text(text = event.displayDate)
         }
+
         is RegularEvent -> {
             Row {
                 Text(text = event.displayStart)
@@ -249,7 +303,7 @@ private fun RegistryButton(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-fun ScheduleGenPreview() {
+fun ScheduleGenScreenPreview() {
     T2STheme {
         val events = listOf(
             AllDayEvent(
@@ -275,5 +329,65 @@ fun ScheduleGenPreview() {
             )
         )
         ScheduleGenScreen(uiState = UiState.Success(events))
+    }
+}
+
+@Preview
+@Composable
+fun EditableEventContentPreview() {
+    T2STheme {
+        Column {
+            Card {
+                EditableEventContent(
+                    event = RegularEvent(
+                        title = "日をまたぐ予定",
+                        start = LocalDateTime.parse("2020-02-15T21:30"),
+                        end = LocalDateTime.parse("2020-02-16T21:30")
+                    )
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Card {
+                EditableEventContent(
+                    event = RegularEvent(
+                        title = "タイトルがとても長くて2行以上になってしまう予定",
+                        memo = "11:00 入り \n12:00 - 13:00 解散",
+                        start = LocalDateTime.parse("2020-02-15T21:30"),
+                        end = LocalDateTime.parse("2020-02-16T21:30")
+                    )
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Card {
+                EditableEventContent(
+                    event = RegularEvent(
+                        title = "予定",
+                        memo = "6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。",
+                        start = LocalDateTime.parse("2020-02-15T21:30"),
+                        end = LocalDateTime.parse("2020-02-16T21:30")
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun EventContentPreview() {
+    T2STheme {
+        Card {
+            EventContent(
+                event = RegularEvent(
+                    title = "日をまたぐ予定",
+                    start = LocalDateTime.parse("2020-02-15T21:30"),
+                    end = LocalDateTime.parse("2020-02-16T21:30")
+                )
+            )
+        }
     }
 }
