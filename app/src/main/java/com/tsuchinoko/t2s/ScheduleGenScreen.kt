@@ -172,81 +172,53 @@ private fun ScheduleEvents(scheduleEvents: List<ScheduleEvent>, modifier: Modifi
 
 @Composable
 private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
-    when (event) {
-        is AllDayEvent -> {
-            Card(
-                modifier = modifier, colors = CardDefaults.cardColors()
-                    .copy(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors()
+            .copy(
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary
+            )
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = 8.dp,
+                        end = 4.dp,
+                        top = 4.dp,
+                        bottom = 4.dp
                     )
+                    .weight(0.9f)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(
-                        modifier = Modifier
-                            .padding(
-                                start = 8.dp,
-                                end = 4.dp,
-                                top = 4.dp,
-                                bottom = 4.dp
-                            )
-                            .weight(0.9f)
-                    ) {
-                        Text(text = event.displayDate)
-                        Text(text = event.title)
-                    }
-                    if (event.memo != null) {
-                        Icon(
-                            painter = painterResource(R.drawable.memo),
-                            contentDescription = "memo",
-                            modifier = Modifier
-                                .weight(0.1f)
-                        )
-                    } else {
-                        Spacer(Modifier.weight(0.1f))
-                    }
-                }
+                ScheduleEventDateTime(event)
+                Text(text = event.title)
+            }
+            if (event.memo != null) {
+                Icon(
+                    painter = painterResource(R.drawable.memo),
+                    contentDescription = "memo",
+                    modifier = Modifier
+                        .weight(0.1f)
+                )
+            } else {
+                Spacer(Modifier.weight(0.1f))
             }
         }
+    }
+}
 
+@Composable
+private fun ScheduleEventDateTime(event: ScheduleEvent) {
+    when(event) {
+        is AllDayEvent -> {
+            Text(text = event.displayDate)
+        }
         is RegularEvent -> {
-            Card(
-                modifier = modifier,
-                colors = CardDefaults.cardColors()
-                    .copy(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary
-                    )
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(
-                        modifier = Modifier
-                            .padding(
-                                start = 8.dp,
-                                end = 4.dp,
-                                top = 4.dp,
-                                bottom = 4.dp
-                            )
-                            .weight(0.9f)
-                    ) {
-                        Row {
-                            Text(text = event.displayStart)
-                            Text(text = " 〜 ")
-                            Text(text = event.displayEnd)
-                        }
-                        Text(text = event.title)
-                    }
-                    if (event.memo != null) {
-                        Icon(
-                            painter = painterResource(R.drawable.memo),
-                            contentDescription = "memo",
-                            modifier = Modifier
-                                .weight(0.1f)
-                        )
-                    } else {
-                        Spacer(Modifier.weight(0.1f))
-                    }
-                }
+            Row {
+                Text(text = event.displayStart)
+                Text(text = " 〜 ")
+                Text(text = event.displayEnd)
             }
         }
     }

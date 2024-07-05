@@ -51,6 +51,6 @@ data class RegularEvent(
     val displayEnd = if (start.toLocalDate() == end.toLocalDate()) {
         end.format(DateTimeFormatter.ofPattern("HH:mm"))
     } else {
-        end.format(DateTimeFormatter.ofPattern("MM/dd/(E) HH:mm"))
+        end.format(DateTimeFormatter.ofPattern("MM/dd(E) HH:mm"))
     }
 }
