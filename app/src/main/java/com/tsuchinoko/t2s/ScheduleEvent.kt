@@ -27,7 +27,7 @@ data class ScheduleEvent(
     val start: LocalDateTime,
     val end: LocalDateTime,
 ) {
-    private val isAllDay =
+    val isAllDay =
         start.hour == 0 && start.minute == 0 && end.hour == 23 && end.minute == 59
 
     val displayDateTime: DisplayDateTime = if (isAllDay) {

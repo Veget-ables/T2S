@@ -1,14 +1,11 @@
 package com.tsuchinoko.t2s
 
 import android.content.Intent
-import android.icu.text.CaseMap.Title
 import android.provider.CalendarContract
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,11 +28,11 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -233,6 +230,30 @@ private fun EditableEventContent(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("終日")
+                Switch(
+                    checked = event.isAllDay,
+                    onCheckedChange = {
+                        if (event.isAllDay) {
+                            val newStart = event.start.withHour(0).withMinute(0)
+                            val newEnd = event.end.withHour(0).withMinute(0)
+                            val new = event.copy(start = newStart, end = newEnd)
+                            onEventChange(new)
+                        } else {
+                            val newStart = event.start.withHour(0).withMinute(0)
+                            val newEnd = event.end.withHour(23).withMinute(59)
+                            val new = event.copy(start = newStart, end = newEnd)
+                            onEventChange(new)
+                        }
+                    }
+                )
+            }
+
             val start = event.start
             EventDateTime(
                 localDateTime = start,
