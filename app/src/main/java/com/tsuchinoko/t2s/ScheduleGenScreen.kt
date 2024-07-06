@@ -1,12 +1,14 @@
 package com.tsuchinoko.t2s
 
 import android.content.Intent
+import android.icu.text.CaseMap.Title
 import android.provider.CalendarContract
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,6 +65,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Composable
 fun ScheduleGenScreen(
@@ -179,10 +182,9 @@ private fun ScheduleEvents(
         LazyColumn(
             contentPadding = paddingValues
         ) {
-            items(scheduleEvents) { event ->
+            items(items = scheduleEvents, key = { it.id }) { event ->
                 ScheduleEvent(
-                    event = event,
-                    modifier = Modifier.fillMaxWidth()
+                    event = event, modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -192,7 +194,7 @@ private fun ScheduleEvents(
 
 @Composable
 private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
     var _event by remember { mutableStateOf(event) }
     Card(
         modifier = modifier
@@ -436,27 +438,25 @@ private val TimeZoneUTC = ZoneId.of("UTC")
 fun ScheduleGenScreenPreview() {
     T2STheme {
         val events = listOf(
-            ScheduleEvent(
+            createScheduleEvent(
                 title = "終日予定",
                 memo = "これはメモです",
                 start = LocalDateTime.parse("2020-02-15T00:00"),
                 end = LocalDateTime.parse("2020-02-15T23:59")
             ),
-            ScheduleEvent(
+            createScheduleEvent(
                 title = "一日予定",
                 memo = "これはメモです",
                 start = LocalDateTime.parse("2020-02-15T01:30"),
                 end = LocalDateTime.parse("2020-02-15T23:30")
             ),
-            ScheduleEvent(
+            createScheduleEvent(
                 title = "日をまたぐ予定",
-                memo = null,
                 start = LocalDateTime.parse("2020-02-15T21:30"),
                 end = LocalDateTime.parse("2020-02-16T21:30")
             ),
-            ScheduleEvent(
+            createScheduleEvent(
                 title = "タイトルがとても長くて2行以上になってしまう予定",
-                memo = null,
                 start = LocalDateTime.parse("2020-02-15T21:30"),
                 end = LocalDateTime.parse("2020-02-16T21:30")
             )
@@ -472,7 +472,7 @@ fun EditableEventContentPreview() {
         Column {
             Card {
                 EditableEventContent(
-                    event = ScheduleEvent(
+                    event = createScheduleEvent(
                         title = "終日予定",
                         memo = "これはメモです",
                         start = LocalDateTime.parse("2020-02-15T00:00"),
@@ -485,7 +485,7 @@ fun EditableEventContentPreview() {
 
             Card {
                 EditableEventContent(
-                    event = ScheduleEvent(
+                    event = createScheduleEvent(
                         title = "タイトルがとても長くて2行以上になってしまう予定",
                         memo = "11:00 入り \n12:00 - 13:00 解散",
                         start = LocalDateTime.parse("2020-02-15T21:30"),
@@ -498,7 +498,7 @@ fun EditableEventContentPreview() {
 
             Card {
                 EditableEventContent(
-                    event = ScheduleEvent(
+                    event = createScheduleEvent(
                         title = "予定",
                         memo = "6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。",
                         start = LocalDateTime.parse("2020-02-15T21:30"),
@@ -516,13 +516,22 @@ fun EventContentPreview() {
     T2STheme {
         Card {
             EventContent(
-                event = ScheduleEvent(
+                event = createScheduleEvent(
                     title = "日をまたぐ予定",
-                    memo = null,
                     start = LocalDateTime.parse("2020-02-15T21:30"),
                     end = LocalDateTime.parse("2020-02-16T21:30")
                 )
             )
         }
     }
+}
+
+private fun createScheduleEvent(
+    id: UUID = UUID.randomUUID(),
+    title: String,
+    memo: String? = null,
+    start: LocalDateTime,
+    end: LocalDateTime
+): ScheduleEvent {
+    return ScheduleEvent(id = id, title = title, memo = memo, start = start, end = end)
 }

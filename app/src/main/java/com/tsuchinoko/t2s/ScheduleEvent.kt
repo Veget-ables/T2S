@@ -4,6 +4,7 @@ import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 fun JSONObject.toScheduleEvent(): ScheduleEvent {
     val title = getString("title").ifBlank { "タイトルなし" }
@@ -11,6 +12,7 @@ fun JSONObject.toScheduleEvent(): ScheduleEvent {
     val start = LocalDateTime.parse(getString("start"))
     val end = LocalDateTime.parse(getString("end"))
     return ScheduleEvent(
+        id = UUID.randomUUID(),
         title = title,
         memo = memo,
         start = start,
@@ -19,6 +21,7 @@ fun JSONObject.toScheduleEvent(): ScheduleEvent {
 }
 
 data class ScheduleEvent(
+    val id: UUID,
     val title: String,
     val memo: String?,
     val start: LocalDateTime,
