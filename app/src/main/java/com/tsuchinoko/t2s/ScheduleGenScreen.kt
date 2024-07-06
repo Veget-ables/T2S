@@ -241,12 +241,11 @@ private fun EditableEventContent(
                     onCheckedChange = {
                         if (event.isAllDay) {
                             val newStart = event.start.withHour(0).withMinute(0)
-                            val newEnd = event.end.withHour(0).withMinute(0)
-                            val new = event.copy(start = newStart, end = newEnd)
+                            val new = event.copy(start = newStart, end = newStart)
                             onEventChange(new)
                         } else {
                             val newStart = event.start.withHour(0).withMinute(0)
-                            val newEnd = event.end.withHour(23).withMinute(59)
+                            val newEnd = newStart.withHour(23).withMinute(59)
                             val new = event.copy(start = newStart, end = newEnd)
                             onEventChange(new)
                         }
@@ -254,34 +253,59 @@ private fun EditableEventContent(
                 )
             }
 
-            val start = event.start
-            EventDateTime(
-                localDateTime = start,
-                onDateChange = {
-                    val newDateTime = it.atTime(start.hour, start.minute)
-                    val new = event.copy(start = newDateTime)
-                    onEventChange(new)
-                },
-                onTimeChange = { hour, minute ->
-                    val newDateTime = start.withHour(hour).withMinute(minute)
-                    val new = event.copy(start = newDateTime)
-                    onEventChange(new)
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween
+            ) {
+                val start = event.start
+                EventDateSelection(
+                    localDateTime = start,
+                    modifier = Modifier.weight(1f, true),
+                    onDateChange = {
+                        val newDateTime = it.atTime(start.hour, start.minute)
+                        val new = event.copy(start = newDateTime)
+                        onEventChange(new)
+                    }
+                )
+                if (event.isAllDay.not()) {
+                    EventTimeSelection(
+                        localDateTime = start,
+                        onTimeChange = { hour, minute ->
+                            val newDateTime = start.withHour(hour).withMinute(minute)
+                            val new = event.copy(start = newDateTime)
+                            onEventChange(new)
+                        }
+                    )
                 }
-            )
-            val end = event.end
-            EventDateTime(localDateTime = end,
-                modifier = Modifier.padding(top = 8.dp),
-                onDateChange = {
-                    val newDateTime = it.atTime(end.hour, end.minute)
-                    val new = event.copy(end = newDateTime)
-                    onEventChange(new)
-                },
-                onTimeChange = { hour, minute ->
-                    val newDateTime = end.withHour(hour).withMinute(minute)
-                    val new = event.copy(end = newDateTime)
-                    onEventChange(new)
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            if (event.isAllDay.not()) {
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Absolute.SpaceBetween
+                ) {
+                    val end = event.end
+                    EventDateSelection(
+                        localDateTime = end,
+                        modifier = Modifier.weight(1f, true),
+                        onDateChange = {
+                            val newDateTime = it.atTime(end.hour, end.minute)
+                            val new = event.copy(end = newDateTime)
+                            onEventChange(new)
+                        }
+                    )
+                    EventTimeSelection(
+                        localDateTime = end,
+                        onTimeChange = { hour, minute ->
+                            val newDateTime = end.withHour(hour).withMinute(minute)
+                            val new = event.copy(end = newDateTime)
+                            onEventChange(new)
+                        }
+                    )
                 }
-            )
+            }
 
             OutlinedTextField(
                 value = event.title,
@@ -313,6 +337,96 @@ private fun EditableEventContent(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EventDateSelection(
+    localDateTime: LocalDateTime,
+    modifier: Modifier = Modifier,
+    onDateChange: (LocalDate) -> Unit,
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    Text(
+        text = localDateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd(E)")),
+        modifier = modifier
+            .clickable {
+                showDatePicker = true
+            }
+    )
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis =
+            localDateTime.atZone(TimeZoneUTC).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let {
+                            val instant = Instant.ofEpochMilli(it)
+                            val localDate = instant.atZone(TimeZoneUTC).toLocalDate()
+                            onDateChange(localDate)
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("キャンセル")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EventTimeSelection(
+    localDateTime: LocalDateTime,
+    modifier: Modifier = Modifier,
+    onTimeChange: (hour: Int, minute: Int) -> Unit
+) {
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    Text(
+        text = localDateTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+        modifier = modifier.clickable {
+            showTimePicker = true
+        }
+    )
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState()
+        TimePickerDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    onTimeChange(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            TimePicker(
+                state = timePickerState,
+            )
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
