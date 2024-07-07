@@ -562,7 +562,7 @@ fun EventContentPreview() {
     }
 }
 
-private fun createScheduleEvent(
+internal fun createScheduleEvent(
     id: UUID = UUID.randomUUID(),
     title: String,
     memo: String? = null,

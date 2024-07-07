@@ -1,9 +1,11 @@
 package com.tsuchinoko.t2s
 
 import android.accounts.AccountManager
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.ComponentActivity
@@ -23,6 +25,8 @@ import com.google.api.client.util.DateTime
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
+import com.google.api.services.calendar.model.Event
+import com.google.api.services.calendar.model.EventDateTime
 import com.tsuchinoko.t2s.Constants.REQUEST_ACCOUNT_PICKER
 import com.tsuchinoko.t2s.Constants.REQUEST_AUTHORIZATION
 import com.tsuchinoko.t2s.Constants.REQUEST_PERMISSION_GET_ACCOUNTS
@@ -30,6 +34,10 @@ import com.tsuchinoko.t2s.ui.theme.T2STheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pub.devrel.easypermissions.EasyPermissions
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,7 +150,20 @@ class MainActivity : ComponentActivity() {
     private fun makeRequestTask() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                getDataFromCalendar()
+                listOf(
+                    createScheduleEvent(
+                        title = "終日予定",
+                        start = LocalDateTime.parse("2024-07-07T00:00"),
+                        end = LocalDateTime.parse("2024-07-07T23:59")
+                    ),
+                    createScheduleEvent(
+                        title = "通常予定",
+                        start = LocalDateTime.parse("2024-07-07T02:00"),
+                        end = LocalDateTime.parse("2024-07-07T08:30")
+                    )
+                ).forEach {
+                    insertEvent(it)
+                }
             } catch (e: Exception) {
                 when (e) {
                     is UserRecoverableAuthIOException -> {
@@ -153,43 +174,49 @@ class MainActivity : ComponentActivity() {
                     }
 
                     else -> {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Google Calendarとの連携に失敗しました：" + e.message,
-                            LENGTH_SHORT
-                        ).show()
+                        Log.e("GOOGLE_ERROR", "Google Calendarとの連携に失敗しました：" + e.message)
                     }
                 }
             }
         }
     }
 
-    private fun getDataFromCalendar(): MutableList<GetEventModel> {
-        val now = DateTime(System.currentTimeMillis())
-        val eventStrings = ArrayList<GetEventModel>()
-        val events = mService!!.events().list("primary")
-            .setMaxResults(10)
-            .setTimeMin(now)
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute()
-        val items = events.items
-
-        for (event in items) {
-            var start = event.start.dateTime
-            if (start == null) {
-                start = event.start.date
-            }
-
-            eventStrings.add(
-                GetEventModel(
-                    summary = event.summary,
-                    startDate = start.toString()
+    private fun insertEvent(scheduleEvent: ScheduleEvent) {
+        val (startDateTime, endDateTime) = if (scheduleEvent.isAllDay) {
+            val startDateTime = EventDateTime()
+                .setDate(
+                    DateTime(scheduleEvent.start.toLocalDate().toString())
                 )
-            )
+            startDateTime to startDateTime
+        } else {
+            val startDateTime = scheduleEvent.start.toEventDateTime()
+            val endDateTime = scheduleEvent.end.toEventDateTime()
+            startDateTime to endDateTime
         }
-        return eventStrings
+
+        val event = Event()
+            .setStart(startDateTime)
+            .setEnd(endDateTime)
+            .setSummary(scheduleEvent.title)
+
+        val resultEvent = mService!!
+            .events()
+            .insert("primary", event)
+            .execute()
+        System.out.printf("Event created: %s\n", resultEvent.htmlLink)
     }
+}
+
+@SuppressLint("SimpleDateFormat")
+private fun LocalDateTime.toEventDateTime(): EventDateTime {
+    val zonedDateTime = atZone(ZoneId.systemDefault())
+    val date = Date.from(zonedDateTime.toInstant())
+    return EventDateTime()
+        .setDateTime(
+            DateTime(
+                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(date)
+            )
+        )
 }
 
 object Constants {
@@ -197,9 +224,3 @@ object Constants {
     const val REQUEST_AUTHORIZATION = 1001
     const val REQUEST_PERMISSION_GET_ACCOUNTS = 1002
 }
-
-data class GetEventModel(
-    var id: Int = 0,
-    var summary: String? = "",
-    var startDate: String = "",
-)
