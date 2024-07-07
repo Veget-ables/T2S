@@ -1,7 +1,5 @@
 package com.tsuchinoko.t2s
 
-import android.content.Intent
-import android.provider.CalendarContract
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -49,7 +47,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -67,14 +64,16 @@ import java.util.UUID
 @Composable
 fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    scheduleGenViewModel: ScheduleGenViewModel = viewModel()
+    scheduleGenViewModel: ScheduleGenViewModel = viewModel(),
+    onRegistryClick: () -> Unit = {},
 ) {
     val uiState by scheduleGenViewModel.uiState.collectAsState()
 
     ScheduleGenScreen(
         modifier = modifier,
         uiState = uiState,
-        onClickConvert = scheduleGenViewModel::sendPrompt
+        onClickConvert = scheduleGenViewModel::sendPrompt,
+        onRegistryClick = onRegistryClick
     )
 }
 
@@ -83,7 +82,8 @@ fun ScheduleGenScreen(
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     uiState: UiState,
-    onClickConvert: (prompt: String) -> Unit = {}
+    onClickConvert: (prompt: String) -> Unit = {},
+    onRegistryClick: () -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.padding(),
@@ -99,7 +99,7 @@ private fun ScheduleGenScreen(
             )
         },
         floatingActionButton = {
-            RegistryButton()
+            RegistryButton(onRegistryClick = onRegistryClick)
         }
     ) { paddingValues ->
         Column(
@@ -454,23 +454,11 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RegistryButton(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+private fun RegistryButton(modifier: Modifier = Modifier, onRegistryClick: () -> Unit = {}) {
     FloatingActionButton(
         modifier = modifier
             .padding(vertical = 16.dp),
-        onClick = {
-            val intent = Intent(Intent.ACTION_INSERT)
-            intent.setData(CalendarContract.Events.CONTENT_URI)
-            val startTimeMillis = System.currentTimeMillis() + 10 * 60 * 1000
-            intent.putExtra(CalendarContract.Events.TITLE, "予定")
-            intent.putExtra(CalendarContract.Events.DTSTART, startTimeMillis)
-            intent.putExtra(
-                CalendarContract.Events.DTEND,
-                startTimeMillis + 30 * 60 * 1000
-            )
-            context.startActivity(intent)
-        },
+        onClick = onRegistryClick,
     ) {
         Icon(
             painter = painterResource(R.drawable.event_upcoming),
