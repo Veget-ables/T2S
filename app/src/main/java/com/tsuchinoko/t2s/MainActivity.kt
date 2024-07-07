@@ -4,7 +4,6 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.ComponentActivity
@@ -18,17 +17,14 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
-import com.tsuchinoko.t2s.Constants.PREF_ACCOUNT_NAME
 import com.tsuchinoko.t2s.Constants.REQUEST_ACCOUNT_PICKER
 import com.tsuchinoko.t2s.Constants.REQUEST_AUTHORIZATION
-import com.tsuchinoko.t2s.Constants.REQUEST_GOOGLE_PLAY_SERVICES
 import com.tsuchinoko.t2s.Constants.REQUEST_PERMISSION_GET_ACCOUNTS
 import com.tsuchinoko.t2s.ui.theme.T2STheme
 import kotlinx.coroutines.Dispatchers
@@ -65,24 +61,9 @@ class MainActivity : ComponentActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != RESULT_OK) {
-                Log.d(
-                    "T2S-LOG",
-                    "This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app."
-                )
-            } else {
-                getResultsFromApi()
-            }
-
-            REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK && data != null &&
-                data.extras != null
-            ) {
-                val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK) {
+                val accountName = data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
-                    val settings = getPreferences(Context.MODE_PRIVATE)
-                    val editor = settings?.edit()
-                    editor?.putString(PREF_ACCOUNT_NAME, accountName)
-                    editor?.apply()
                     mCredential!!.selectedAccountName = accountName
                     getResultsFromApi()
                 }
@@ -121,12 +102,18 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun getResultsFromApi() {
-        if (!isGooglePlayServicesAvailable()) {
-            acquireGooglePlayServices()
-        } else if (mCredential!!.selectedAccountName == null) {
-            chooseAccount()
+        if (isGooglePlayServicesAvailable()) {
+            if (mCredential!!.selectedAccountName == null) {
+                chooseAccount()
+            } else {
+                makeRequestTask()
+            }
         } else {
-            makeRequestTask()
+            Toast.makeText(
+                this,
+                "Google Play 開発者サービスが必要ですが、お使いの端末では無効になっているかサポートされていません。",
+                LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -136,35 +123,13 @@ class MainActivity : ComponentActivity() {
         return connectionStatusCode == ConnectionResult.SUCCESS
     }
 
-    private fun acquireGooglePlayServices() {
-        val apiAvailability = GoogleApiAvailability.getInstance()
-        val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
-        if (connectionStatusCode != ConnectionResult.SUCCESS)
-            if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
-                Toast.makeText(
-                    this,
-                    "Google Play 開発者サービスが必要ですが、お使いの端末ではサポートされていません。",
-                    LENGTH_SHORT
-                ).show()
-            }
-    }
-
     private fun chooseAccount() {
         if (EasyPermissions.hasPermissions(this, android.Manifest.permission.GET_ACCOUNTS)) {
-            val accountName = getPreferences(Context.MODE_PRIVATE)
-                ?.getString(PREF_ACCOUNT_NAME, null)
-            if (accountName != null) {
-                mCredential!!.selectedAccountName = accountName
-                getResultsFromApi()
-            } else {
-                // Start a dialog from which the user can choose an account
-                startActivityForResult(
-                    mCredential!!.newChooseAccountIntent(),
-                    REQUEST_ACCOUNT_PICKER
-                )
-            }
+            startActivityForResult(
+                mCredential!!.newChooseAccountIntent(),
+                REQUEST_ACCOUNT_PICKER
+            )
         } else {
-            // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
                 this,
                 "This app needs to access your Google account (via Contacts).",
@@ -180,14 +145,6 @@ class MainActivity : ComponentActivity() {
                 getDataFromCalendar()
             } catch (e: Exception) {
                 when (e) {
-                    is GooglePlayServicesAvailabilityIOException -> {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Google Error:" + e.connectionStatusCode,
-                            LENGTH_SHORT
-                        ).show()
-                    }
-
                     is UserRecoverableAuthIOException -> {
                         this@MainActivity.startActivityForResult(
                             e.intent,
@@ -196,7 +153,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     else -> {
-                        Log.e("T2S-LOG", "The following error occurred:\n" + e.message)
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Google Calendarとの連携に失敗しました：" + e.message,
+                            LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -234,9 +195,7 @@ class MainActivity : ComponentActivity() {
 object Constants {
     const val REQUEST_ACCOUNT_PICKER = 1000
     const val REQUEST_AUTHORIZATION = 1001
-    const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
-    const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
-    const val PREF_ACCOUNT_NAME = "getCalendarEvent"
+    const val REQUEST_PERMISSION_GET_ACCOUNTS = 1002
 }
 
 data class GetEventModel(
