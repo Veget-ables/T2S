@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         initGCPClient(this)
+        chooseCalendar()
 
         setContent {
             T2STheme {
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     ScheduleGenScreen(
                         onRegistryClick = {
-                            getResultsFromApi()
+                            insertEvents()
                         }
                     )
                 }
@@ -73,12 +74,12 @@ class MainActivity : ComponentActivity() {
                 val accountName = data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
                     mCredential!!.selectedAccountName = accountName
-                    getResultsFromApi()
+                    getCalendar()
                 }
             }
 
             REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
-                getResultsFromApi()
+                getCalendar()
             }
         }
     }
@@ -109,12 +110,12 @@ class MainActivity : ComponentActivity() {
             .build()
     }
 
-    private fun getResultsFromApi() {
+    private fun chooseCalendar() {
         if (isGooglePlayServicesAvailable()) {
             if (mCredential!!.selectedAccountName == null) {
                 chooseAccount()
             } else {
-                makeRequestTask()
+                getCalendar()
             }
         } else {
             Toast.makeText(
@@ -147,7 +148,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun makeRequestTask() {
+    private fun getCalendar() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val calendars = mService!!.calendarList().list().execute()
+                calendars
+            } catch (e: Exception) {
+                when (e) {
+                    is UserRecoverableAuthIOException -> {
+                        this@MainActivity.startActivityForResult(
+                            e.intent,
+                            REQUEST_AUTHORIZATION
+                        )
+                    }
+
+                    else -> {
+                        Log.e("GOOGLE_ERROR", "Google Calendarとの連携に失敗しました：" + e.message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun insertEvents() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 listOf(
