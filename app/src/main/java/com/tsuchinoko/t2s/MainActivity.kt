@@ -29,11 +29,9 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.tsuchinoko.t2s.Constants.REQUEST_ACCOUNT_PICKER
 import com.tsuchinoko.t2s.Constants.REQUEST_AUTHORIZATION
-import com.tsuchinoko.t2s.Constants.REQUEST_PERMISSION_GET_ACCOUNTS
 import com.tsuchinoko.t2s.ui.theme.T2STheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.EasyPermissions
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -59,6 +57,7 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
+                GetAccountPermissionEffect()
             }
         }
     }
@@ -82,15 +81,6 @@ class MainActivity : ComponentActivity() {
                 getCalendar()
             }
         }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
     private fun initGCPClient(context: Context) {
@@ -133,19 +123,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun chooseAccount() {
-        if (EasyPermissions.hasPermissions(this, android.Manifest.permission.GET_ACCOUNTS)) {
-            startActivityForResult(
-                mCredential!!.newChooseAccountIntent(),
-                REQUEST_ACCOUNT_PICKER
-            )
-        } else {
-            EasyPermissions.requestPermissions(
-                this,
-                "This app needs to access your Google account (via Contacts).",
-                REQUEST_PERMISSION_GET_ACCOUNTS,
-                android.Manifest.permission.GET_ACCOUNTS
-            )
-        }
+        startActivityForResult(
+            mCredential!!.newChooseAccountIntent(),
+            REQUEST_ACCOUNT_PICKER
+        )
     }
 
     private fun getCalendar() {
@@ -245,5 +226,4 @@ private fun LocalDateTime.toEventDateTime(): EventDateTime {
 object Constants {
     const val REQUEST_ACCOUNT_PICKER = 1000
     const val REQUEST_AUTHORIZATION = 1001
-    const val REQUEST_PERMISSION_GET_ACCOUNTS = 1002
 }
