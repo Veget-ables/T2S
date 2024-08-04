@@ -70,14 +70,18 @@ import java.util.UUID
 @Composable
 fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
+    calendarViewModel: CalendarViewModel = viewModel(),
     scheduleGenViewModel: ScheduleGenViewModel = viewModel(),
     onRegistryClick: () -> Unit = {},
 ) {
-    val uiState by scheduleGenViewModel.uiState.collectAsState()
+    val calendarUiState by calendarViewModel.calendarUiState.collectAsState()
+    val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
 
     ScheduleGenScreen(
         modifier = modifier,
-        uiState = uiState,
+        calendarUiState = calendarUiState,
+        scheduleGenUiState = scheduleGenUiState,
+        onAccountChange = calendarViewModel::fetchCalendars,
         onClickConvert = scheduleGenViewModel::sendPrompt,
         onRegistryClick = onRegistryClick
     )
@@ -87,7 +91,9 @@ fun ScheduleGenScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState,
+    calendarUiState: CalendarUiState,
+    scheduleGenUiState: ScheduleGenUiState,
+    onAccountChange: (accountName: String) -> Unit = {},
     onClickConvert: (prompt: String) -> Unit = {},
     onRegistryClick: () -> Unit = {}
 ) {
@@ -95,7 +101,12 @@ private fun ScheduleGenScreen(
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { CalendarDrawerSheet(accountName = null, calendarList = emptyList()) }
+        drawerContent = {
+            CalendarDrawerSheet(
+                uiState = calendarUiState,
+                onAccountChange = onAccountChange
+            )
+        }
     ) {
         Scaffold(
             modifier = modifier.padding(),
@@ -158,21 +169,21 @@ private fun ScheduleGenScreen(
                     Text(text = "予定に変換する")
                 }
 
-                if (uiState is UiState.Loading) {
+                if (scheduleGenUiState is ScheduleGenUiState.Loading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 } else {
-                    if (uiState is UiState.Error) {
+                    if (scheduleGenUiState is ScheduleGenUiState.Error) {
                         Text(
-                            text = uiState.errorMessage,
+                            text = scheduleGenUiState.errorMessage,
                             textAlign = TextAlign.Start,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp)
                         )
-                    } else if (uiState is UiState.Success) {
+                    } else if (scheduleGenUiState is ScheduleGenUiState.Success) {
                         ScheduleEvents(
-                            scheduleEvents = uiState.scheduleEvents,
+                            scheduleEvents = scheduleGenUiState.scheduleEvents,
                             modifier = Modifier
                                 .weight(0.8f)
                                 .fillMaxSize()
@@ -522,7 +533,9 @@ fun ScheduleGenScreenPreview() {
                 end = LocalDateTime.parse("2020-02-16T21:30")
             )
         )
-        ScheduleGenScreen(uiState = UiState.Success(events))
+        ScheduleGenScreen(
+            calendarUiState = CalendarUiState.Initial,
+            scheduleGenUiState = ScheduleGenUiState.Success(events))
     }
 }
 

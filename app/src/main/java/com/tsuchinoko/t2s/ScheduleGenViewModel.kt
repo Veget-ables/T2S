@@ -17,10 +17,10 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class ScheduleGenViewModel : ViewModel() {
-    private val _uiState: MutableStateFlow<UiState> =
-        MutableStateFlow(UiState.Initial)
-    val uiState: StateFlow<UiState> =
-        _uiState.asStateFlow()
+    private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
+        MutableStateFlow(ScheduleGenUiState.Initial)
+    val scheduleGenUiState: StateFlow<ScheduleGenUiState> =
+        this._scheduleGenUiState.asStateFlow()
 
     private val getScheduleStructure = defineFunction(
         name = "getScheduleStructure",
@@ -48,7 +48,7 @@ class ScheduleGenViewModel : ViewModel() {
     )
 
     fun sendPrompt(prompt: String) {
-        _uiState.value = UiState.Loading
+        _scheduleGenUiState.value = ScheduleGenUiState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -66,9 +66,9 @@ class ScheduleGenViewModel : ViewModel() {
                     scheduleJson.toScheduleEvent()
                 }
 
-                _uiState.value = UiState.Success(scheduleEvents)
+                _scheduleGenUiState.value = ScheduleGenUiState.Success(scheduleEvents)
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "")
+                _scheduleGenUiState.value = ScheduleGenUiState.Error(e.localizedMessage ?: "")
             }
         }
     }
