@@ -23,10 +23,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,12 +40,14 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -85,81 +91,100 @@ private fun ScheduleGenScreen(
     onClickConvert: (prompt: String) -> Unit = {},
     onRegistryClick: () -> Unit = {}
 ) {
-    Scaffold(
-        modifier = modifier.padding(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                },
-            )
-        },
-        floatingActionButton = {
-            RegistryButton(onRegistryClick = onRegistryClick)
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .scrollable(
-                    state = rememberScrollState(), orientation = Orientation.Vertical
-                ),
-        ) {
-            var prompt by rememberSaveable { mutableStateOf(TEST_SCHEDULE) }
-
-            TextField(
-                value = prompt,
-                label = { Text(stringResource(R.string.label_prompt)) },
-                onValueChange = { prompt = it },
-                modifier = Modifier
-                    .requiredHeight(300.dp)
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
-            )
-
-            Button(
-                onClick = {
-                    onClickConvert(prompt)
-                },
-                enabled = prompt.isNotEmpty(),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 24.dp)
-            ) {
-                Text(text = "予定に変換する")
-            }
-
-            if (uiState is UiState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            } else {
-                if (uiState is UiState.Error) {
-                    Text(
-                        text = uiState.errorMessage,
-                        textAlign = TextAlign.Start,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(16.dp)
-                    )
-                } else if (uiState is UiState.Success) {
-                    ScheduleEvents(
-                        scheduleEvents = uiState.scheduleEvents,
-                        modifier = Modifier
-                            .weight(0.8f)
-                            .fillMaxSize()
-                            .padding(start = 8.dp, top = 16.dp, end = 8.dp),
-                        paddingValues = PaddingValues(
-                            start = 8.dp,
-                            end = 8.dp,
-                            top = 16.dp,
-                            bottom = 112.dp
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = { CalendarDrawerSheet(accountName = null, calendarList = emptyList()) }
+    ) {
+        Scaffold(
+            modifier = modifier.padding(),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(16.dp)
                         )
-                    )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                scope.launch { drawerState.open() }
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.perm_contact_calendar),
+                                contentDescription = "Choose Account & Calendar",
+                            )
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                RegistryButton(onRegistryClick = onRegistryClick)
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .scrollable(
+                        state = rememberScrollState(), orientation = Orientation.Vertical
+                    ),
+            ) {
+                var prompt by rememberSaveable { mutableStateOf(TEST_SCHEDULE) }
+
+                TextField(
+                    value = prompt,
+                    label = { Text(stringResource(R.string.label_prompt)) },
+                    onValueChange = { prompt = it },
+                    modifier = Modifier
+                        .requiredHeight(300.dp)
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp)
+                )
+
+                Button(
+                    onClick = {
+                        onClickConvert(prompt)
+                    },
+                    enabled = prompt.isNotEmpty(),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 24.dp)
+                ) {
+                    Text(text = "予定に変換する")
+                }
+
+                if (uiState is UiState.Loading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                } else {
+                    if (uiState is UiState.Error) {
+                        Text(
+                            text = uiState.errorMessage,
+                            textAlign = TextAlign.Start,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(16.dp)
+                        )
+                    } else if (uiState is UiState.Success) {
+                        ScheduleEvents(
+                            scheduleEvents = uiState.scheduleEvents,
+                            modifier = Modifier
+                                .weight(0.8f)
+                                .fillMaxSize()
+                                .padding(start = 8.dp, top = 16.dp, end = 8.dp),
+                            paddingValues = PaddingValues(
+                                start = 8.dp,
+                                end = 8.dp,
+                                top = 16.dp,
+                                bottom = 112.dp
+                            )
+                        )
+                    }
                 }
             }
         }
