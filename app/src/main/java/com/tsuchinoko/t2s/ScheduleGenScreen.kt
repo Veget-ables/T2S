@@ -57,7 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.ui.theme.T2STheme
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -70,8 +70,8 @@ import java.util.UUID
 @Composable
 fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    calendarViewModel: CalendarViewModel = viewModel(),
-    scheduleGenViewModel: ScheduleGenViewModel = viewModel(),
+    calendarViewModel: CalendarViewModel = hiltViewModel(),
+    scheduleGenViewModel: ScheduleGenViewModel = hiltViewModel(),
     onRegistryClick: () -> Unit = {},
 ) {
     val calendarUiState by calendarViewModel.calendarUiState.collectAsState()

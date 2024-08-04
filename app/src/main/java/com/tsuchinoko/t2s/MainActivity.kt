@@ -10,11 +10,10 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -30,6 +29,7 @@ import com.google.api.services.calendar.model.EventDateTime
 import com.tsuchinoko.t2s.Constants.REQUEST_ACCOUNT_PICKER
 import com.tsuchinoko.t2s.Constants.REQUEST_AUTHORIZATION
 import com.tsuchinoko.t2s.ui.theme.T2STheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -37,6 +37,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,16 +47,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             T2STheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = "schedule_gen"
                 ) {
-                    ScheduleGenScreen(
-                        onRegistryClick = {
-                            insertEvents()
-                        }
-                    )
+                    composable("schedule_gen") {
+                        ScheduleGenScreen()
+                    }
                 }
                 GetAccountPermissionEffect()
             }
