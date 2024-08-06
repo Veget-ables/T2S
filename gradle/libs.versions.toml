@@ -19,7 +19,7 @@ googleApiCalendar = "v3-rev305-1.23.0"
 googlePlayServicesAuth = "20.4.0"
 
 navigationCompose = "2.7.7"
-hilt = "2.44"
+hilt = "2.51.1"
 hiltNavigationCompose = "1.0.0"
 
 [libraries]
