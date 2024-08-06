@@ -1,6 +1,5 @@
 package com.tsuchinoko.t2s
 
-import android.accounts.Account
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,20 +60,20 @@ fun CalendarDrawerSheet(
             }
 
             is CalendarUiState.Success -> {
-                val account = uiState.account
+                val accountName = uiState.accountName
                 TextButton(
                     onClick = {
-                        launcher.launch(account)
+                        launcher.launch(accountName)
                     }
                 ) {
-                    val accountText = "選択中: ${account.name}"
+                    val accountText = "選択中: ${accountName}"
                     Text(accountText)
                 }
 
                 HorizontalDivider()
 
-                SelectionCalendarList(
-                    calendarList = uiState.calendarList,
+                AccountCalendars(
+                    calendars = uiState.calendars,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -87,15 +86,15 @@ fun CalendarDrawerSheet(
 }
 
 @Composable
-private fun SelectionCalendarList(calendarList: List<String>, modifier: Modifier = Modifier) {
+private fun AccountCalendars(calendars: List<Calendar>, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier) {
-        items(calendarList) { calendar ->
+        items(calendars) { calendar ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = false,
                     onClick = {}
                 )
-                Text(calendar)
+                Text(calendar.title)
             }
         }
     }
@@ -120,8 +119,12 @@ fun CalendarDrawerPreview_AccountSelected() {
         Surface {
             CalendarDrawerSheet(
                 uiState = CalendarUiState.Success(
-                    account = Account("taro", "google"),
-                    calendarList = listOf("calendar1", "calendar2", "calendar3")
+                    accountName = "taro",
+                    calendars = listOf(
+                        Calendar("calendar1"),
+                        Calendar("calendar2"),
+                        Calendar("calendar3")
+                    )
                 )
             )
         }

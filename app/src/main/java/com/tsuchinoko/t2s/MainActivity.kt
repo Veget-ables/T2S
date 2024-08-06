@@ -1,9 +1,6 @@
 package com.tsuchinoko.t2s
 
-import android.accounts.AccountManager
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -16,17 +13,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.api.client.extensions.android.http.AndroidHttp
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
-import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.calendar.Calendar
-import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
-import com.tsuchinoko.t2s.Constants.REQUEST_ACCOUNT_PICKER
 import com.tsuchinoko.t2s.Constants.REQUEST_AUTHORIZATION
 import com.tsuchinoko.t2s.ui.theme.T2STheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,9 +32,6 @@ import java.util.Date
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        initGCPClient(this)
-        chooseCalendar()
 
         setContent {
             T2STheme {
@@ -61,51 +49,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private var mCredential: GoogleAccountCredential? = null
     private var mService: Calendar? = null
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK) {
-                val accountName = data?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null) {
-                    mCredential!!.selectedAccountName = accountName
-                    getCalendar()
-                }
-            }
-
-            REQUEST_AUTHORIZATION -> if (resultCode == RESULT_OK) {
-                getCalendar()
-            }
-        }
-    }
-
-    private fun initGCPClient(context: Context) {
-        mCredential = GoogleAccountCredential
-            .usingOAuth2(
-                context,
-                arrayListOf(CalendarScopes.CALENDAR)
-            )
-            .setBackOff(ExponentialBackOff())
-
-        mService = Calendar.Builder(
-            AndroidHttp.newCompatibleTransport(),
-            JacksonFactory.getDefaultInstance(),
-            mCredential
-        )
-            .setApplicationName("T2S")
-            .build()
-    }
 
     private fun chooseCalendar() {
         if (isGooglePlayServicesAvailable()) {
-            if (mCredential!!.selectedAccountName == null) {
-                chooseAccount()
-            } else {
-                getCalendar()
-            }
         } else {
             Toast.makeText(
                 this,
@@ -119,35 +66,6 @@ class MainActivity : ComponentActivity() {
         val connectionStatusCode = GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(this)
         return connectionStatusCode == ConnectionResult.SUCCESS
-    }
-
-    private fun chooseAccount() {
-        startActivityForResult(
-            mCredential!!.newChooseAccountIntent(),
-            REQUEST_ACCOUNT_PICKER
-        )
-    }
-
-    private fun getCalendar() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val calendars = mService!!.calendarList().list().execute()
-                calendars
-            } catch (e: Exception) {
-                when (e) {
-                    is UserRecoverableAuthIOException -> {
-                        this@MainActivity.startActivityForResult(
-                            e.intent,
-                            REQUEST_AUTHORIZATION
-                        )
-                    }
-
-                    else -> {
-                        Log.e("GOOGLE_ERROR", "Google Calendarとの連携に失敗しました：" + e.message)
-                    }
-                }
-            }
-        }
     }
 
     private fun insertEvents() {
@@ -223,6 +141,5 @@ private fun LocalDateTime.toEventDateTime(): EventDateTime {
 }
 
 object Constants {
-    const val REQUEST_ACCOUNT_PICKER = 1000
     const val REQUEST_AUTHORIZATION = 1001
 }

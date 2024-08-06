@@ -14,13 +14,17 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.common.AccountPicker
 
-class ChooseAccountContract : ActivityResultContract<Account?, String?>() {
-    override fun createIntent(context: Context, input: Account?): Intent {
+/**
+ * input: Selected Account Name
+ */
+class ChooseAccountContract : ActivityResultContract<String?, String?>() {
+    override fun createIntent(context: Context, input: String?): Intent {
+        val account = if (input != null) Account(input, "google") else null
         return AccountPicker.newChooseAccountIntent(
             AccountPicker
                 .AccountChooserOptions
                 .Builder()
-                .setSelectedAccount(input)
+                .setSelectedAccount(account)
                 .build()
         )
     }

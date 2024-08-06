@@ -5,18 +5,18 @@ import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.ExponentialBackOff
-import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class GoogleServiceModule {
-
+    @Singleton
     @Provides
     fun provideGoogleAccountCredential(@ApplicationContext context: Context): GoogleAccountCredential {
         return GoogleAccountCredential
@@ -27,9 +27,10 @@ class GoogleServiceModule {
             .setBackOff(ExponentialBackOff())
     }
 
+    @Singleton
     @Provides
-    fun provideGoogleCalendarService(credential: GoogleAccountCredential): Calendar {
-        return Calendar.Builder(
+    fun provideGoogleCalendarService(credential: GoogleAccountCredential): com.google.api.services.calendar.Calendar {
+        return com.google.api.services.calendar.Calendar.Builder(
             AndroidHttp.newCompatibleTransport(),
             JacksonFactory.getDefaultInstance(),
             credential

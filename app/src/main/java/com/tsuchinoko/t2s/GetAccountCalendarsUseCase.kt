@@ -1,6 +1,5 @@
 package com.tsuchinoko.t2s
 
-import com.google.api.services.calendar.model.Calendar
 import javax.inject.Inject
 
 class GetAccountCalendarsUseCase @Inject constructor(

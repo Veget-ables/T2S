@@ -26,7 +26,11 @@ class CalendarViewModel @Inject constructor(
 
     fun fetchCalendars(accountName: String) {
         viewModelScope.launch {
-            getAccountCalendarsUseCase(accountName)
+            val calendars = getAccountCalendarsUseCase(accountName)
+            _calendarUiState.value = CalendarUiState.Success(
+                accountName = accountName,
+                calendars = calendars
+            )
         }
     }
 }

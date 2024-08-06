@@ -5,8 +5,8 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import javax.inject.Inject
 
 class AccountRepositoryImpl @Inject constructor(
-    val credential: GoogleAccountCredential
-) : AccountRepository{
+    private val credential: GoogleAccountCredential
+) : AccountRepository {
     override fun getAccount(): Account? {
         return credential.selectedAccount
     }
