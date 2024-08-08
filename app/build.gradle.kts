@@ -1,6 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.t2s.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     alias(libs.plugins.hilt.android)
@@ -9,12 +8,9 @@ plugins {
 
 android {
     namespace = "com.tsuchinoko.t2s"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.tsuchinoko.t2s"
-        minSdk = 27
-        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -32,13 +28,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
