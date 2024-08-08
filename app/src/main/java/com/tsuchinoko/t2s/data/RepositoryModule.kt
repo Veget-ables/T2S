@@ -1,9 +1,5 @@
-package com.tsuchinoko.t2s.di
+package com.tsuchinoko.t2s.data
 
-import com.tsuchinoko.t2s.AccountRepository
-import com.tsuchinoko.t2s.AccountRepositoryImpl
-import com.tsuchinoko.t2s.CalendarRepository
-import com.tsuchinoko.t2s.CalendarRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

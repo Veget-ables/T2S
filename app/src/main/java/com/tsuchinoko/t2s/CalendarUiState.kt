@@ -1,5 +1,7 @@
 package com.tsuchinoko.t2s
 
+import com.tsuchinoko.t2s.model.Calendar
+
 sealed interface CalendarUiState {
 
     object Initial : CalendarUiState

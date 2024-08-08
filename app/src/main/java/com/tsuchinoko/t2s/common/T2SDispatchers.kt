@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.common
 
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME

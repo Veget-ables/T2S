@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.di
+package com.tsuchinoko.t2s.network
 
 import android.content.Context
 import com.google.api.client.extensions.android.http.AndroidHttp

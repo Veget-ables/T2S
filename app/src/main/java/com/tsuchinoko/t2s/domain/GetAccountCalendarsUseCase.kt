@@ -1,5 +1,8 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.domain
 
+import com.tsuchinoko.t2s.data.AccountRepository
+import com.tsuchinoko.t2s.data.CalendarRepository
+import com.tsuchinoko.t2s.model.Calendar
 import javax.inject.Inject
 
 class GetAccountCalendarsUseCase @Inject constructor(

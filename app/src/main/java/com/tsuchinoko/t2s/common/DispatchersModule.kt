@@ -1,7 +1,5 @@
-package com.tsuchinoko.t2s.di
+package com.tsuchinoko.t2s.common
 
-import com.tsuchinoko.t2s.Dispatcher
-import com.tsuchinoko.t2s.T2SDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
