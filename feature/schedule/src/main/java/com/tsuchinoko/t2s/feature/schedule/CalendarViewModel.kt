@@ -2,7 +2,7 @@ package com.tsuchinoko.t2s.feature.schedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tsuchinoko.t2s.feature.schedule.data.AccountRepository
+import com.tsuchinoko.t2s.core.data.AccountRepository
 import com.tsuchinoko.t2s.feature.schedule.domain.GetAccountCalendarsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,7 +1,7 @@
 package com.tsuchinoko.t2s.feature.schedule.domain
 
-import com.tsuchinoko.t2s.feature.schedule.data.AccountRepository
-import com.tsuchinoko.t2s.feature.schedule.data.CalendarRepository
+import com.tsuchinoko.t2s.core.data.AccountRepository
+import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.model.Calendar
 import javax.inject.Inject
 
