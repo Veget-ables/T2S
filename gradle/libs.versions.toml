@@ -71,4 +71,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 t2s-android-application = { id = "t2s.android.application", version = "unspecified" }
 t2s-android-application-compose = { id = "t2s.android.application.compose", version = "unspecified" }
 t2s-android-library = { id = "t2s.android.library", version = "unspecified" }
+t2s-android-library-compose = { id = "t2s.android.library.compose", version = "unspecified" }
 t2s-hilt = { id = "t2s.hilt", version = "unspecified" }

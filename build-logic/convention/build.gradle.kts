@@ -37,6 +37,10 @@ gradlePlugin {
             id = "t2s.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+        register("androidLibraryCompose") {
+            id = "t2s.android.library.compose"
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
+        }
         register("hilt") {
             id = "t2s.hilt"
             implementationClass = "HiltConventionPlugin"

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.t2s.android.feature)
+    alias(libs.plugins.t2s.android.library.compose)
 }
 
 android {
