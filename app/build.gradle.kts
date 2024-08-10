@@ -42,24 +42,16 @@ android {
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.designsystem)
+    implementation(projects.feature.schedule)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
-    implementation(libs.generativeai)
-    implementation(libs.accompanist.permissions)
 
     // Navigation & Hilt
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation.compose)
-
-    // Calendar API
-    implementation(libs.google.api.client.android)
-    implementation(libs.google.oauth.client.jetty)
-    implementation(libs.google.api.calendar)
-    implementation(libs.google.play.services.auth)
-    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.feature.schedule
 
 sealed interface ScheduleGenUiState {
 

@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.feature.schedule
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -114,7 +114,7 @@ private fun ScheduleGenScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = stringResource(R.string.app_name),
+                            text = "title",
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -149,7 +149,6 @@ private fun ScheduleGenScreen(
 
                 TextField(
                     value = prompt,
-                    label = { Text(stringResource(R.string.label_prompt)) },
                     onValueChange = { prompt = it },
                     modifier = Modifier
                         .requiredHeight(300.dp)
@@ -600,7 +599,7 @@ fun EventContentPreview() {
     }
 }
 
-internal fun createScheduleEvent(
+fun createScheduleEvent(
     id: UUID = UUID.randomUUID(),
     title: String,
     memo: String? = null,

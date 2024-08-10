@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.network
+package com.tsuchinoko.t2s.feature.schedule.network
 
 import android.content.Context
 import com.google.api.client.extensions.android.http.AndroidHttp

@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.common
+package com.tsuchinoko.t2s.feature.schedule.common
 
 import dagger.Module
 import dagger.Provides

@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.feature.schedule
 
 const val TEST_SCHEDULE = """
 ●6/25(火)

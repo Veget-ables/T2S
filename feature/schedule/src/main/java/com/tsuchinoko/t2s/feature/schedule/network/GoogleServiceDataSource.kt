@@ -1,11 +1,11 @@
-package com.tsuchinoko.t2s.network
+package com.tsuchinoko.t2s.feature.schedule.network
 
 import android.content.Intent
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.calendar.model.CalendarList
-import com.tsuchinoko.t2s.model.Calendar
-import com.tsuchinoko.t2s.common.Dispatcher
-import com.tsuchinoko.t2s.common.T2SDispatchers
+import com.tsuchinoko.t2s.feature.schedule.model.Calendar
+import com.tsuchinoko.t2s.feature.schedule.common.Dispatcher
+import com.tsuchinoko.t2s.feature.schedule.common.T2SDispatchers
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

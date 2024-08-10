@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.feature.schedule
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -45,7 +45,8 @@ class ScheduleGenViewModel @Inject constructor() : ViewModel() {
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
-        apiKey = BuildConfig.apiKey,
+//        apiKey = BuildConfig.apiKey,
+        apiKey = "", // TODO
         tools = listOf(Tool(listOf(getScheduleStructure))),
         systemInstruction = content { text("あなたはGoogle Calendarに予定を登録しようとしている人です。") }
     )

@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s
+package com.tsuchinoko.t2s.feature.schedule
 
 import android.accounts.Account
 import android.accounts.AccountManager
@@ -40,7 +40,7 @@ class ChooseAccountContract : ActivityResultContract<String?, String?>() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-internal fun GetAccountPermissionEffect() {
+fun GetAccountPermissionEffect() {
     if (LocalInspectionMode.current) return
 
     val accountPermissionState = rememberPermissionState(android.Manifest.permission.GET_ACCOUNTS)
