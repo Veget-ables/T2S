@@ -7,8 +7,8 @@ plugins {
 group = "com.tsuchinoko.t2s.buildlogic"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
 }
 
 kotlin {
@@ -48,6 +48,10 @@ gradlePlugin {
         register("androidFeature") {
             id = "t2s.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
+        }
+        register("jvmLibrary") {
+            id = "t2s.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
         }
     }
 }

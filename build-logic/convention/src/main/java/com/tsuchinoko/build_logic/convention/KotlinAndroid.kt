@@ -28,15 +28,3 @@ fun Project.configureKotlinAndroid(
         configureKotlin<KotlinAndroidProjectExtension>()
     }
 }
-
-private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin() = configure<T> {
-    val warningsAsErrors: String? by project
-    when (this) {
-        is KotlinAndroidProjectExtension -> compilerOptions
-        is KotlinJvmProjectExtension -> compilerOptions
-        else -> TODO("Unsupported project extension $this ${T::class}")
-    }.apply {
-        jvmTarget = JvmTarget.JVM_18
-        allWarningsAsErrors = warningsAsErrors.toBoolean()
-    }
-}
