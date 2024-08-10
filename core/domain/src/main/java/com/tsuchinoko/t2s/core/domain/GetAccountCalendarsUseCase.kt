@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule.domain
+package com.tsuchinoko.t2s.core.domain
 
 import com.tsuchinoko.t2s.core.data.AccountRepository
 import com.tsuchinoko.t2s.core.data.CalendarRepository
