@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.t2s.android.application)
     alias(libs.plugins.t2s.android.application.compose)
     alias(libs.plugins.t2s.hilt)
-    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {

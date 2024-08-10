@@ -45,8 +45,7 @@ class ScheduleGenViewModel @Inject constructor() : ViewModel() {
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
-//        apiKey = BuildConfig.apiKey,
-        apiKey = "", // TODO
+        apiKey = BuildConfig.apiKey,
         tools = listOf(Tool(listOf(getScheduleStructure))),
         systemInstruction = content { text("あなたはGoogle Calendarに予定を登録しようとしている人です。") }
     )

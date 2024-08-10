@@ -1,10 +1,15 @@
 plugins {
     alias(libs.plugins.t2s.android.library.compose)
     alias(libs.plugins.t2s.android.feature)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
     namespace = "com.tsuchinoko.t2s.feature.schedule"
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
