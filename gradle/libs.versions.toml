@@ -2,6 +2,7 @@
 agp = "8.7.0-alpha03"
 androidGradlePlugin = "8.4.2"
 kotlin = "2.0.0"
+kotlinxCoroutines = "1.8.0"
 ksp = "2.0.0-1.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -44,6 +45,9 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 
 google-api-client-android = { group = "com.google.api-client", name = "google-api-client-android", version.ref = "googleApiClientAndroid" }
 google-oauth-client-jetty = { group = "com.google.oauth-client", name = "google-oauth-client-jetty", version.ref = "googleOAuthClientJetty" }

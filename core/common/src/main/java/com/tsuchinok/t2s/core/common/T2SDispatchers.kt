@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule.common
+package com.tsuchinok.t2s.core.common
 
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME
