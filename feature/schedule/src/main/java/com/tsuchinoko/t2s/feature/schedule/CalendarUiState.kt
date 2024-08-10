@@ -1,6 +1,6 @@
 package com.tsuchinoko.t2s.feature.schedule
 
-import com.tsuchinoko.t2s.feature.schedule.model.Calendar
+import com.tsuchinoko.t2s.core.model.Calendar
 
 sealed interface CalendarUiState {
 

@@ -1,6 +1,6 @@
 package com.tsuchinoko.t2s.feature.schedule.data
 
-import com.tsuchinoko.t2s.feature.schedule.model.Calendar
+import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.feature.schedule.network.GoogleServiceDataSource
 import javax.inject.Inject
 
