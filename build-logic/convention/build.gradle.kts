@@ -19,7 +19,7 @@ kotlin {
 
 dependencies {
     compileOnly(libs.android.gradle.plugin)
-    implementation(libs.kotlin.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
 }
 
 

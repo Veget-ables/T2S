@@ -1,6 +1,5 @@
-package com.tsuchinoko.build_logic.convention
-
 import com.android.build.gradle.LibraryExtension
+import com.tsuchinoko.build_logic.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
