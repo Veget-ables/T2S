@@ -37,6 +37,7 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
     implementation(projects.core.common)
+    implementation(projects.core.network)
     implementation(projects.feature.schedule)
 
     implementation(libs.androidx.core.ktx)

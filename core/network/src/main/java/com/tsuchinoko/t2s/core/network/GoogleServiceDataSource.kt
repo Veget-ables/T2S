@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule.network
+package com.tsuchinoko.t2s.core.network
 
 import android.content.Intent
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException

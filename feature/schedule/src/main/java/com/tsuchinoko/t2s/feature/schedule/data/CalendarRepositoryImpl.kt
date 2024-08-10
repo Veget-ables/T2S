@@ -1,7 +1,7 @@
 package com.tsuchinoko.t2s.feature.schedule.data
 
 import com.tsuchinoko.t2s.core.model.Calendar
-import com.tsuchinoko.t2s.feature.schedule.network.GoogleServiceDataSource
+import com.tsuchinoko.t2s.core.network.GoogleServiceDataSource
 import javax.inject.Inject
 
 class CalendarRepositoryImpl @Inject constructor(

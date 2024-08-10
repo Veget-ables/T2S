@@ -13,7 +13,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.common)
+    implementation(projects.core.network)
 
     implementation(libs.generativeai)
     implementation(libs.accompanist.permissions)
