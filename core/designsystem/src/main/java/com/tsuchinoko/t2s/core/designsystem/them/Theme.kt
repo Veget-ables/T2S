@@ -1,6 +1,5 @@
-package com.tsuchinoko.t2s.ui.theme
+package com.tsuchinoko.t2s.core.designsystem.them
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

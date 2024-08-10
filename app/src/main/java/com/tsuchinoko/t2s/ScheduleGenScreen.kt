@@ -58,7 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.tsuchinoko.t2s.ui.theme.T2STheme
+import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate

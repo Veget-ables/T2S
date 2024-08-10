@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.model.Calendar
-import com.tsuchinoko.t2s.ui.theme.T2STheme
+import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 
 @Composable
 fun CalendarDrawerSheet(

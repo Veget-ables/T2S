@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.ui.theme
+package com.tsuchinoko.t2s.core.designsystem.them
 
 import androidx.compose.ui.graphics.Color
 

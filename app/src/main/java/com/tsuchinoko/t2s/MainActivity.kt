@@ -19,7 +19,7 @@ import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.tsuchinoko.t2s.Constants.REQUEST_AUTHORIZATION
-import com.tsuchinoko.t2s.ui.theme.T2STheme
+import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
