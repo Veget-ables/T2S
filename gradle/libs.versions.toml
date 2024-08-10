@@ -73,3 +73,4 @@ t2s-android-application-compose = { id = "t2s.android.application.compose", vers
 t2s-android-library = { id = "t2s.android.library", version = "unspecified" }
 t2s-android-library-compose = { id = "t2s.android.library.compose", version = "unspecified" }
 t2s-hilt = { id = "t2s.hilt", version = "unspecified" }
+t2s-android-feature = { id = "t2s.android.feature", version = "unspecified" }

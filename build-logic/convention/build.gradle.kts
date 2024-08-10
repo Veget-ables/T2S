@@ -45,5 +45,9 @@ gradlePlugin {
             id = "t2s.hilt"
             implementationClass = "HiltConventionPlugin"
         }
+        register("androidFeature") {
+            id = "t2s.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
