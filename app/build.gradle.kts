@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.t2s.android.application)
+    alias(libs.plugins.t2s.android.application.compose)
     alias(libs.plugins.t2s.hilt)
-    alias(libs.plugins.compose)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
@@ -44,10 +44,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.generativeai)
     implementation(libs.accompanist.permissions)

@@ -29,6 +29,10 @@ gradlePlugin {
             id = "t2s.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidApplicationCompose") {
+            id = "t2s.android.application.compose"
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
+        }
         register("androidLibrary") {
             id = "t2s.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
