@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.t2s.android.application)
     alias(libs.plugins.t2s.hilt)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
@@ -29,7 +29,6 @@ android {
         }
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
     packaging {
@@ -54,7 +53,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     // Navigation & Hilt
-    implementation(libs.android.navigation.compose)
+    implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation.compose)
 
     // Calendar API
