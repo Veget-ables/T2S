@@ -1,9 +1,8 @@
 plugins {
     alias(libs.plugins.t2s.android.application)
+    alias(libs.plugins.t2s.hilt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
-    alias(libs.plugins.hilt.android)
-    id("kotlin-kapt")
 }
 
 android {
@@ -39,13 +38,9 @@ android {
             excludes += "/META-INF/DEPENDENCIES"
         }
     }
-    kapt {
-        correctErrorTypes = true
-    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -61,8 +56,6 @@ dependencies {
     // Navigation & Hilt
     implementation(libs.android.navigation.compose)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 
     // Calendar API
     implementation(libs.google.api.client.android)

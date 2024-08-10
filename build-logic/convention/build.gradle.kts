@@ -20,8 +20,8 @@ kotlin {
 dependencies {
     compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
+    compileOnly(libs.ksp.gradlePlugin)
 }
-
 
 gradlePlugin {
     plugins {
@@ -32,6 +32,10 @@ gradlePlugin {
         register("androidLibrary") {
             id = "t2s.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
+        }
+        register("hilt") {
+            id = "t2s.hilt"
+            implementationClass = "HiltConventionPlugin"
         }
     }
 }
