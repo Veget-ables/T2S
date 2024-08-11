@@ -1,13 +1,13 @@
 package com.tsuchinoko.t2s.core.data
 
 import com.tsuchinoko.t2s.core.model.Calendar
-import com.tsuchinoko.t2s.core.network.GoogleServiceDataSource
+import com.tsuchinoko.t2s.core.network.GoogleCalendarDataSource
 import javax.inject.Inject
 
 class CalendarRepositoryImpl @Inject constructor(
-    private val serviceDataSource: GoogleServiceDataSource
+    private val networkSource: GoogleCalendarDataSource
 ) : CalendarRepository {
     override suspend fun fetchCalendars(): List<Calendar> {
-        return serviceDataSource.getCalendars()
+        return networkSource.getCalendars()
     }
 }

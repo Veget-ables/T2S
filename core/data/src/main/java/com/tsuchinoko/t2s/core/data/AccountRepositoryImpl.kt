@@ -1,17 +1,17 @@
 package com.tsuchinoko.t2s.core.data
 
 import android.accounts.Account
-import com.tsuchinoko.t2s.core.network.GoogleServiceDataSource
+import com.tsuchinoko.t2s.core.network.GoogleAccountDataSource
 import javax.inject.Inject
 
 class AccountRepositoryImpl @Inject constructor(
-    private val service: GoogleServiceDataSource
+    private val networkSource: GoogleAccountDataSource
 ) : AccountRepository {
     override fun getAccount(): Account? {
-        return service.getAccount()
+        return networkSource.getAccount()
     }
 
     override fun setAccountName(accountName: String) {
-        service.setAccountName(accountName)
+        networkSource.setAccountName(accountName)
     }
 }
