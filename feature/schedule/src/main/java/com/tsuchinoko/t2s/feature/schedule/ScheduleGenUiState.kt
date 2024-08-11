@@ -1,5 +1,7 @@
 package com.tsuchinoko.t2s.feature.schedule
 
+import com.tsuchinoko.t2s.core.model.ScheduleEvent
+
 sealed interface ScheduleGenUiState {
 
     object Initial : ScheduleGenUiState

@@ -1,43 +1,18 @@
 package com.tsuchinoko.t2s.feature.schedule
 
-import org.json.JSONObject
+import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 
-fun JSONObject.toScheduleEvent(): ScheduleEvent {
-    val title = getString("title").ifBlank { "タイトルなし" }
-    val memo = getString("memo").ifBlank { null }
-    val start = LocalDateTime.parse(getString("start"))
-    val end = LocalDateTime.parse(getString("end"))
-    return ScheduleEvent(
-        id = UUID.randomUUID(),
-        title = title,
-        memo = memo,
-        start = start,
-        end = end
-    )
-}
-
-data class ScheduleEvent(
-    val id: UUID,
-    val title: String,
-    val memo: String?,
-    val start: LocalDateTime,
-    val end: LocalDateTime,
-) {
-    val isAllDay =
-        start.hour == 0 && start.minute == 0 && end.hour == 23 && end.minute == 59
-
-    val displayDateTime: DisplayDateTime = if (isAllDay) {
+internal val ScheduleEvent.displayDateTime: DisplayDateTime
+    get() = if (isAllDay) {
         DisplayDateTime.AllDay(localDate = start.toLocalDate())
     } else {
         DisplayDateTime.Regular(start = start, end = end)
     }
-}
 
-sealed interface DisplayDateTime {
+internal sealed interface DisplayDateTime {
     val value: String
 
     data class AllDay(val localDate: LocalDate) : DisplayDateTime {
