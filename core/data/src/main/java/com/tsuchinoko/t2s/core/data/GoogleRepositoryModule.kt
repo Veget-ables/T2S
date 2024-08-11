@@ -7,10 +7,10 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+abstract class GoogleRepositoryModule {
     @Binds
-    abstract fun bindAccountRepository(impl: AccountRepositoryImpl): AccountRepository
+    abstract fun bindAccountRepository(impl: GoogleAccountRepository): AccountRepository
 
     @Binds
-    abstract fun bindCalendarRepository(impl: CalendarRepositoryImpl): CalendarRepository
+    abstract fun bindCalendarRepository(impl: GoogleCalendarRepository): CalendarRepository
 }

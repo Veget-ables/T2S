@@ -4,7 +4,7 @@ import android.accounts.Account
 import com.tsuchinoko.t2s.core.network.GoogleAccountDataSource
 import javax.inject.Inject
 
-class AccountRepositoryImpl @Inject constructor(
+class GoogleAccountRepository @Inject constructor(
     private val networkSource: GoogleAccountDataSource
 ) : AccountRepository {
     override fun getAccount(): Account? {
