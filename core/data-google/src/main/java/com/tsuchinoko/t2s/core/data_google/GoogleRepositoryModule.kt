@@ -1,5 +1,7 @@
-package com.tsuchinoko.t2s.core.data
+package com.tsuchinoko.t2s.core.data_google
 
+import com.tsuchinoko.t2s.core.data.AccountRepository
+import com.tsuchinoko.t2s.core.data.CalendarRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

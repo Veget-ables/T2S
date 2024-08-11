@@ -39,6 +39,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.domain)
     implementation(projects.core.data)
+    implementation(projects.core.dataGoogle)
     implementation(projects.core.network)
     implementation(projects.feature.schedule)
 
