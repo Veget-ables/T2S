@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule
+package com.tsuchinoko.t2s.core.network
 
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import org.json.JSONObject
