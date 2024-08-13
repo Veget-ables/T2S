@@ -70,20 +70,18 @@ import java.util.UUID
 @Composable
 fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    calendarViewModel: CalendarViewModel = hiltViewModel(),
     scheduleGenViewModel: ScheduleGenViewModel = hiltViewModel(),
-    onRegistryClick: () -> Unit = {},
 ) {
-    val calendarUiState by calendarViewModel.calendarUiState.collectAsState()
+    val calendarUiState by scheduleGenViewModel.calendarUiState.collectAsState()
     val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
 
     ScheduleGenScreen(
         modifier = modifier,
         calendarUiState = calendarUiState,
         scheduleGenUiState = scheduleGenUiState,
-        onAccountChange = calendarViewModel::fetchCalendars,
+        onAccountChange = scheduleGenViewModel::fetchCalendars,
         onClickConvert = scheduleGenViewModel::sendPrompt,
-        onRegistryClick = onRegistryClick
+        onRegistryClick = scheduleGenViewModel::registryEvents
     )
 }
 
