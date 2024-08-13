@@ -80,7 +80,7 @@ fun ScheduleGenScreen(
         calendarUiState = calendarUiState,
         scheduleGenUiState = scheduleGenUiState,
         onAccountChange = scheduleGenViewModel::fetchCalendars,
-        onClickConvert = scheduleGenViewModel::sendPrompt,
+        onConvertClick = scheduleGenViewModel::sendPrompt,
         onRegistryClick = scheduleGenViewModel::registryEvents
     )
 }
@@ -92,7 +92,7 @@ private fun ScheduleGenScreen(
     calendarUiState: CalendarUiState,
     scheduleGenUiState: ScheduleGenUiState,
     onAccountChange: (accountName: String) -> Unit = {},
-    onClickConvert: (prompt: String) -> Unit = {},
+    onConvertClick: (prompt: String) -> Unit = {},
     onRegistryClick: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -156,7 +156,7 @@ private fun ScheduleGenScreen(
 
                 Button(
                     onClick = {
-                        onClickConvert(prompt)
+                        onConvertClick(prompt)
                     },
                     enabled = prompt.isNotEmpty(),
                     modifier = Modifier
