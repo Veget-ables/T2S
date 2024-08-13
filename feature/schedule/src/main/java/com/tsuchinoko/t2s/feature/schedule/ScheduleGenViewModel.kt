@@ -28,7 +28,7 @@ class ScheduleGenViewModel @Inject constructor(
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> =
         this._scheduleGenUiState.asStateFlow()
 
-        fun fetchCalendars(accountName: String) {
+    fun fetchCalendars(accountName: String) {
         viewModelScope.launch {
             val calendars = getAccountCalendarsUseCase(accountName)
             _calendarUiState.value = CalendarUiState.Success(
