@@ -9,7 +9,7 @@ class GetAccountCalendarsUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
 ) {
-    suspend operator fun invoke(accountName: String): List<Calendar>{
+    suspend operator fun invoke(accountName: String): List<Calendar> {
         accountRepository.setAccountName(accountName)
         return calendarRepository.fetchCalendars()
     }

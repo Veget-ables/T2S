@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "schedule_gen"
+                    startDestination = "schedule_gen",
                 ) {
                     scheduleNavigation()
                 }
@@ -109,10 +109,10 @@ class MainActivity : ComponentActivity() {
 //            .execute()
 //        System.out.printf("Event created: %s\n", resultEvent.htmlLink)
 //    }
-//}
+// }
 //
-//@SuppressLint("SimpleDateFormat")
-//private fun LocalDateTime.toEventDateTime(): EventDateTime {
+// @SuppressLint("SimpleDateFormat")
+// private fun LocalDateTime.toEventDateTime(): EventDateTime {
 //    val zonedDateTime = atZone(ZoneId.systemDefault())
 //    val date = Date.from(zonedDateTime.toInstant())
 //    return EventDateTime()
@@ -121,8 +121,8 @@ class MainActivity : ComponentActivity() {
 //                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(date)
 //            )
 //        )
-//}
+// }
 //
-//object Constants {
+// object Constants {
 //    const val REQUEST_AUTHORIZATION = 1001
-//}
+// }
