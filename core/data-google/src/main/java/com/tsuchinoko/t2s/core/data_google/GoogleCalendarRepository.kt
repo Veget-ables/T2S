@@ -13,7 +13,8 @@ class GoogleCalendarRepository @Inject constructor(
         return networkSource.getCalendars()
     }
 
-    override suspend fun registryEvents(events: List<ScheduleEvent>) {
-        networkSource.insertEvents(events)
+    override suspend fun registryEvents(calendarId: String, events: List<ScheduleEvent>) {
+        events
+    //        networkSource.insertEvents(calendarId = calendarId, events = events)
     }
 }

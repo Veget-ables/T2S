@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -26,13 +27,13 @@ internal sealed interface CalendarUiState {
     data object Initial : CalendarUiState
     data object Loading : CalendarUiState
     data class Selected(val accountName: String, val calendars: List<Calendar>) : CalendarUiState
-    data class Error(val errorMessage: String) : CalendarUiState
+    data class Error(val message: String) : CalendarUiState
 }
 
 @Composable
 internal fun CalendarDrawerSheet(
     uiState: CalendarUiState,
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     onAccountChange: (accountName: String) -> Unit = {}
 ) {
     ModalDrawerSheet(modifier = modifier) {
@@ -43,7 +44,7 @@ internal fun CalendarDrawerSheet(
                 }
             }
 
-        when(uiState) {
+        when (uiState) {
             CalendarUiState.Initial -> {
                 TextButton(
                     onClick = {
@@ -64,7 +65,7 @@ internal fun CalendarDrawerSheet(
             }
 
             CalendarUiState.Loading -> {
-
+                CircularProgressIndicator()
             }
 
             is CalendarUiState.Selected -> {
@@ -87,7 +88,7 @@ internal fun CalendarDrawerSheet(
             }
 
             is CalendarUiState.Error -> {
-
+                Text(uiState.message)
             }
         }
     }
