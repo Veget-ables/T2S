@@ -22,8 +22,15 @@ import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
 
+internal sealed interface CalendarUiState {
+    data object Initial : CalendarUiState
+    data object Loading : CalendarUiState
+    data class Selected(val accountName: String, val calendars: List<Calendar>) : CalendarUiState
+    data class Error(val errorMessage: String) : CalendarUiState
+}
+
 @Composable
-fun CalendarDrawerSheet(
+internal fun CalendarDrawerSheet(
     uiState: CalendarUiState,
     modifier : Modifier = Modifier,
     onAccountChange: (accountName: String) -> Unit = {}
@@ -60,7 +67,7 @@ fun CalendarDrawerSheet(
 
             }
 
-            is CalendarUiState.Success -> {
+            is CalendarUiState.Selected -> {
                 val accountName = uiState.accountName
                 TextButton(
                     onClick = {
@@ -119,7 +126,7 @@ fun CalendarDrawerPreview_AccountSelected() {
     T2STheme {
         Surface {
             CalendarDrawerSheet(
-                uiState = CalendarUiState.Success(
+                uiState = CalendarUiState.Selected(
                     accountName = "taro",
                     calendars = listOf(
                         Calendar("calendar1"),

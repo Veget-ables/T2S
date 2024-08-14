@@ -4,11 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.feature.schedule.GetAccountPermissionEffect
-import com.tsuchinoko.t2s.feature.schedule.ScheduleGenScreen
+import com.tsuchinoko.t2s.feature.schedule.scheduleNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,9 +22,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = "schedule_gen"
                 ) {
-                    composable("schedule_gen") {
-                        ScheduleGenScreen()
-                    }
+                    scheduleNavigation()
                 }
                 GetAccountPermissionEffect()
             }

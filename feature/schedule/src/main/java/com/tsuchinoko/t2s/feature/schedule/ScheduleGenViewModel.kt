@@ -15,62 +15,75 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ScheduleGenViewModel @Inject constructor(
+internal class ScheduleGenViewModel @Inject constructor(
     private val calendarRepository: CalendarRepository,
     private val getAccountCalendarsUseCase: GetAccountCalendarsUseCase,
     private val scheduleGenRepository: ScheduleGenRepository
 ) : ViewModel() {
-    private val _calendarUiState: MutableStateFlow<CalendarUiState> =
-        MutableStateFlow(CalendarUiState.Initial)
-    val calendarUiState: StateFlow<CalendarUiState> =
-        _calendarUiState.asStateFlow()
 
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
-        MutableStateFlow(ScheduleGenUiState.Initial)
-    val scheduleGenUiState: StateFlow<ScheduleGenUiState> =
-        this._scheduleGenUiState.asStateFlow()
+        MutableStateFlow(ScheduleGenUiState.Empty)
+    val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
 
     fun fetchCalendars(accountName: String) {
         viewModelScope.launch {
             val calendars = getAccountCalendarsUseCase(accountName)
-            _calendarUiState.value = CalendarUiState.Success(
-                accountName = accountName,
-                calendars = calendars
-            )
+            _scheduleGenUiState.update {
+                it.copy(
+                    calendarUiState = CalendarUiState.Selected(
+                        accountName = accountName,
+                        calendars = calendars
+                    )
+                )
+            }
         }
     }
 
     fun updateInputEvent(event: ScheduleEvent) {
-        val uiState = _scheduleGenUiState.value
-        if (uiState is ScheduleGenUiState.Success) {
+        val uiState = _scheduleGenUiState.value.generatedEventsUiState
+        if (uiState is GeneratedEventsUiState.Generated) {
             val newEvents = uiState.events.toTypedArray().apply {
                 val targetIndex = indexOfFirst { it.id == event.id }
                 this[targetIndex] = event
             }.toList()
             _scheduleGenUiState.update {
-                ScheduleGenUiState.Success(newEvents)
+                it.copy(generatedEventsUiState = GeneratedEventsUiState.Generated(newEvents))
             }
         }
     }
 
     fun sendPrompt(prompt: String) {
-        _scheduleGenUiState.value = ScheduleGenUiState.Loading
+        _scheduleGenUiState.update {
+            it.copy(generatedEventsUiState = GeneratedEventsUiState.Loading)
+        }
 
         viewModelScope.launch {
             try {
                 val scheduleEvents = scheduleGenRepository.generate(prompt)
-                _scheduleGenUiState.value = ScheduleGenUiState.Success(scheduleEvents)
+                _scheduleGenUiState.update {
+                    it.copy(generatedEventsUiState = GeneratedEventsUiState.Generated(scheduleEvents))
+                }
             } catch (e: Exception) {
-                _scheduleGenUiState.value = ScheduleGenUiState.Error(e.localizedMessage ?: "")
+                _scheduleGenUiState.update {
+                    it.copy(
+                        generatedEventsUiState = GeneratedEventsUiState.Error(
+                            e.localizedMessage ?: ""
+                        )
+                    )
+                }
             }
         }
     }
 
     fun registryEvents() {
-        val uiState = _scheduleGenUiState.value
-        if (uiState is ScheduleGenUiState.Success) {
+        val calendarUiState = _scheduleGenUiState.value.calendarUiState
+        val generatedEventsUiState = _scheduleGenUiState.value.generatedEventsUiState
+        if (calendarUiState is CalendarUiState.Selected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
             viewModelScope.launch {
-                calendarRepository.registryEvents(calendarId = "primary", events = uiState.events)
+                calendarRepository.registryEvents(
+                    calendarId = "primary",
+                    events = generatedEventsUiState.events
+                )
             }
         }
     }
