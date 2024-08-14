@@ -6,6 +6,7 @@ import com.google.api.services.calendar.model.CalendarList
 import com.tsuchinok.t2s.core.common.Dispatcher
 import com.tsuchinok.t2s.core.common.T2SDispatchers
 import com.tsuchinoko.t2s.core.model.Calendar
+import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -29,14 +30,14 @@ class GoogleCalendarDataSource @Inject constructor(
         }
     }
 
-    override suspend fun insertEvents(calendarId: String, events: List<ScheduleEvent>) {
+    override suspend fun insertEvents(calendarId: CalendarId, events: List<ScheduleEvent>) {
         return withContext(ioDispatcher) {
             try {
                 events.forEach { event ->
                     val googleCalendarEvent = event.convertToGoogleCalendarEvent()
                     service
                         .events()
-                        .insert(calendarId, googleCalendarEvent)
+                        .insert(calendarId.value, googleCalendarEvent)
                         .execute()
                 }
             } catch (e: UserRecoverableAuthIOException) {
@@ -56,6 +57,9 @@ data class GoogleServiceRecoverableError(
 
 private fun CalendarList.convert(): List<Calendar> {
     return this.items.map { item ->
-        Calendar(title = item.summary)
+        Calendar(
+            id = CalendarId(item.id),
+            title = item.summary
+        )
     }
 }

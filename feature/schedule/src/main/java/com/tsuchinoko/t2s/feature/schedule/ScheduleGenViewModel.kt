@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
+import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,11 +31,22 @@ internal class ScheduleGenViewModel @Inject constructor(
             val calendars = getAccountCalendarsUseCase(accountName)
             _scheduleGenUiState.update {
                 it.copy(
-                    calendarUiState = CalendarUiState.Selected(
+                    calendarUiState = CalendarUiState.AccountSelected(
                         accountName = accountName,
-                        calendars = calendars
+                        calendars = calendars,
+                        targetCalendar = calendars[0]
                     )
                 )
+            }
+        }
+    }
+
+    fun updateTargetCalendar(calendar: Calendar) {
+        val uiState = _scheduleGenUiState.value.calendarUiState
+        if (uiState is CalendarUiState.AccountSelected) {
+            _scheduleGenUiState.update {
+                val newUiState = uiState.copy(targetCalendar = calendar)
+                it.copy(calendarUiState = newUiState)
             }
         }
     }
@@ -78,10 +90,10 @@ internal class ScheduleGenViewModel @Inject constructor(
     fun registryEvents() {
         val calendarUiState = _scheduleGenUiState.value.calendarUiState
         val generatedEventsUiState = _scheduleGenUiState.value.generatedEventsUiState
-        if (calendarUiState is CalendarUiState.Selected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
+        if (calendarUiState is CalendarUiState.AccountSelected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
             viewModelScope.launch {
                 calendarRepository.registryEvents(
-                    calendarId = "primary",
+                    calendarId = calendarUiState.targetCalendar.id,
                     events = generatedEventsUiState.events
                 )
             }

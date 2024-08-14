@@ -22,11 +22,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
+import com.tsuchinoko.t2s.core.model.CalendarId
 
 internal sealed interface CalendarUiState {
     data object Initial : CalendarUiState
     data object Loading : CalendarUiState
-    data class Selected(val accountName: String, val calendars: List<Calendar>) : CalendarUiState
+
+    data class AccountSelected(
+        val accountName: String,
+        val calendars: List<Calendar>,
+        val targetCalendar: Calendar
+    ) : CalendarUiState
+
     data class Error(val message: String) : CalendarUiState
 }
 
@@ -34,7 +41,8 @@ internal sealed interface CalendarUiState {
 internal fun CalendarDrawerSheet(
     uiState: CalendarUiState,
     modifier: Modifier = Modifier,
-    onAccountChange: (accountName: String) -> Unit = {}
+    onAccountChange: (accountName: String) -> Unit = {},
+    onCalendarChange: (calendar: Calendar) -> Unit = {}
 ) {
     ModalDrawerSheet(modifier = modifier) {
         val launcher =
@@ -68,22 +76,23 @@ internal fun CalendarDrawerSheet(
                 CircularProgressIndicator()
             }
 
-            is CalendarUiState.Selected -> {
+            is CalendarUiState.AccountSelected -> {
                 val accountName = uiState.accountName
                 TextButton(
                     onClick = {
                         launcher.launch(accountName)
                     }
                 ) {
-                    val accountText = "選択中: ${accountName}"
-                    Text(accountText)
+                    Text("選択中: $accountName")
                 }
 
                 HorizontalDivider()
 
                 AccountCalendars(
+                    selectedCalendar = uiState.targetCalendar,
                     calendars = uiState.calendars,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onCalendarChange = onCalendarChange
                 )
             }
 
@@ -95,13 +104,18 @@ internal fun CalendarDrawerSheet(
 }
 
 @Composable
-private fun AccountCalendars(calendars: List<Calendar>, modifier: Modifier = Modifier) {
+private fun AccountCalendars(
+    selectedCalendar: Calendar,
+    calendars: List<Calendar>,
+    modifier: Modifier = Modifier,
+    onCalendarChange: (calendar: Calendar) -> Unit = {}
+) {
     LazyColumn(modifier = modifier) {
         items(calendars) { calendar ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = false,
-                    onClick = {}
+                    selected = calendar == selectedCalendar,
+                    onClick = { onCalendarChange(calendar) }
                 )
                 Text(calendar.title)
             }
@@ -126,14 +140,14 @@ fun CalendarDrawerPreview_NoAccount() {
 fun CalendarDrawerPreview_AccountSelected() {
     T2STheme {
         Surface {
+            val calendar1 = Calendar(id = CalendarId("1"), title = "calendar1")
+            val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
+            val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
             CalendarDrawerSheet(
-                uiState = CalendarUiState.Selected(
+                uiState = CalendarUiState.AccountSelected(
                     accountName = "taro",
-                    calendars = listOf(
-                        Calendar("calendar1"),
-                        Calendar("calendar2"),
-                        Calendar("calendar3")
-                    )
+                    calendars = listOf(calendar1, calendar2, calendar3),
+                    targetCalendar = calendar1
                 )
             )
         }

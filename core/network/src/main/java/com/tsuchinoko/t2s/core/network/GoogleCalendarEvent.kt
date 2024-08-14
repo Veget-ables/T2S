@@ -27,6 +27,7 @@ internal fun ScheduleEvent.convertToGoogleCalendarEvent(): Event {
         .setStart(startDateTime)
         .setEnd(endDateTime)
         .setSummary(title)
+        .setDescription(memo)
 }
 
 @SuppressLint("SimpleDateFormat")
