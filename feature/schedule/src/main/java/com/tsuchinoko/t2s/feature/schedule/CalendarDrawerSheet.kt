@@ -125,7 +125,7 @@ private fun AccountCalendars(
 
 @Preview
 @Composable
-fun CalendarDrawerPreview_NoAccount() {
+fun CalendarDrawerPreview_Initial() {
     T2STheme {
         Surface {
             CalendarDrawerSheet(
@@ -149,6 +149,18 @@ fun CalendarDrawerPreview_AccountSelected() {
                     calendars = listOf(calendar1, calendar2, calendar3),
                     targetCalendar = calendar1
                 )
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CalendarDrawerPreview_Error() {
+    T2STheme {
+        Surface {
+            CalendarDrawerSheet(
+                uiState = CalendarUiState.Error("アカウントの取得に失敗しました")
             )
         }
     }
