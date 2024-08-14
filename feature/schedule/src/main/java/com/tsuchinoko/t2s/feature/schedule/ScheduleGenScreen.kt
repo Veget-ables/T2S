@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -81,6 +79,7 @@ fun ScheduleGenScreen(
         scheduleGenUiState = scheduleGenUiState,
         onAccountChange = scheduleGenViewModel::fetchCalendars,
         onConvertClick = scheduleGenViewModel::sendPrompt,
+        onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents
     )
 }
@@ -93,6 +92,7 @@ private fun ScheduleGenScreen(
     scheduleGenUiState: ScheduleGenUiState,
     onAccountChange: (accountName: String) -> Unit = {},
     onConvertClick: (prompt: String) -> Unit = {},
+    onEventChange:(ScheduleEvent) -> Unit = {},
     onRegistryClick: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -132,7 +132,9 @@ private fun ScheduleGenScreen(
                 )
             },
             floatingActionButton = {
-                RegistryButton(onRegistryClick = onRegistryClick)
+                if (scheduleGenUiState is ScheduleGenUiState.Success) {
+                    RegistryButton(onRegistryClick = onRegistryClick)
+                }
             }
         ) { paddingValues ->
             Column(
@@ -179,19 +181,29 @@ private fun ScheduleGenScreen(
                                 .padding(16.dp)
                         )
                     } else if (scheduleGenUiState is ScheduleGenUiState.Success) {
-                        ScheduleEvents(
-                            scheduleEvents = scheduleGenUiState.scheduleEvents,
+                        LazyColumn(
                             modifier = Modifier
                                 .weight(0.8f)
                                 .fillMaxSize()
                                 .padding(start = 8.dp, top = 16.dp, end = 8.dp),
-                            paddingValues = PaddingValues(
+                            contentPadding = PaddingValues(
                                 start = 8.dp,
                                 end = 8.dp,
                                 top = 16.dp,
                                 bottom = 112.dp
                             )
-                        )
+                        ) {
+                            items(
+                                items = scheduleGenUiState.events,
+                                key = { it.id }) { event ->
+                                ScheduleEvent(
+                                    event = event,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onEventChange = onEventChange
+                                )
+                                Spacer(Modifier.height(8.dp))
+                            }
+                        }
                     }
                 }
             }
@@ -200,32 +212,12 @@ private fun ScheduleGenScreen(
 }
 
 @Composable
-private fun ScheduleEvents(
-    scheduleEvents: List<ScheduleEvent>,
+private fun ScheduleEvent(
+    event: ScheduleEvent,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(16.dp)
+    onEventChange: (ScheduleEvent) -> Unit = {}
 ) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        LazyColumn(
-            contentPadding = paddingValues
-        ) {
-            items(items = scheduleEvents, key = { it.id }) { event ->
-                ScheduleEvent(
-                    event = event, modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(8.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-    var _event by remember { mutableStateOf(event) }
     Card(
         modifier = modifier
             .animateContentSize(),
@@ -233,14 +225,12 @@ private fun ScheduleEvent(event: ScheduleEvent, modifier: Modifier = Modifier) {
     ) {
         if (isExpanded) {
             EditableEventContent(
-                event = _event,
+                event = event,
                 modifier = Modifier.fillMaxWidth(),
-                onEventChange = { _event = it },
+                onEventChange = onEventChange,
             )
         } else {
-            EventContent(
-                event = _event,
-            )
+            EventContent(event = event)
         }
     }
 }
@@ -532,7 +522,8 @@ fun ScheduleGenScreenPreview() {
         )
         ScheduleGenScreen(
             calendarUiState = CalendarUiState.Initial,
-            scheduleGenUiState = ScheduleGenUiState.Success(events))
+            scheduleGenUiState = ScheduleGenUiState.Success(events)
+        )
     }
 }
 

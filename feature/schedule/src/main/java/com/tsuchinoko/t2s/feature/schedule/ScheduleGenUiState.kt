@@ -8,7 +8,7 @@ sealed interface ScheduleGenUiState {
 
     object Loading : ScheduleGenUiState
 
-    data class Success(val scheduleEvents: List<ScheduleEvent>) : ScheduleGenUiState
+    data class Success(val events: List<ScheduleEvent>) : ScheduleGenUiState
 
     data class Error(val errorMessage: String) : ScheduleGenUiState
 }

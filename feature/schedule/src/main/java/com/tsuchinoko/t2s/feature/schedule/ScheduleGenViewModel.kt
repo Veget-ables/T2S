@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
+import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,6 +40,19 @@ class ScheduleGenViewModel @Inject constructor(
         }
     }
 
+    fun updateInputEvent(event: ScheduleEvent) {
+        val uiState = _scheduleGenUiState.value
+        if (uiState is ScheduleGenUiState.Success) {
+            val newEvents = uiState.events.toTypedArray().apply {
+                val targetIndex = indexOfFirst { it.id == event.id }
+                this[targetIndex] = event
+            }.toList()
+            _scheduleGenUiState.update {
+                ScheduleGenUiState.Success(newEvents)
+            }
+        }
+    }
+
     fun sendPrompt(prompt: String) {
         _scheduleGenUiState.value = ScheduleGenUiState.Loading
 
@@ -52,8 +67,11 @@ class ScheduleGenViewModel @Inject constructor(
     }
 
     fun registryEvents() {
-        viewModelScope.launch {
-            calendarRepository.registryEvents(emptyList())
+        val uiState = _scheduleGenUiState.value
+        if (uiState is ScheduleGenUiState.Success) {
+            viewModelScope.launch {
+                calendarRepository.registryEvents(calendarId = "primary", events = uiState.events)
+            }
         }
     }
 }
