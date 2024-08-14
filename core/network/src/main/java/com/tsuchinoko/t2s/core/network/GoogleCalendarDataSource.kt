@@ -29,14 +29,14 @@ class GoogleCalendarDataSource @Inject constructor(
         }
     }
 
-    override suspend fun insertEvents(events: List<ScheduleEvent>) {
+    override suspend fun insertEvents(calendarId: String, events: List<ScheduleEvent>) {
         return withContext(ioDispatcher) {
             try {
                 events.forEach { event ->
                     val googleCalendarEvent = event.convertToGoogleCalendarEvent()
                     service
                         .events()
-                        .insert("primary", googleCalendarEvent)
+                        .insert(calendarId, googleCalendarEvent)
                         .execute()
                 }
             } catch (e: UserRecoverableAuthIOException) {
