@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tsuchinoko.t2s.core.data_google"
+    namespace = "com.tsuchinoko.t2s.core.data.google"
 }
 
 dependencies {

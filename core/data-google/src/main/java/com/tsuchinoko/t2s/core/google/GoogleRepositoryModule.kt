@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.core.data_google
+package com.tsuchinoko.t2s.core.google
 
 import com.tsuchinoko.t2s.core.data.AccountRepository
 import com.tsuchinoko.t2s.core.data.CalendarRepository
