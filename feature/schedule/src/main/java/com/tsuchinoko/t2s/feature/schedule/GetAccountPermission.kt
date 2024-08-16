@@ -25,7 +25,7 @@ class ChooseAccountContract : ActivityResultContract<String?, String?>() {
                 .AccountChooserOptions
                 .Builder()
                 .setSelectedAccount(account)
-                .build()
+                .build(),
         )
     }
 

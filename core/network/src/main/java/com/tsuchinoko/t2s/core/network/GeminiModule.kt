@@ -17,14 +17,12 @@ import javax.inject.Singleton
 class GeminiModule {
     @Singleton
     @Provides
-    fun provideGenerativeModel(): GenerativeModel {
-        return GenerativeModel(
-            modelName = "gemini-1.5-flash",
-            apiKey = BuildConfig.apiKey,
-            tools = listOf(Tool(listOf(getScheduleStructure))),
-            systemInstruction = content { text("あなたはGoogle Calendarに予定を登録しようとしている人です。") }
-        )
-    }
+    fun provideGenerativeModel(): GenerativeModel = GenerativeModel(
+        modelName = "gemini-1.5-flash",
+        apiKey = BuildConfig.apiKey,
+        tools = listOf(Tool(listOf(getScheduleStructure))),
+        systemInstruction = content { text("あなたはGoogle Calendarに予定を登録しようとしている人です。") },
+    )
 
     private val getScheduleStructure = defineFunction(
         name = "getScheduleStructure",

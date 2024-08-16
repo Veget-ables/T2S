@@ -14,7 +14,7 @@ internal fun ScheduleEvent.convertToGoogleCalendarEvent(): Event {
     val (startDateTime, endDateTime) = if (isAllDay) {
         val startDateTime = EventDateTime()
             .setDate(
-                DateTime(start.toLocalDate().toString())
+                DateTime(start.toLocalDate().toString()),
             )
         startDateTime to startDateTime
     } else {
@@ -37,7 +37,7 @@ private fun LocalDateTime.toEventDateTime(): EventDateTime {
     return EventDateTime()
         .setDateTime(
             DateTime(
-                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(date)
-            )
+                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(date),
+            ),
         )
 }

@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class GoogleCalendarDataSource @Inject constructor(
     @Dispatcher(T2SDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-    private val service: com.google.api.services.calendar.Calendar
+    private val service: com.google.api.services.calendar.Calendar,
 ) : CalendarNetworkDataSource {
     override suspend fun getCalendars(): List<Calendar> {
         return withContext(ioDispatcher) {
@@ -24,42 +24,38 @@ class GoogleCalendarDataSource @Inject constructor(
             } catch (e: UserRecoverableAuthIOException) {
                 throw GoogleServiceRecoverableError(
                     message = e.message,
-                    intent = e.intent
+                    intent = e.intent,
                 )
             }
         }
     }
 
-    override suspend fun insertEvents(calendarId: CalendarId, events: List<ScheduleEvent>) {
-        return withContext(ioDispatcher) {
-            try {
-                events.forEach { event ->
-                    val googleCalendarEvent = event.convertToGoogleCalendarEvent()
-                    service
-                        .events()
-                        .insert(calendarId.value, googleCalendarEvent)
-                        .execute()
-                }
-            } catch (e: UserRecoverableAuthIOException) {
-                throw GoogleServiceRecoverableError(
-                    message = e.message,
-                    intent = e.intent
-                )
+    override suspend fun insertEvents(calendarId: CalendarId, events: List<ScheduleEvent>) = withContext(ioDispatcher) {
+        try {
+            events.forEach { event ->
+                val googleCalendarEvent = event.convertToGoogleCalendarEvent()
+                service
+                    .events()
+                    .insert(calendarId.value, googleCalendarEvent)
+                    .execute()
             }
+        } catch (e: UserRecoverableAuthIOException) {
+            throw GoogleServiceRecoverableError(
+                message = e.message,
+                intent = e.intent,
+            )
         }
     }
 }
 
 data class GoogleServiceRecoverableError(
     override val message: String?,
-    val intent: Intent
+    val intent: Intent,
 ) : Exception()
 
-private fun CalendarList.convert(): List<Calendar> {
-    return this.items.map { item ->
-        Calendar(
-            id = CalendarId(item.id),
-            title = item.summary
-        )
-    }
+private fun CalendarList.convert(): List<Calendar> = this.items.map { item ->
+    Calendar(
+        id = CalendarId(item.id),
+        title = item.summary,
+    )
 }

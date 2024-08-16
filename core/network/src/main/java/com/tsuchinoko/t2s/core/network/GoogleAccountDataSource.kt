@@ -6,10 +6,8 @@ import javax.inject.Inject
 
 class GoogleAccountDataSource @Inject constructor(
     private val credential: GoogleAccountCredential,
-): AccountNetworkDataSource {
-    override fun getAccount(): Account? {
-        return credential.selectedAccount
-    }
+) : AccountNetworkDataSource {
+    override fun getAccount(): Account? = credential.selectedAccount
 
     override fun setAccountName(accountName: String) {
         credential.selectedAccountName = accountName

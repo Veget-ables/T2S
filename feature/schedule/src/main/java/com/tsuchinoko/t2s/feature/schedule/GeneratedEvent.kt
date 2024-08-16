@@ -46,13 +46,13 @@ private val TimeZoneUTC = ZoneId.of("UTC")
 internal fun GeneratedEvent(
     event: ScheduleEvent,
     modifier: Modifier = Modifier,
-    onEventChange: (ScheduleEvent) -> Unit = {}
+    onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     Card(
         modifier = modifier
             .animateContentSize(),
-        onClick = { isExpanded = !isExpanded }
+        onClick = { isExpanded = !isExpanded },
     ) {
         if (isExpanded) {
             EditableEventContent(
@@ -74,20 +74,21 @@ private fun EditableEventContent(
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 24.dp, vertical = 24.dp
+                    horizontal = 24.dp,
+                    vertical = 24.dp,
                 ),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("終日")
                 Switch(
@@ -103,13 +104,13 @@ private fun EditableEventContent(
                             val new = event.copy(start = newStart, end = newEnd)
                             onEventChange(new)
                         }
-                    }
+                    },
                 )
             }
 
             Row(
                 modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             ) {
                 val start = event.start
                 EventDateSelection(
@@ -119,7 +120,7 @@ private fun EditableEventContent(
                         val newDateTime = it.atTime(start.hour, start.minute)
                         val new = event.copy(start = newDateTime)
                         onEventChange(new)
-                    }
+                    },
                 )
                 if (event.isAllDay.not()) {
                     EventTimeSelection(
@@ -128,7 +129,7 @@ private fun EditableEventContent(
                             val newDateTime = start.withHour(hour).withMinute(minute)
                             val new = event.copy(start = newDateTime)
                             onEventChange(new)
-                        }
+                        },
                     )
                 }
             }
@@ -138,7 +139,7 @@ private fun EditableEventContent(
             if (event.isAllDay.not()) {
                 Row(
                     modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Absolute.SpaceBetween
+                    horizontalArrangement = Arrangement.Absolute.SpaceBetween,
                 ) {
                     val end = event.end
                     EventDateSelection(
@@ -148,7 +149,7 @@ private fun EditableEventContent(
                             val newDateTime = it.atTime(end.hour, end.minute)
                             val new = event.copy(end = newDateTime)
                             onEventChange(new)
-                        }
+                        },
                     )
                     EventTimeSelection(
                         localDateTime = end,
@@ -156,7 +157,7 @@ private fun EditableEventContent(
                             val newDateTime = end.withHour(hour).withMinute(minute)
                             val new = event.copy(end = newDateTime)
                             onEventChange(new)
-                        }
+                        },
                     )
                 }
             }
@@ -172,7 +173,7 @@ private fun EditableEventContent(
                 },
                 label = {
                     Text("予定のタイトル")
-                }
+                },
             )
             OutlinedTextField(
                 value = event.memo ?: "",
@@ -186,7 +187,7 @@ private fun EditableEventContent(
                 label = {
                     Text("予定のメモ")
                 },
-                maxLines = 6
+                maxLines = 6,
             )
         }
     }
@@ -206,12 +207,12 @@ private fun EventDateSelection(
         modifier = modifier
             .clickable {
                 showDatePicker = true
-            }
+            },
     )
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis =
-            localDateTime.atZone(TimeZoneUTC).toInstant().toEpochMilli()
+            localDateTime.atZone(TimeZoneUTC).toInstant().toEpochMilli(),
         )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -224,7 +225,7 @@ private fun EventDateSelection(
                             onDateChange(localDate)
                         }
                         showDatePicker = false
-                    }
+                    },
                 ) {
                     Text("OK")
                 }
@@ -233,7 +234,7 @@ private fun EventDateSelection(
                 TextButton(onClick = { showDatePicker = false }) {
                     Text("キャンセル")
                 }
-            }
+            },
         ) {
             DatePicker(state = datePickerState)
         }
@@ -245,7 +246,7 @@ private fun EventDateSelection(
 private fun EventTimeSelection(
     localDateTime: LocalDateTime,
     modifier: Modifier = Modifier,
-    onTimeChange: (hour: Int, minute: Int) -> Unit
+    onTimeChange: (hour: Int, minute: Int) -> Unit,
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
 
@@ -253,7 +254,7 @@ private fun EventTimeSelection(
         text = localDateTime.format(DateTimeFormatter.ofPattern("HH:mm")),
         modifier = modifier.clickable {
             showTimePicker = true
-        }
+        },
     )
 
     if (showTimePicker) {
@@ -272,7 +273,7 @@ private fun EventTimeSelection(
                 TextButton(onClick = { showTimePicker = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         ) {
             TimePicker(
                 state = timePickerState,
@@ -287,9 +288,12 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .padding(
-                    start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp
+                    start = 8.dp,
+                    end = 4.dp,
+                    top = 4.dp,
+                    bottom = 4.dp,
                 )
-                .weight(0.9f)
+                .weight(0.9f),
         ) {
             Text(text = event.displayDateTime.value)
             Text(text = event.title)
@@ -299,7 +303,7 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
                 painter = painterResource(R.drawable.memo),
                 contentDescription = "memo",
                 modifier = Modifier
-                    .weight(0.1f)
+                    .weight(0.1f),
             )
         } else {
             Spacer(Modifier.weight(0.1f))
@@ -337,7 +341,7 @@ fun EventContentPreview() {
     T2STheme {
         Card {
             EventContent(
-                event = fake2DaysEvent
+                event = fake2DaysEvent,
             )
         }
     }

@@ -30,7 +30,7 @@ internal sealed interface GeneratedEventsUiState {
 internal fun GeneratedEvents(
     uiState: GeneratedEventsUiState,
     modifier: Modifier = Modifier,
-    onEventChange: (ScheduleEvent) -> Unit = {}
+    onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     when (uiState) {
         GeneratedEventsUiState.Empty -> {
@@ -48,17 +48,17 @@ internal fun GeneratedEvents(
                     start = 8.dp,
                     end = 8.dp,
                     top = 16.dp,
-                    bottom = 112.dp
-                )
+                    bottom = 112.dp,
+                ),
             ) {
                 items(
                     items = uiState.events,
-                    key = { it.id }
+                    key = { it.id },
                 ) { event ->
                     GeneratedEvent(
                         event = event,
                         modifier = Modifier.fillMaxWidth(),
-                        onEventChange = onEventChange
+                        onEventChange = onEventChange,
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -70,7 +70,7 @@ internal fun GeneratedEvents(
                 text = uiState.message,
                 textAlign = TextAlign.Start,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }

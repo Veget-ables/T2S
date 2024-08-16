@@ -18,24 +18,20 @@ import javax.inject.Singleton
 class GoogleServiceModule {
     @Singleton
     @Provides
-    fun provideGoogleAccountCredential(@ApplicationContext context: Context): GoogleAccountCredential {
-        return GoogleAccountCredential
-            .usingOAuth2(
-                context,
-                arrayListOf(CalendarScopes.CALENDAR)
-            )
-            .setBackOff(ExponentialBackOff())
-    }
+    fun provideGoogleAccountCredential(@ApplicationContext context: Context): GoogleAccountCredential = GoogleAccountCredential
+        .usingOAuth2(
+            context,
+            arrayListOf(CalendarScopes.CALENDAR),
+        )
+        .setBackOff(ExponentialBackOff())
 
     @Singleton
     @Provides
-    fun provideGoogleCalendarService(credential: GoogleAccountCredential): com.google.api.services.calendar.Calendar {
-        return com.google.api.services.calendar.Calendar.Builder(
-            AndroidHttp.newCompatibleTransport(),
-            JacksonFactory.getDefaultInstance(),
-            credential
-        )
-            .setApplicationName("T2S")
-            .build()
-    }
+    fun provideGoogleCalendarService(credential: GoogleAccountCredential): com.google.api.services.calendar.Calendar = com.google.api.services.calendar.Calendar.Builder(
+        AndroidHttp.newCompatibleTransport(),
+        JacksonFactory.getDefaultInstance(),
+        credential,
+    )
+        .setApplicationName("T2S")
+        .build()
 }

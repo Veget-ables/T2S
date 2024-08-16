@@ -15,6 +15,6 @@ internal fun JSONObject.toScheduleEvent(): ScheduleEvent {
         title = title,
         memo = memo,
         start = start,
-        end = end
+        end = end,
     )
 }

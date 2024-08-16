@@ -39,12 +39,12 @@ internal fun TimePickerDialog(
     tonalElevation: Dp = 6.0.dp,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     properties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier.wrapContentHeight(),
-        properties = properties
+        properties = properties,
     ) {
         Surface(
             modifier = Modifier
@@ -56,20 +56,20 @@ internal fun TimePickerDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 content()
                 // Buttons
                 Box(
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(DialogButtonsPadding)
+                        .padding(DialogButtonsPadding),
                 ) {
                     ProvideContentColorTextStyle(
                         contentColor = MaterialTheme.colorScheme.primary,
-                        textStyle = MaterialTheme.typography.labelLarge
+                        textStyle = MaterialTheme.typography.labelLarge,
                     ) {
-                        Row() {
+                        Row {
                             dismissButton?.invoke()
                             confirmButton()
                         }
@@ -84,13 +84,13 @@ internal fun TimePickerDialog(
 internal fun ProvideContentColorTextStyle(
     contentColor: Color,
     textStyle: TextStyle,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val mergedStyle = LocalTextStyle.current.merge(textStyle)
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
         LocalTextStyle provides mergedStyle,
-        content = content
+        content = content,
     )
 }
 

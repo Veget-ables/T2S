@@ -19,7 +19,7 @@ import javax.inject.Inject
 internal class ScheduleGenViewModel @Inject constructor(
     private val calendarRepository: CalendarRepository,
     private val getAccountCalendarsUseCase: GetAccountCalendarsUseCase,
-    private val scheduleGenRepository: ScheduleGenRepository
+    private val scheduleGenRepository: ScheduleGenRepository,
 ) : ViewModel() {
 
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
@@ -34,8 +34,8 @@ internal class ScheduleGenViewModel @Inject constructor(
                     calendarUiState = CalendarUiState.AccountSelected(
                         accountName = accountName,
                         calendars = calendars,
-                        targetCalendar = calendars[0]
-                    )
+                        targetCalendar = calendars[0],
+                    ),
                 )
             }
         }
@@ -79,8 +79,8 @@ internal class ScheduleGenViewModel @Inject constructor(
                 _scheduleGenUiState.update {
                     it.copy(
                         generatedEventsUiState = GeneratedEventsUiState.Error(
-                            e.localizedMessage ?: ""
-                        )
+                            e.localizedMessage ?: "",
+                        ),
                     )
                 }
             }
@@ -94,7 +94,7 @@ internal class ScheduleGenViewModel @Inject constructor(
             viewModelScope.launch {
                 calendarRepository.registryEvents(
                     calendarId = calendarUiState.targetCalendar.id,
-                    events = generatedEventsUiState.events
+                    events = generatedEventsUiState.events,
                 )
             }
         }

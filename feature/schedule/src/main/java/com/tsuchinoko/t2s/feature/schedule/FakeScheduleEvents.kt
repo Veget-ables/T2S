@@ -8,33 +8,33 @@ internal val fakeRegularEvent = createScheduleEvent(
     title = "通常予定",
     memo = "これはメモです",
     start = LocalDateTime.parse("2020-02-15T01:30"),
-    end = LocalDateTime.parse("2020-02-15T23:30")
+    end = LocalDateTime.parse("2020-02-15T23:30"),
 )
 
 internal val fakeAllDayEvent = createScheduleEvent(
     title = "終日予定",
     memo = "これはメモです",
     start = LocalDateTime.parse("2020-02-15T00:00"),
-    end = LocalDateTime.parse("2020-02-15T23:59")
+    end = LocalDateTime.parse("2020-02-15T23:59"),
 )
 
 internal val fakeLongTitleEvent = createScheduleEvent(
     title = "タイトルがとても長くて2行以上になってしまう予定",
     start = LocalDateTime.parse("2020-02-15T21:30"),
-    end = LocalDateTime.parse("2020-02-16T21:30")
+    end = LocalDateTime.parse("2020-02-16T21:30"),
 )
 
 internal val fakeLongMemoEvent = createScheduleEvent(
     title = "メモが長い予定",
     memo = "6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。",
     start = LocalDateTime.parse("2020-02-15T21:30"),
-    end = LocalDateTime.parse("2020-02-16T21:30")
+    end = LocalDateTime.parse("2020-02-16T21:30"),
 )
 
 internal val fake2DaysEvent = createScheduleEvent(
     title = "日をまたぐ予定",
     start = LocalDateTime.parse("2020-02-15T21:30"),
-    end = LocalDateTime.parse("2020-02-16T21:30")
+    end = LocalDateTime.parse("2020-02-16T21:30"),
 )
 
 internal val fakeEvents = listOf(
@@ -42,7 +42,7 @@ internal val fakeEvents = listOf(
     fakeAllDayEvent,
     fake2DaysEvent,
     fakeLongTitleEvent,
-    fakeLongMemoEvent
+    fakeLongMemoEvent,
 )
 
 private fun createScheduleEvent(
@@ -50,7 +50,5 @@ private fun createScheduleEvent(
     title: String,
     memo: String? = null,
     start: LocalDateTime,
-    end: LocalDateTime
-): ScheduleEvent {
-    return ScheduleEvent(id = id, title = title, memo = memo, start = start, end = end)
-}
+    end: LocalDateTime,
+): ScheduleEvent = ScheduleEvent(id = id, title = title, memo = memo, start = start, end = end)

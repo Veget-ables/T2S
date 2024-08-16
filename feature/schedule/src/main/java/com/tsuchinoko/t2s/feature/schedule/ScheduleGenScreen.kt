@@ -53,7 +53,7 @@ internal fun ScheduleGenScreen(
         onTargetCalendarChange = scheduleGenViewModel::updateTargetCalendar,
         onConvertClick = scheduleGenViewModel::sendPrompt,
         onEventChange = scheduleGenViewModel::updateInputEvent,
-        onRegistryClick = scheduleGenViewModel::registryEvents
+        onRegistryClick = scheduleGenViewModel::registryEvents,
     )
 }
 
@@ -65,8 +65,8 @@ private fun ScheduleGenScreen(
     onAccountChange: (accountName: String) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onConvertClick: (prompt: String) -> Unit = {},
-    onEventChange:(ScheduleEvent) -> Unit = {},
-    onRegistryClick: () -> Unit = {}
+    onEventChange: (ScheduleEvent) -> Unit = {},
+    onRegistryClick: () -> Unit = {},
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -76,9 +76,9 @@ private fun ScheduleGenScreen(
             CalendarDrawerSheet(
                 uiState = scheduleGenUiState.calendarUiState,
                 onAccountChange = onAccountChange,
-                onCalendarChange = onTargetCalendarChange
+                onCalendarChange = onTargetCalendarChange,
             )
-        }
+        },
     ) {
         Scaffold(
             modifier = modifier.padding(),
@@ -88,33 +88,34 @@ private fun ScheduleGenScreen(
                         Text(
                             text = "title",
                             style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier.padding(16.dp),
                         )
                     },
                     navigationIcon = {
                         IconButton(
                             onClick = {
                                 scope.launch { drawerState.open() }
-                            }
+                            },
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.perm_contact_calendar),
                                 contentDescription = "Choose Account & Calendar",
                             )
                         }
-                    }
+                    },
                 )
             },
             floatingActionButton = {
                 RegistryButton(onRegistryClick = onRegistryClick)
-            }
+            },
         ) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .scrollable(
-                        state = rememberScrollState(), orientation = Orientation.Vertical
+                        state = rememberScrollState(),
+                        orientation = Orientation.Vertical,
                     ),
             ) {
                 var prompt by rememberSaveable { mutableStateOf(TEST_SCHEDULE) }
@@ -125,7 +126,7 @@ private fun ScheduleGenScreen(
                     modifier = Modifier
                         .requiredHeight(300.dp)
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp),
                 )
 
                 Button(
@@ -135,7 +136,7 @@ private fun ScheduleGenScreen(
                     enabled = prompt.isNotEmpty(),
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = 24.dp)
+                        .padding(top = 24.dp),
                 ) {
                     Text(text = "予定に変換する")
                 }
@@ -146,7 +147,7 @@ private fun ScheduleGenScreen(
                         .weight(0.8f)
                         .fillMaxSize()
                         .padding(start = 8.dp, top = 16.dp, end = 8.dp),
-                    onEventChange = onEventChange
+                    onEventChange = onEventChange,
                 )
             }
         }
@@ -162,7 +163,7 @@ private fun RegistryButton(modifier: Modifier = Modifier, onRegistryClick: () ->
     ) {
         Icon(
             painter = painterResource(R.drawable.event_upcoming),
-            contentDescription = "カレンダーに登録"
+            contentDescription = "カレンダーに登録",
         )
     }
 }
@@ -172,7 +173,7 @@ private fun RegistryButton(modifier: Modifier = Modifier, onRegistryClick: () ->
 fun ScheduleGenScreenPreview() {
     T2STheme {
         ScheduleGenScreen(
-            scheduleGenUiState = ScheduleGenUiState.Empty
+            scheduleGenUiState = ScheduleGenUiState.Empty,
         )
     }
 }

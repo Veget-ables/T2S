@@ -13,14 +13,14 @@ import javax.inject.Inject
 
 class GeminiScheduleGenDataSource @Inject constructor(
     @Dispatcher(T2SDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-    private val generativeModel: GenerativeModel
+    private val generativeModel: GenerativeModel,
 ) : ScheduleGenNetworkDataSource {
     override suspend fun generate(prompt: String): List<ScheduleEvent> {
         return withContext(ioDispatcher) {
             val response = generativeModel.generateContent(
                 content {
-                    text(SCHEDULE_GENERATIVE_PROMPT + prompt)
-                }
+                    text(scheduleGenerativePrompt + prompt)
+                },
             )
             val scheduleEvents = response.functionCalls.map { functionCall ->
                 val matchedFunction = generativeModel.tools?.flatMap { it.functionDeclarations }
@@ -34,7 +34,7 @@ class GeminiScheduleGenDataSource @Inject constructor(
         }
     }
 
-    val SCHEDULE_GENERATIVE_PROMPT = """
+    private val scheduleGenerativePrompt = """
 以下の予定のリストをGoogle Calendarに登録するために### フォーマット ###の形に変換してください。
 変換方法は### 例 ### のように行ってください。
 
@@ -114,5 +114,4 @@ class GeminiScheduleGenDataSource @Inject constructor(
 
 ----- 予定のリスト -----
 """
-
 }

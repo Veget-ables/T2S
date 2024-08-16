@@ -31,7 +31,7 @@ internal sealed interface CalendarUiState {
     data class AccountSelected(
         val accountName: String,
         val calendars: List<Calendar>,
-        val targetCalendar: Calendar
+        val targetCalendar: Calendar,
     ) : CalendarUiState
 
     data class Error(val message: String) : CalendarUiState
@@ -42,7 +42,7 @@ internal fun CalendarDrawerSheet(
     uiState: CalendarUiState,
     modifier: Modifier = Modifier,
     onAccountChange: (accountName: String) -> Unit = {},
-    onCalendarChange: (calendar: Calendar) -> Unit = {}
+    onCalendarChange: (calendar: Calendar) -> Unit = {},
 ) {
     ModalDrawerSheet(modifier = modifier) {
         val launcher =
@@ -57,7 +57,7 @@ internal fun CalendarDrawerSheet(
                 TextButton(
                     onClick = {
                         launcher.launch(null)
-                    }
+                    },
                 ) {
                     Text("アカウントを選択")
                 }
@@ -68,7 +68,7 @@ internal fun CalendarDrawerSheet(
 
                 Text(
                     "カレンダーを表示するためにはアカウントの選択が必要です",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
 
@@ -81,7 +81,7 @@ internal fun CalendarDrawerSheet(
                 TextButton(
                     onClick = {
                         launcher.launch(accountName)
-                    }
+                    },
                 ) {
                     Text("選択中: $accountName")
                 }
@@ -92,7 +92,7 @@ internal fun CalendarDrawerSheet(
                     selectedCalendar = uiState.targetCalendar,
                     calendars = uiState.calendars,
                     modifier = Modifier.fillMaxWidth(),
-                    onCalendarChange = onCalendarChange
+                    onCalendarChange = onCalendarChange,
                 )
             }
 
@@ -108,14 +108,14 @@ private fun AccountCalendars(
     selectedCalendar: Calendar,
     calendars: List<Calendar>,
     modifier: Modifier = Modifier,
-    onCalendarChange: (calendar: Calendar) -> Unit = {}
+    onCalendarChange: (calendar: Calendar) -> Unit = {},
 ) {
     LazyColumn(modifier = modifier) {
         items(calendars) { calendar ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = calendar == selectedCalendar,
-                    onClick = { onCalendarChange(calendar) }
+                    onClick = { onCalendarChange(calendar) },
                 )
                 Text(calendar.title)
             }
@@ -129,7 +129,7 @@ fun CalendarDrawerPreview_Initial() {
     T2STheme {
         Surface {
             CalendarDrawerSheet(
-                uiState = CalendarUiState.Initial
+                uiState = CalendarUiState.Initial,
             )
         }
     }
@@ -147,8 +147,8 @@ fun CalendarDrawerPreview_AccountSelected() {
                 uiState = CalendarUiState.AccountSelected(
                     accountName = "taro",
                     calendars = listOf(calendar1, calendar2, calendar3),
-                    targetCalendar = calendar1
-                )
+                    targetCalendar = calendar1,
+                ),
             )
         }
     }
@@ -160,7 +160,7 @@ fun CalendarDrawerPreview_Error() {
     T2STheme {
         Surface {
             CalendarDrawerSheet(
-                uiState = CalendarUiState.Error("アカウントの取得に失敗しました")
+                uiState = CalendarUiState.Error("アカウントの取得に失敗しました"),
             )
         }
     }
