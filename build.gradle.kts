@@ -12,23 +12,5 @@ plugins {
 buildscript {
     dependencies {
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
-        classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.0.BETA1")
-    }
-}
-
-val ktlintVersion = "1.3.1"
-
-subprojects {
-    apply<com.diffplug.gradle.spotless.SpotlessPlugin>()
-    extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-        kotlin {
-            target("**/*.kt")
-            targetExclude("**/build/**/*.kt")
-            ktlint(ktlintVersion).editorConfigOverride(
-                mapOf(
-                    "android" to "true",
-                ),
-            )
-        }
     }
 }
