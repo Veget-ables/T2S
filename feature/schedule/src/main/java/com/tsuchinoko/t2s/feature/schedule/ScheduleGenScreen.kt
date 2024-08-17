@@ -3,14 +3,15 @@ package com.tsuchinoko.t2s.feature.schedule
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -99,11 +101,16 @@ private fun ScheduleGenScreen(
                                 contentDescription = "Choose Account & Calendar",
                             )
                         }
-                        Text(
-                            text = "title",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(16.dp),
-                        )
+                        IconButton(
+                            onClick = {
+                                scope.launch { drawerState.open() }
+                            },
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.open),
+                                contentDescription = "Choose Account & Calendar",
+                            )
+                        }
                     },
                     floatingActionButton = {
                         FloatingActionButton(
@@ -120,7 +127,7 @@ private fun ScheduleGenScreen(
                 )
             },
         ) { paddingValues ->
-            Column(
+            ScheduleGenContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
@@ -128,18 +135,55 @@ private fun ScheduleGenScreen(
                         state = rememberScrollState(),
                         orientation = Orientation.Vertical,
                     ),
-            ) {
-                var prompt by rememberSaveable { mutableStateOf(TEST_SCHEDULE) }
+                uiState = scheduleGenUiState.generatedEventsUiState,
+                onConvertClick = onConvertClick,
+            )
+        }
+    }
+}
 
+@Composable
+private fun ScheduleGenContent(
+    modifier: Modifier = Modifier,
+    uiState: GeneratedEventsUiState,
+    onConvertClick: (prompt: String) -> Unit = {},
+    onEventChange: (ScheduleEvent) -> Unit = {},
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        var prompt by rememberSaveable { mutableStateOf("") }
+
+        when (uiState) {
+            GeneratedEventsUiState.Empty -> {
                 TextField(
                     value = prompt,
                     onValueChange = { prompt = it },
                     modifier = Modifier
-                        .requiredHeight(300.dp)
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp),
-                )
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    placeholder = {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text("予定に変換するテキスト入力")
 
+                            Text("または", style = MaterialTheme.typography.labelSmall)
+
+                            TextButton(onClick = {}) {
+                                Icon(
+                                    painter = painterResource(R.drawable.open),
+                                    contentDescription = null,
+                                )
+
+                                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+
+                                Text(text = "テキストをインポート")
+                            }
+                        }
+                    },
+                )
                 Button(
                     onClick = {
                         onConvertClick(prompt)
@@ -151,15 +195,23 @@ private fun ScheduleGenScreen(
                 ) {
                     Text(text = "予定に変換する")
                 }
+            }
 
+            GeneratedEventsUiState.Loading -> {
+            }
+
+            is GeneratedEventsUiState.Generated -> {
                 GeneratedEvents(
-                    uiState = scheduleGenUiState.generatedEventsUiState,
+                    uiState = uiState,
                     modifier = Modifier
                         .weight(0.8f)
                         .fillMaxSize()
                         .padding(start = 8.dp, top = 16.dp, end = 8.dp),
                     onEventChange = onEventChange,
                 )
+            }
+
+            is GeneratedEventsUiState.Error -> {
             }
         }
     }
