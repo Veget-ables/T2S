@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.feature.schedule.guide.TextInputGuideScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -175,7 +176,7 @@ private fun ScheduleGenContent(
         }
         when (uiState) {
             GeneratedEventsUiState.Empty -> {
-                ScheduleGenOnboarding(
+                TextInputGuideScreen(
                     modifier = Modifier.fillMaxSize(),
                     onInputClick = {
                         prompt = it
