@@ -6,5 +6,6 @@ import com.tsuchinoko.t2s.core.model.ScheduleEvent
 
 interface CalendarRepository {
     suspend fun fetchCalendars(): List<Calendar>
+    suspend fun setTargetCalendar(calendarId: CalendarId)
     suspend fun registryEvents(calendarId: CalendarId, events: List<ScheduleEvent>)
 }

@@ -3,9 +3,8 @@ package com.tsuchinoko.t2s.feature.schedule.account
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,7 +50,10 @@ internal fun CalendarAccountSelection(
             }
         }
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         when (uiState) {
             CalendarAccountUiState.Initial -> {
                 TextButton(
@@ -61,15 +63,6 @@ internal fun CalendarAccountSelection(
                 ) {
                     Text("アカウントを選択")
                 }
-
-                HorizontalDivider()
-
-                Spacer(Modifier.height(20.dp))
-
-                Text(
-                    "カレンダーを表示するためにはアカウントの選択が必要です",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
             }
 
             CalendarAccountUiState.Loading -> {
@@ -88,10 +81,18 @@ internal fun CalendarAccountSelection(
 
                 HorizontalDivider()
 
+                Text(
+                    text = "対象のカレンダーを一つ選択してください",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 16.dp),
+                )
+
                 AccountCalendars(
                     selectedCalendar = uiState.targetCalendar,
                     calendars = uiState.calendars,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     onCalendarChange = onCalendarChange,
                 )
             }
@@ -140,16 +141,7 @@ fun CalendarAccountSelectionPreview_Initial() {
 fun CalendarAccountSelectionPreview_AccountSelected() {
     T2STheme {
         Surface {
-            val calendar1 = Calendar(id = CalendarId("1"), title = "calendar1")
-            val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
-            val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
-            CalendarAccountSelection(
-                uiState = CalendarAccountUiState.AccountSelected(
-                    accountName = "taro",
-                    calendars = listOf(calendar1, calendar2, calendar3),
-                    targetCalendar = calendar1,
-                ),
-            )
+            CalendarAccountSelection(uiState = fakeUiStateAccountSelected)
         }
     }
 }
@@ -165,3 +157,13 @@ fun CalendarAccountSelectionPreview_Error() {
         }
     }
 }
+
+private val calendar1 = Calendar(id = CalendarId("1"), title = "calendar1")
+private val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
+private val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
+
+internal val fakeUiStateAccountSelected = CalendarAccountUiState.AccountSelected(
+    accountName = "taro",
+    calendars = listOf(calendar1, calendar2, calendar3),
+    targetCalendar = calendar1,
+)

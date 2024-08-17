@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
-import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.R
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
+import com.tsuchinoko.t2s.feature.schedule.account.fakeUiStateAccountSelected
 import kotlinx.coroutines.launch
 
 @Composable
@@ -209,21 +209,11 @@ fun CalendarAccountDrawerPreview_Initial() {
 @Composable
 fun CalendarAccountDrawerPreview_AccountSelected() {
     T2STheme {
-        val calendar1 = Calendar(id = CalendarId("1"), title = "calendar1")
-        val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
-        val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
-
         ModalNavigationDrawer(
             drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
             drawerContent = {
                 ModalDrawerSheet {
-                    CalendarAccountSelection(
-                        uiState = CalendarAccountUiState.AccountSelected(
-                            accountName = "taro",
-                            calendars = listOf(calendar1, calendar2, calendar3),
-                            targetCalendar = calendar1,
-                        ),
-                    )
+                    CalendarAccountSelection(uiState = fakeUiStateAccountSelected)
                 }
             },
         ) {}

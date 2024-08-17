@@ -10,17 +10,40 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
+import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.feature.schedule.R
 
 @Composable
 internal fun CalendarAccountGuideScreen(
     modifier: Modifier = Modifier,
+    viewModel: CalendarAccountGuideViewModel = hiltViewModel(),
+    onCompleteClick: () -> Unit = {},
+) {
+    val uiState by viewModel.calendarAccountUiState.collectAsState()
+    CalendarAccountGuideScreen(
+        modifier = modifier,
+        uiState = uiState,
+        onAccountChange = viewModel::fetchCalendars,
+        onTargetCalendarChange = viewModel::updateTargetCalendar,
+        onCompleteClick = onCompleteClick,
+    )
+}
+
+@Composable
+private fun CalendarAccountGuideScreen(
+    modifier: Modifier = Modifier,
+    uiState: CalendarAccountUiState,
+    onAccountChange: (accountName: String) -> Unit = {},
+    onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onCompleteClick: () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
@@ -43,9 +66,12 @@ internal fun CalendarAccountGuideScreen(
             )
 
             CalendarAccountSelection(
-                uiState = CalendarAccountUiState.Initial,
-                onAccountChange = {},
-                onCalendarChange = {},
+                uiState = uiState,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                onAccountChange = onAccountChange,
+                onCalendarChange = onTargetCalendarChange,
             )
 
             OutlinedButton(
@@ -60,10 +86,20 @@ internal fun CalendarAccountGuideScreen(
 
 @Preview
 @Composable
-fun CalendarAccountGuideScreenPreview() {
+fun CalendarAccountGuideScreenPreview_Initial() {
     T2STheme {
         Surface {
-            CalendarAccountGuideScreen()
+            CalendarAccountGuideScreen(uiState = CalendarAccountUiState.Initial)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CalendarAccountGuideScreenPreview_AccountSelected() {
+    T2STheme {
+        Surface {
+            CalendarAccountGuideScreen(uiState = fakeUiStateAccountSelected)
         }
     }
 }
