@@ -7,6 +7,7 @@ import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

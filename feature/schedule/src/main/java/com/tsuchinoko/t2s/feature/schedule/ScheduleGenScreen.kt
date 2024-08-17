@@ -9,11 +9,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -32,7 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
+import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarUiState
 import com.tsuchinoko.t2s.feature.schedule.guide.TextInputGuideScreen
 import kotlinx.coroutines.launch
 
@@ -55,7 +58,6 @@ internal fun ScheduleGenScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     scheduleGenUiState: ScheduleGenUiState,
@@ -71,11 +73,13 @@ private fun ScheduleGenScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CalendarDrawerSheet(
-                uiState = scheduleGenUiState.calendarUiState,
-                onAccountChange = onAccountChange,
-                onCalendarChange = onTargetCalendarChange,
-            )
+            ModalDrawerSheet {
+                CalendarAccountSelection(
+                    uiState = scheduleGenUiState.calendarUiState,
+                    onAccountChange = onAccountChange,
+                    onCalendarChange = onTargetCalendarChange,
+                )
+            }
         },
     ) {
         Scaffold(
@@ -120,8 +124,10 @@ private fun ScheduleGenScreen(
                                     )
                                 }
                             }
+
                             GeneratedEventsUiState.Loading -> {
                             }
+
                             is GeneratedEventsUiState.Generated -> {
                                 FloatingActionButton(
                                     onClick = onRegistryClick,
@@ -134,6 +140,7 @@ private fun ScheduleGenScreen(
                                     )
                                 }
                             }
+
                             is GeneratedEventsUiState.Error -> {
                             }
                         }
@@ -212,5 +219,64 @@ fun ScheduleGenScreenPreview() {
         ScheduleGenScreen(
             scheduleGenUiState = ScheduleGenUiState.Empty,
         )
+    }
+}
+
+@Preview
+@Composable
+fun CalendarAccountDrawerPreview_Initial() {
+    T2STheme {
+        ModalNavigationDrawer(
+            drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
+            drawerContent = {
+                ModalDrawerSheet {
+                    CalendarAccountSelection(
+                        uiState = CalendarUiState.Initial,
+                    )
+                }
+            },
+        ) {}
+    }
+}
+
+@Preview
+@Composable
+fun CalendarAccountDrawerPreview_AccountSelected() {
+    T2STheme {
+        val calendar1 = Calendar(id = CalendarId("1"), title = "calendar1")
+        val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
+        val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
+
+        ModalNavigationDrawer(
+            drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
+            drawerContent = {
+                ModalDrawerSheet {
+                    CalendarAccountSelection(
+                        uiState = CalendarUiState.AccountSelected(
+                            accountName = "taro",
+                            calendars = listOf(calendar1, calendar2, calendar3),
+                            targetCalendar = calendar1,
+                        ),
+                    )
+                }
+            },
+        ) {}
+    }
+}
+
+@Preview
+@Composable
+fun CalendarAccountDrawerPreview_Error() {
+    T2STheme {
+        ModalNavigationDrawer(
+            drawerState = rememberDrawerState(initialValue = DrawerValue.Open),
+            drawerContent = {
+                ModalDrawerSheet {
+                    CalendarAccountSelection(
+                        uiState = CalendarUiState.Error("アカウントの取得に失敗しました"),
+                    )
+                }
+            },
+        ) {}
     }
 }

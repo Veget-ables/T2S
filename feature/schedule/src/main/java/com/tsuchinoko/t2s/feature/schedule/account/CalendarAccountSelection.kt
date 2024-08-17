@@ -1,6 +1,7 @@
-package com.tsuchinoko.t2s.feature.schedule
+package com.tsuchinoko.t2s.feature.schedule.account
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,35 +23,23 @@ import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
-
-internal sealed interface CalendarUiState {
-    data object Initial : CalendarUiState
-    data object Loading : CalendarUiState
-
-    data class AccountSelected(
-        val accountName: String,
-        val calendars: List<Calendar>,
-        val targetCalendar: Calendar,
-    ) : CalendarUiState
-
-    data class Error(val message: String) : CalendarUiState
-}
+import com.tsuchinoko.t2s.feature.schedule.ChooseAccountContract
 
 @Composable
-internal fun CalendarDrawerSheet(
+internal fun CalendarAccountSelection(
     uiState: CalendarUiState,
     modifier: Modifier = Modifier,
     onAccountChange: (accountName: String) -> Unit = {},
     onCalendarChange: (calendar: Calendar) -> Unit = {},
 ) {
-    ModalDrawerSheet(modifier = modifier) {
-        val launcher =
-            rememberLauncherForActivityResult(ChooseAccountContract()) { newAccountName ->
-                newAccountName?.let {
-                    onAccountChange(it)
-                }
+    val launcher =
+        rememberLauncherForActivityResult(ChooseAccountContract()) { newAccountName ->
+            newAccountName?.let {
+                onAccountChange(it)
             }
+        }
 
+    Column(modifier = modifier) {
         when (uiState) {
             CalendarUiState.Initial -> {
                 TextButton(
@@ -125,10 +113,10 @@ private fun AccountCalendars(
 
 @Preview
 @Composable
-fun CalendarDrawerPreview_Initial() {
+fun CalendarAccountSelectionPreview_Initial() {
     T2STheme {
         Surface {
-            CalendarDrawerSheet(
+            CalendarAccountSelection(
                 uiState = CalendarUiState.Initial,
             )
         }
@@ -137,13 +125,13 @@ fun CalendarDrawerPreview_Initial() {
 
 @Preview
 @Composable
-fun CalendarDrawerPreview_AccountSelected() {
+fun CalendarAccountSelectionPreview_AccountSelected() {
     T2STheme {
         Surface {
             val calendar1 = Calendar(id = CalendarId("1"), title = "calendar1")
             val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
             val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
-            CalendarDrawerSheet(
+            CalendarAccountSelection(
                 uiState = CalendarUiState.AccountSelected(
                     accountName = "taro",
                     calendars = listOf(calendar1, calendar2, calendar3),
@@ -156,10 +144,10 @@ fun CalendarDrawerPreview_AccountSelected() {
 
 @Preview
 @Composable
-fun CalendarDrawerPreview_Error() {
+fun CalendarAccountSelectionPreview_Error() {
     T2STheme {
         Surface {
-            CalendarDrawerSheet(
+            CalendarAccountSelection(
                 uiState = CalendarUiState.Error("アカウントの取得に失敗しました"),
             )
         }
