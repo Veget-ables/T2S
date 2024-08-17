@@ -20,7 +20,6 @@ import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 
 internal sealed interface GeneratedEventsUiState {
-    data object Empty : GeneratedEventsUiState
     data object Loading : GeneratedEventsUiState
     data class Generated(val events: List<ScheduleEvent>) : GeneratedEventsUiState
     data class Error(val message: String) : GeneratedEventsUiState
@@ -33,10 +32,6 @@ internal fun GeneratedEvents(
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     when (uiState) {
-        GeneratedEventsUiState.Empty -> {
-            Text("予定を変換してください")
-        }
-
         GeneratedEventsUiState.Loading -> {
             CircularProgressIndicator()
         }
@@ -72,16 +67,6 @@ internal fun GeneratedEvents(
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(16.dp),
             )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun GeneratedEventsPreview_Empty() {
-    T2STheme {
-        Surface {
-            GeneratedEvents(uiState = GeneratedEventsUiState.Empty)
         }
     }
 }

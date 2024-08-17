@@ -7,6 +7,7 @@ import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,7 @@ internal class ScheduleGenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
-        MutableStateFlow(ScheduleGenUiState.Empty)
+        MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
 
     fun fetchCalendars(accountName: String) {

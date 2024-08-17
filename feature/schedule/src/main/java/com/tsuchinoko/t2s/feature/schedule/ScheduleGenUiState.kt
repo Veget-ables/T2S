@@ -7,9 +7,9 @@ internal data class ScheduleGenUiState(
     val generatedEventsUiState: GeneratedEventsUiState,
 ) {
     companion object {
-        val Empty = ScheduleGenUiState(
-            calendarAccountUiState = CalendarAccountUiState.Initial,
-            generatedEventsUiState = GeneratedEventsUiState.Empty,
+        val Initial = ScheduleGenUiState(
+            calendarAccountUiState = CalendarAccountUiState.Loading,
+            generatedEventsUiState = GeneratedEventsUiState.Loading,
         )
     }
 }

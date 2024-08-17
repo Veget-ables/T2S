@@ -15,16 +15,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +32,6 @@ import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
-import com.tsuchinoko.t2s.feature.schedule.guide.TextInputGuideScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,10 +43,9 @@ internal fun ScheduleGenScreen(
 
     ScheduleGenScreen(
         modifier = modifier,
-        scheduleGenUiState = scheduleGenUiState,
+        uiState = scheduleGenUiState,
         onAccountChange = scheduleGenViewModel::fetchCalendars,
         onTargetCalendarChange = scheduleGenViewModel::updateTargetCalendar,
-        onConvertClick = scheduleGenViewModel::sendPrompt,
         onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
     )
@@ -60,22 +54,20 @@ internal fun ScheduleGenScreen(
 @Composable
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    scheduleGenUiState: ScheduleGenUiState,
+    uiState: ScheduleGenUiState,
     onAccountChange: (accountName: String) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
-    onConvertClick: (prompt: String) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: () -> Unit = {},
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    var prompt by rememberSaveable { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 CalendarAccountSelection(
-                    uiState = scheduleGenUiState.calendarAccountUiState,
+                    uiState = uiState.calendarAccountUiState,
                     onAccountChange = onAccountChange,
                     onCalendarChange = onTargetCalendarChange,
                 )
@@ -111,37 +103,16 @@ private fun ScheduleGenScreen(
                         }
                     },
                     floatingActionButton = {
-                        when (scheduleGenUiState.generatedEventsUiState) {
-                            GeneratedEventsUiState.Empty -> {
-                                FloatingActionButton(
-                                    onClick = { onConvertClick(prompt) },
-                                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.convert_to_event),
-                                        contentDescription = "予定オブジェクトに変換する",
-                                    )
-                                }
-                            }
-
-                            GeneratedEventsUiState.Loading -> {
-                            }
-
-                            is GeneratedEventsUiState.Generated -> {
-                                FloatingActionButton(
-                                    onClick = onRegistryClick,
-                                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.event_upcoming),
-                                        contentDescription = "カレンダーに登録",
-                                    )
-                                }
-                            }
-
-                            is GeneratedEventsUiState.Error -> {
+                        if (uiState.generatedEventsUiState is GeneratedEventsUiState.Generated) {
+                            FloatingActionButton(
+                                onClick = onRegistryClick,
+                                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.event_upcoming),
+                                    contentDescription = "カレンダーに登録",
+                                )
                             }
                         }
                     },
@@ -156,15 +127,11 @@ private fun ScheduleGenScreen(
                         state = rememberScrollState(),
                         orientation = Orientation.Vertical,
                     ),
-                uiState = scheduleGenUiState.generatedEventsUiState,
+                uiState = uiState.generatedEventsUiState,
+                onEventChange = onEventChange,
             )
         }
     }
-}
-
-enum class InputStatus {
-    Idling,
-    Input,
 }
 
 @Composable
@@ -173,25 +140,10 @@ private fun ScheduleGenContent(
     uiState: GeneratedEventsUiState,
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
-    var inputStatus by rememberSaveable { mutableStateOf(InputStatus.Idling) }
-    var prompt by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = modifier,
     ) {
-        if (inputStatus == InputStatus.Input) {
-            OutlinedTextField(value = prompt, onValueChange = { text -> prompt = text })
-        }
         when (uiState) {
-            GeneratedEventsUiState.Empty -> {
-                TextInputGuideScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    onInputClick = {
-                        prompt = it
-                        inputStatus = InputStatus.Input
-                    },
-                )
-            }
-
             GeneratedEventsUiState.Loading -> {
             }
 
@@ -214,10 +166,23 @@ private fun ScheduleGenContent(
 
 @Preview
 @Composable
-fun ScheduleGenScreenPreview() {
+fun ScheduleGenScreenPreview_Initial() {
     T2STheme {
         ScheduleGenScreen(
-            scheduleGenUiState = ScheduleGenUiState.Empty,
+            uiState = ScheduleGenUiState.Initial,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ScheduleGenScreenPreview_Generated() {
+    T2STheme {
+        ScheduleGenScreen(
+            uiState = ScheduleGenUiState(
+                calendarAccountUiState = CalendarAccountUiState.Loading,
+                generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
+            ),
         )
     }
 }
