@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,8 +22,7 @@ import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 @Composable
 internal fun ScheduleGenOnboarding(
     modifier: Modifier = Modifier,
-    onInputClick: () -> Unit = {},
-    onImportClick: () -> Unit = {},
+    onInputClick: (prompt: String) -> Unit = {},
 ) {
     Column(
         modifier = modifier,
@@ -34,7 +34,7 @@ internal fun ScheduleGenOnboarding(
             style = MaterialTheme.typography.titleMedium,
         )
 
-        OutlinedButton(onClick = {}) {
+        OutlinedButton(onClick = { onInputClick("") }) {
             Icon(
                 painter = painterResource(R.drawable.edit),
                 contentDescription = null,
@@ -51,7 +51,13 @@ internal fun ScheduleGenOnboarding(
             style = MaterialTheme.typography.labelSmall,
         )
 
-        OutlinedButton(onClick = {}) {
+        val clipboardManager = LocalClipboardManager.current
+        OutlinedButton(
+            onClick = {
+                val clipboardText = clipboardManager.getText().toString()
+                onInputClick(clipboardText)
+            },
+        ) {
             Icon(
                 painter = painterResource(R.drawable.assignment),
                 contentDescription = null,

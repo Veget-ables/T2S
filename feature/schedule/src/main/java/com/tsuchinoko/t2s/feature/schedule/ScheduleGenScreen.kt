@@ -15,6 +15,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -153,18 +154,34 @@ private fun ScheduleGenScreen(
     }
 }
 
+enum class InputStatus {
+    Idling,
+    Input,
+}
+
 @Composable
 private fun ScheduleGenContent(
     modifier: Modifier = Modifier,
     uiState: GeneratedEventsUiState,
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
+    var inputStatus by rememberSaveable { mutableStateOf(InputStatus.Idling) }
+    var prompt by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = modifier,
     ) {
+        if (inputStatus == InputStatus.Input) {
+            OutlinedTextField(value = prompt, onValueChange = { text -> prompt = text })
+        }
         when (uiState) {
             GeneratedEventsUiState.Empty -> {
-                ScheduleGenOnboarding(modifier = Modifier.fillMaxSize())
+                ScheduleGenOnboarding(
+                    modifier = Modifier.fillMaxSize(),
+                    onInputClick = {
+                        prompt = it
+                        inputStatus = InputStatus.Input
+                    },
+                )
             }
 
             GeneratedEventsUiState.Loading -> {
