@@ -25,7 +25,7 @@ import com.tsuchinoko.t2s.feature.schedule.R
 @Composable
 internal fun ScheduleInputGuideScreen(
     modifier: Modifier = Modifier,
-    onInputClick: (prompt: String) -> Unit = {},
+    onInputClick: (input: String) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column(
@@ -66,7 +66,7 @@ internal fun ScheduleInputGuideScreen(
             val clipboardManager = LocalClipboardManager.current
             OutlinedButton(
                 onClick = {
-                    val clipboardText = clipboardManager.getText().toString()
+                    val clipboardText = clipboardManager.getText()?.text ?: ""
                     onInputClick(clipboardText)
                 },
             ) {

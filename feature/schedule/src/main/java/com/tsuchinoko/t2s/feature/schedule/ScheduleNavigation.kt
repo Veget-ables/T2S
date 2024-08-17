@@ -3,6 +3,7 @@ package com.tsuchinoko.t2s.feature.schedule
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountGuideScreen
 import com.tsuchinoko.t2s.feature.schedule.gen.ScheduleGenScreen
 import com.tsuchinoko.t2s.feature.schedule.input.ScheduleInputGuideScreen
@@ -16,28 +17,36 @@ object CalendarAccountGuide
 private object ScheduleInputGuide
 
 @Serializable
-private object ScheduleInput
+data class ScheduleInput(val input: String)
 
 @Serializable
 private object ScheduleGen
 
 fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
     composable<CalendarAccountGuide> {
-        CalendarAccountGuideScreen(onCompleteClick = {
-            controller.navigate(ScheduleInputGuide)
-        })
+        CalendarAccountGuideScreen(
+            onCompleteClick = {
+                controller.navigate(ScheduleInputGuide)
+            },
+        )
     }
 
     composable<ScheduleInputGuide> {
-        ScheduleInputGuideScreen(onInputClick = {
-            controller.navigate(ScheduleInput)
-        })
+        ScheduleInputGuideScreen(
+            onInputClick = { input ->
+                controller.navigate(ScheduleInput(input))
+            },
+        )
     }
 
-    composable<ScheduleInput> {
-        ScheduleInputScreen(onGenerateClick = {
-            controller.navigate(ScheduleGen)
-        })
+    composable<ScheduleInput> { backStackEntry ->
+        val args = backStackEntry.toRoute<ScheduleInput>()
+        ScheduleInputScreen(
+            initialInput = args.input,
+            onGenerateClick = {
+                controller.navigate(ScheduleGen)
+            },
+        )
     }
 
     composable<ScheduleGen> {

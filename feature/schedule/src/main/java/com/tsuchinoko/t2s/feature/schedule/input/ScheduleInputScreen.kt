@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun ScheduleInputScreen(
     modifier: Modifier = Modifier,
+    initialInput: String,
     scheduleInputViewModel: ScheduleInputViewModel = hiltViewModel(),
     onGenerateClick: (input: String) -> Unit = {},
 ) {
@@ -51,6 +52,7 @@ internal fun ScheduleInputScreen(
     ScheduleInputScreen(
         modifier = modifier,
         uiState = calendarAccountUiState,
+        initialInput = initialInput,
         onGenerateClick = onGenerateClick,
     )
 }
@@ -59,6 +61,7 @@ internal fun ScheduleInputScreen(
 private fun ScheduleInputScreen(
     modifier: Modifier = Modifier,
     uiState: CalendarAccountUiState,
+    initialInput: String,
     onAccountChange: (accountName: String) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onGenerateClick: (input: String) -> Unit = {},
@@ -134,7 +137,7 @@ private fun ScheduleInputScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                var input by rememberSaveable { mutableStateOf("") }
+                var input by rememberSaveable { mutableStateOf(initialInput) }
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it },
@@ -166,6 +169,9 @@ private fun ScheduleInputScreen(
 @Composable
 fun ScheduleInputScreenPreview() {
     T2STheme {
-        ScheduleInputScreen(uiState = CalendarAccountUiState.Initial)
+        ScheduleInputScreen(
+            uiState = CalendarAccountUiState.Initial,
+            initialInput = "",
+        )
     }
 }
