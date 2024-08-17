@@ -88,7 +88,7 @@ private fun ScheduleGenScreen(
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.perm_contact_calendar),
-                                contentDescription = "Choose Account & Calendar",
+                                contentDescription = "アカウントを設定",
                             )
                         }
                         IconButton(
@@ -97,8 +97,8 @@ private fun ScheduleGenScreen(
                             },
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.open),
-                                contentDescription = "Choose Account & Calendar",
+                                painter = painterResource(R.drawable.edit_text),
+                                contentDescription = "テキストを入力",
                             )
                         }
                     },
