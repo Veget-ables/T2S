@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule.guide
+package com.tsuchinoko.t2s.feature.schedule.input
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
