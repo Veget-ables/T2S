@@ -43,7 +43,7 @@ internal fun CalendarAccountGuideScreen(
             )
 
             CalendarAccountSelection(
-                uiState = CalendarUiState.Initial,
+                uiState = CalendarAccountUiState.Initial,
                 onAccountChange = {},
                 onCalendarChange = {},
             )

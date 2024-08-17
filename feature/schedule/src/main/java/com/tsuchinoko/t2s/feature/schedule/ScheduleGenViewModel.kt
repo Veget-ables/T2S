@@ -7,7 +7,6 @@ import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
-import com.tsuchinoko.t2s.feature.schedule.account.CalendarUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +31,7 @@ internal class ScheduleGenViewModel @Inject constructor(
             val calendars = getAccountCalendarsUseCase(accountName)
             _scheduleGenUiState.update {
                 it.copy(
-                    calendarUiState = CalendarUiState.AccountSelected(
+                    calendarAccountUiState = CalendarAccountUiState.AccountSelected(
                         accountName = accountName,
                         calendars = calendars,
                         targetCalendar = calendars[0],
@@ -43,11 +42,11 @@ internal class ScheduleGenViewModel @Inject constructor(
     }
 
     fun updateTargetCalendar(calendar: Calendar) {
-        val uiState = _scheduleGenUiState.value.calendarUiState
-        if (uiState is CalendarUiState.AccountSelected) {
+        val uiState = _scheduleGenUiState.value.calendarAccountUiState
+        if (uiState is CalendarAccountUiState.AccountSelected) {
             _scheduleGenUiState.update {
                 val newUiState = uiState.copy(targetCalendar = calendar)
-                it.copy(calendarUiState = newUiState)
+                it.copy(calendarAccountUiState = newUiState)
             }
         }
     }
@@ -89,9 +88,9 @@ internal class ScheduleGenViewModel @Inject constructor(
     }
 
     fun registryEvents() {
-        val calendarUiState = _scheduleGenUiState.value.calendarUiState
+        val calendarUiState = _scheduleGenUiState.value.calendarAccountUiState
         val generatedEventsUiState = _scheduleGenUiState.value.generatedEventsUiState
-        if (calendarUiState is CalendarUiState.AccountSelected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
+        if (calendarUiState is CalendarAccountUiState.AccountSelected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
             viewModelScope.launch {
                 calendarRepository.registryEvents(
                     calendarId = calendarUiState.targetCalendar.id,

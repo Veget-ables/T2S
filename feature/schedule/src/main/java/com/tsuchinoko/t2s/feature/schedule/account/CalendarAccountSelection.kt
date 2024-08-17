@@ -25,9 +25,22 @@ import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.feature.schedule.ChooseAccountContract
 
+internal sealed interface CalendarAccountUiState {
+    data object Initial : CalendarAccountUiState
+    data object Loading : CalendarAccountUiState
+
+    data class AccountSelected(
+        val accountName: String,
+        val calendars: List<Calendar>,
+        val targetCalendar: Calendar,
+    ) : CalendarAccountUiState
+
+    data class Error(val message: String) : CalendarAccountUiState
+}
+
 @Composable
 internal fun CalendarAccountSelection(
-    uiState: CalendarUiState,
+    uiState: CalendarAccountUiState,
     modifier: Modifier = Modifier,
     onAccountChange: (accountName: String) -> Unit = {},
     onCalendarChange: (calendar: Calendar) -> Unit = {},
@@ -41,7 +54,7 @@ internal fun CalendarAccountSelection(
 
     Column(modifier = modifier) {
         when (uiState) {
-            CalendarUiState.Initial -> {
+            CalendarAccountUiState.Initial -> {
                 TextButton(
                     onClick = {
                         launcher.launch(null)
@@ -60,11 +73,11 @@ internal fun CalendarAccountSelection(
                 )
             }
 
-            CalendarUiState.Loading -> {
+            CalendarAccountUiState.Loading -> {
                 CircularProgressIndicator()
             }
 
-            is CalendarUiState.AccountSelected -> {
+            is CalendarAccountUiState.AccountSelected -> {
                 val accountName = uiState.accountName
                 TextButton(
                     onClick = {
@@ -84,7 +97,7 @@ internal fun CalendarAccountSelection(
                 )
             }
 
-            is CalendarUiState.Error -> {
+            is CalendarAccountUiState.Error -> {
                 Text(uiState.message)
             }
         }
@@ -117,7 +130,7 @@ fun CalendarAccountSelectionPreview_Initial() {
     T2STheme {
         Surface {
             CalendarAccountSelection(
-                uiState = CalendarUiState.Initial,
+                uiState = CalendarAccountUiState.Initial,
             )
         }
     }
@@ -132,7 +145,7 @@ fun CalendarAccountSelectionPreview_AccountSelected() {
             val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
             val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
             CalendarAccountSelection(
-                uiState = CalendarUiState.AccountSelected(
+                uiState = CalendarAccountUiState.AccountSelected(
                     accountName = "taro",
                     calendars = listOf(calendar1, calendar2, calendar3),
                     targetCalendar = calendar1,
@@ -148,7 +161,7 @@ fun CalendarAccountSelectionPreview_Error() {
     T2STheme {
         Surface {
             CalendarAccountSelection(
-                uiState = CalendarUiState.Error("アカウントの取得に失敗しました"),
+                uiState = CalendarAccountUiState.Error("アカウントの取得に失敗しました"),
             )
         }
     }

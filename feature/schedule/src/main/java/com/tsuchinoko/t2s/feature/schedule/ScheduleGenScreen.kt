@@ -35,7 +35,7 @@ import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
-import com.tsuchinoko.t2s.feature.schedule.account.CalendarUiState
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import com.tsuchinoko.t2s.feature.schedule.guide.TextInputGuideScreen
 import kotlinx.coroutines.launch
 
@@ -75,7 +75,7 @@ private fun ScheduleGenScreen(
         drawerContent = {
             ModalDrawerSheet {
                 CalendarAccountSelection(
-                    uiState = scheduleGenUiState.calendarUiState,
+                    uiState = scheduleGenUiState.calendarAccountUiState,
                     onAccountChange = onAccountChange,
                     onCalendarChange = onTargetCalendarChange,
                 )
@@ -231,7 +231,7 @@ fun CalendarAccountDrawerPreview_Initial() {
             drawerContent = {
                 ModalDrawerSheet {
                     CalendarAccountSelection(
-                        uiState = CalendarUiState.Initial,
+                        uiState = CalendarAccountUiState.Initial,
                     )
                 }
             },
@@ -252,7 +252,7 @@ fun CalendarAccountDrawerPreview_AccountSelected() {
             drawerContent = {
                 ModalDrawerSheet {
                     CalendarAccountSelection(
-                        uiState = CalendarUiState.AccountSelected(
+                        uiState = CalendarAccountUiState.AccountSelected(
                             accountName = "taro",
                             calendars = listOf(calendar1, calendar2, calendar3),
                             targetCalendar = calendar1,
@@ -273,7 +273,7 @@ fun CalendarAccountDrawerPreview_Error() {
             drawerContent = {
                 ModalDrawerSheet {
                     CalendarAccountSelection(
-                        uiState = CalendarUiState.Error("アカウントの取得に失敗しました"),
+                        uiState = CalendarAccountUiState.Error("アカウントの取得に失敗しました"),
                     )
                 }
             },

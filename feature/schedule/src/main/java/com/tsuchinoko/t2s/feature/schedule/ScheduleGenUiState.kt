@@ -1,14 +1,14 @@
 package com.tsuchinoko.t2s.feature.schedule
 
-import com.tsuchinoko.t2s.feature.schedule.account.CalendarUiState
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 
 internal data class ScheduleGenUiState(
-    val calendarUiState: CalendarUiState,
+    val calendarAccountUiState: CalendarAccountUiState,
     val generatedEventsUiState: GeneratedEventsUiState,
 ) {
     companion object {
         val Empty = ScheduleGenUiState(
-            calendarUiState = CalendarUiState.Initial,
+            calendarAccountUiState = CalendarAccountUiState.Initial,
             generatedEventsUiState = GeneratedEventsUiState.Empty,
         )
     }
