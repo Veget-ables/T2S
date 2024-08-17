@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.feature.schedule.CalendarAccountGuide
-import com.tsuchinoko.t2s.feature.schedule.GetAccountPermissionEffect
+import com.tsuchinoko.t2s.feature.schedule.account.GetAccountPermissionEffect
 import com.tsuchinoko.t2s.feature.schedule.scheduleNavigation
 import dagger.hilt.android.AndroidEntryPoint
 

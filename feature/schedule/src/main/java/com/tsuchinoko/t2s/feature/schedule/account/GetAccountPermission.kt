@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule
+package com.tsuchinoko.t2s.feature.schedule.account
 
 import android.accounts.Account
 import android.accounts.AccountManager

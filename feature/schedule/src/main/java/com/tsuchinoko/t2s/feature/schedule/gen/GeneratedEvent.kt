@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule
+package com.tsuchinoko.t2s.feature.schedule.gen
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.feature.schedule.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime

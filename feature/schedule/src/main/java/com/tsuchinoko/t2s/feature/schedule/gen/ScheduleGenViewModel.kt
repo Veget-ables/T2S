@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule
+package com.tsuchinoko.t2s.feature.schedule.gen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

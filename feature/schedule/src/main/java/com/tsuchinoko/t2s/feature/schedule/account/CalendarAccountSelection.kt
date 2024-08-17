@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
-import com.tsuchinoko.t2s.feature.schedule.ChooseAccountContract
 
 internal sealed interface CalendarAccountUiState {
     data object Initial : CalendarAccountUiState

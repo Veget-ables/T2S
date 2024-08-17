@@ -1,4 +1,4 @@
-package com.tsuchinoko.t2s.feature.schedule
+package com.tsuchinoko.t2s.feature.schedule.gen
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -30,6 +30,7 @@ import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.feature.schedule.R
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import kotlinx.coroutines.launch

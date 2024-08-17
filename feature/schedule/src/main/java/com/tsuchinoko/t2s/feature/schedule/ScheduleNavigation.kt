@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountGuideScreen
+import com.tsuchinoko.t2s.feature.schedule.gen.ScheduleGenScreen
 import com.tsuchinoko.t2s.feature.schedule.input.ScheduleInputGuideScreen
 import com.tsuchinoko.t2s.feature.schedule.input.ScheduleInputScreen
 import kotlinx.serialization.Serializable
