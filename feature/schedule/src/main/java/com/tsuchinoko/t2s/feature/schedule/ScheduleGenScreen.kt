@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +22,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -83,15 +85,10 @@ private fun ScheduleGenScreen(
         Scaffold(
             modifier = modifier.padding(),
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "title",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(16.dp),
-                        )
-                    },
-                    navigationIcon = {
+            },
+            bottomBar = {
+                BottomAppBar(
+                    actions = {
                         IconButton(
                             onClick = {
                                 scope.launch { drawerState.open() }
@@ -102,11 +99,25 @@ private fun ScheduleGenScreen(
                                 contentDescription = "Choose Account & Calendar",
                             )
                         }
+                        Text(
+                            text = "title",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.padding(16.dp),
+                        )
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = onRegistryClick,
+                            containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.event_upcoming),
+                                contentDescription = "カレンダーに登録",
+                            )
+                        }
                     },
                 )
-            },
-            floatingActionButton = {
-                RegistryButton(onRegistryClick = onRegistryClick)
             },
         ) { paddingValues ->
             Column(
@@ -151,20 +162,6 @@ private fun ScheduleGenScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun RegistryButton(modifier: Modifier = Modifier, onRegistryClick: () -> Unit = {}) {
-    FloatingActionButton(
-        modifier = modifier
-            .padding(vertical = 16.dp),
-        onClick = onRegistryClick,
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.event_upcoming),
-            contentDescription = "カレンダーに登録",
-        )
     }
 }
 
