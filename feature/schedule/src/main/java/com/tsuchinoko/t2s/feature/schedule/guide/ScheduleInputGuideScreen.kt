@@ -23,7 +23,7 @@ import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.feature.schedule.R
 
 @Composable
-internal fun TextInputGuideScreen(
+internal fun ScheduleInputGuideScreen(
     modifier: Modifier = Modifier,
     onInputClick: (prompt: String) -> Unit = {},
 ) {
@@ -102,10 +102,10 @@ internal fun TextInputGuideScreen(
 
 @Preview
 @Composable
-fun TextInputGuideScreenPreview() {
+fun ScheduleInputGuideScreenPreview() {
     T2STheme {
         Surface {
-            TextInputGuideScreen()
+            ScheduleInputGuideScreen()
         }
     }
 }
