@@ -8,4 +8,9 @@ import javax.inject.Inject
 internal class CalendarAccountGuideViewModel @Inject constructor(
     calendarAccountUiStateLogic: CalendarAccountUiStateLogic,
 ) : ViewModel(),
-    CalendarAccountUiStateLogic by calendarAccountUiStateLogic
+    CalendarAccountUiStateLogic by calendarAccountUiStateLogic {
+
+    init {
+        initCalendarAccountUiState()
+    }
+}

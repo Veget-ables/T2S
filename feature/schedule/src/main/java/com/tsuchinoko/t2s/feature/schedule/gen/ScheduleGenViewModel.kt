@@ -27,6 +27,10 @@ internal class ScheduleGenViewModel @Inject constructor(
         MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
 
+    init {
+        initCalendarAccountUiState()
+    }
+
     fun updateInputEvent(event: ScheduleEvent) {
         val uiState = _scheduleGenUiState.value.generatedEventsUiState
         if (uiState is GeneratedEventsUiState.Generated) {

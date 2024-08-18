@@ -9,4 +9,9 @@ import javax.inject.Inject
 internal class ScheduleInputViewModel @Inject constructor(
     calendarAccountUiStateLogic: CalendarAccountUiStateLogic,
 ) : ViewModel(),
-    CalendarAccountUiStateLogic by calendarAccountUiStateLogic
+    CalendarAccountUiStateLogic by calendarAccountUiStateLogic {
+
+    init {
+        initCalendarAccountUiState()
+    }
+}

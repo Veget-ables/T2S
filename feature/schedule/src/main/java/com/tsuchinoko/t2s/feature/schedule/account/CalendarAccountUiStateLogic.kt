@@ -2,6 +2,7 @@ package com.tsuchinoko.t2s.feature.schedule.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tsuchinoko.t2s.core.data.AccountRepository
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Account
@@ -30,6 +31,9 @@ internal interface CalendarAccountUiStateLogic {
     val calendarAccountUiState: StateFlow<CalendarAccountUiState>
 
     context(ViewModel)
+    fun initCalendarAccountUiState()
+
+    context(ViewModel)
     fun fetchCalendars(
         account: Account,
     )
@@ -41,6 +45,7 @@ internal interface CalendarAccountUiStateLogic {
 }
 
 internal class CalendarAccountUiStateLogicImpl @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
     private val getAccountCalendarsUseCase: GetAccountCalendarsUseCase,
 ) : CalendarAccountUiStateLogic {
@@ -48,6 +53,17 @@ internal class CalendarAccountUiStateLogicImpl @Inject constructor(
         MutableStateFlow(CalendarAccountUiState.Initial)
     override val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         _calendarAccountUiState.asStateFlow()
+
+    context(ViewModel)
+    override fun initCalendarAccountUiState() {
+        viewModelScope.launch {
+            accountRepository.getAccount().collect { account ->
+                account?.let {
+                    fetchCalendars(it)
+                }
+            }
+        }
+    }
 
     context(ViewModel)
     override fun fetchCalendars(account: Account) {
