@@ -33,8 +33,12 @@ internal fun CalendarAccountGuideScreen(
     CalendarAccountGuideScreen(
         modifier = modifier,
         uiState = uiState,
-        onAccountChange = viewModel::fetchCalendars,
-        onTargetCalendarChange = viewModel::updateTargetCalendar,
+        onAccountChange = {
+            with(viewModel) { fetchCalendars(it) }
+        },
+        onTargetCalendarChange = {
+            with(viewModel) { updateTargetCalendar(it) }
+        },
         onCompleteClick = onCompleteClick,
     )
 }

@@ -45,15 +45,21 @@ import kotlinx.coroutines.launch
 internal fun ScheduleInputScreen(
     modifier: Modifier = Modifier,
     initialInput: String,
-    scheduleInputViewModel: ScheduleInputViewModel = hiltViewModel(),
+    viewModel: ScheduleInputViewModel = hiltViewModel(),
     onGenerateClick: (input: String) -> Unit = {},
 ) {
-    val calendarAccountUiState by scheduleInputViewModel.calendarAccountUiState.collectAsState()
+    val calendarAccountUiState by viewModel.calendarAccountUiState.collectAsState()
 
     ScheduleInputScreen(
         modifier = modifier,
         uiState = calendarAccountUiState,
         initialInput = initialInput,
+        onAccountChange = {
+            with(viewModel) { fetchCalendars(it) }
+        },
+        onTargetCalendarChange = {
+            with(viewModel) { updateTargetCalendar(it) }
+        },
         onGenerateClick = onGenerateClick,
     )
 }

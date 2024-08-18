@@ -24,5 +24,6 @@ inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin() = con
     }.apply {
         jvmTarget = JvmTarget.JVM_18
         allWarningsAsErrors = warningsAsErrors.toBoolean()
+        freeCompilerArgs.add("-Xcontext-receivers")
     }
 }
