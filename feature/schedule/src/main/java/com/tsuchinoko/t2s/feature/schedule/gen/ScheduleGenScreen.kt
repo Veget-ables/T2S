@@ -39,24 +39,31 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    scheduleGenViewModel: ScheduleGenViewModel = hiltViewModel(),
+    viewModel: ScheduleGenViewModel = hiltViewModel(),
 ) {
-    val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
+    val calendarAccountUiState by viewModel.calendarAccountUiState.collectAsState()
+    val scheduleGenUiState by viewModel.scheduleGenUiState.collectAsState()
 
     ScheduleGenScreen(
         modifier = modifier,
-        uiState = scheduleGenUiState,
-        onAccountChange = scheduleGenViewModel::fetchCalendars,
-        onTargetCalendarChange = scheduleGenViewModel::updateTargetCalendar,
-        onEventChange = scheduleGenViewModel::updateInputEvent,
-        onRegistryClick = scheduleGenViewModel::registryEvents,
+        calendarAccountUiState = calendarAccountUiState,
+        scheduleGenUiState = scheduleGenUiState,
+        onAccountChange = {
+            with(viewModel) { fetchCalendars(it) }
+        },
+        onTargetCalendarChange = {
+            with(viewModel) { updateTargetCalendar(it) }
+        },
+        onEventChange = viewModel::updateInputEvent,
+        onRegistryClick = viewModel::registryEvents,
     )
 }
 
 @Composable
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    uiState: ScheduleGenUiState,
+    calendarAccountUiState: CalendarAccountUiState,
+    scheduleGenUiState: ScheduleGenUiState,
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
@@ -69,7 +76,7 @@ private fun ScheduleGenScreen(
         drawerContent = {
             ModalDrawerSheet {
                 CalendarAccountSelection(
-                    uiState = uiState.calendarAccountUiState,
+                    uiState = calendarAccountUiState,
                     onAccountChange = onAccountChange,
                     onCalendarChange = onTargetCalendarChange,
                 )
@@ -105,7 +112,7 @@ private fun ScheduleGenScreen(
                         }
                     },
                     floatingActionButton = {
-                        if (uiState.generatedEventsUiState is GeneratedEventsUiState.Generated) {
+                        if (scheduleGenUiState.generatedEventsUiState is GeneratedEventsUiState.Generated) {
                             FloatingActionButton(
                                 onClick = onRegistryClick,
                                 containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
@@ -129,7 +136,7 @@ private fun ScheduleGenScreen(
                         state = rememberScrollState(),
                         orientation = Orientation.Vertical,
                     ),
-                uiState = uiState.generatedEventsUiState,
+                uiState = scheduleGenUiState.generatedEventsUiState,
                 onEventChange = onEventChange,
             )
         }
@@ -171,7 +178,8 @@ private fun ScheduleGenContent(
 fun ScheduleGenScreenPreview_Initial() {
     T2STheme {
         ScheduleGenScreen(
-            uiState = ScheduleGenUiState.Initial,
+            calendarAccountUiState = CalendarAccountUiState.Initial,
+            scheduleGenUiState = ScheduleGenUiState.Initial,
         )
     }
 }
@@ -181,8 +189,8 @@ fun ScheduleGenScreenPreview_Initial() {
 fun ScheduleGenScreenPreview_Generated() {
     T2STheme {
         ScheduleGenScreen(
-            uiState = ScheduleGenUiState(
-                calendarAccountUiState = CalendarAccountUiState.Loading,
+            calendarAccountUiState = CalendarAccountUiState.Initial,
+            scheduleGenUiState = ScheduleGenUiState(
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
             ),
         )

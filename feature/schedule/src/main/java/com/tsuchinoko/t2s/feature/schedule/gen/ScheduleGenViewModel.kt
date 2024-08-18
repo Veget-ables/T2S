@@ -4,11 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
-import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
-import com.tsuchinoko.t2s.core.model.Account
-import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiStateLogic
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,39 +17,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class ScheduleGenViewModel @Inject constructor(
+    calendarAccountUiStateLogic: CalendarAccountUiStateLogic,
     private val calendarRepository: CalendarRepository,
-    private val getAccountCalendarsUseCase: GetAccountCalendarsUseCase,
     private val scheduleGenRepository: ScheduleGenRepository,
-) : ViewModel() {
+) : ViewModel(),
+    CalendarAccountUiStateLogic by calendarAccountUiStateLogic {
 
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
         MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
-
-    fun fetchCalendars(account: Account) {
-        viewModelScope.launch {
-            val calendars = getAccountCalendarsUseCase(account)
-            _scheduleGenUiState.update {
-                it.copy(
-                    calendarAccountUiState = CalendarAccountUiState.AccountSelected(
-                        account = account,
-                        calendars = calendars,
-                        targetCalendar = calendars[0],
-                    ),
-                )
-            }
-        }
-    }
-
-    fun updateTargetCalendar(calendar: Calendar) {
-        val uiState = _scheduleGenUiState.value.calendarAccountUiState
-        if (uiState is CalendarAccountUiState.AccountSelected) {
-            _scheduleGenUiState.update {
-                val newUiState = uiState.copy(targetCalendar = calendar)
-                it.copy(calendarAccountUiState = newUiState)
-            }
-        }
-    }
 
     fun updateInputEvent(event: ScheduleEvent) {
         val uiState = _scheduleGenUiState.value.generatedEventsUiState
@@ -90,8 +64,8 @@ internal class ScheduleGenViewModel @Inject constructor(
     }
 
     fun registryEvents() {
-        val calendarUiState = _scheduleGenUiState.value.calendarAccountUiState
-        val generatedEventsUiState = _scheduleGenUiState.value.generatedEventsUiState
+        val calendarUiState = calendarAccountUiState.value
+        val generatedEventsUiState = scheduleGenUiState.value.generatedEventsUiState
         if (calendarUiState is CalendarAccountUiState.AccountSelected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
             viewModelScope.launch {
                 calendarRepository.registryEvents(
