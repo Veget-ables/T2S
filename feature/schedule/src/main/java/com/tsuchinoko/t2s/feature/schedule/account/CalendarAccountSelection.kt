@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
+import com.tsuchinoko.t2s.core.model.Account
+import com.tsuchinoko.t2s.core.model.AccountId
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
 
@@ -28,7 +30,7 @@ internal sealed interface CalendarAccountUiState {
     data object Loading : CalendarAccountUiState
 
     data class AccountSelected(
-        val accountName: String,
+        val account: Account,
         val calendars: List<Calendar>,
         val targetCalendar: Calendar,
     ) : CalendarAccountUiState
@@ -40,12 +42,12 @@ internal sealed interface CalendarAccountUiState {
 internal fun CalendarAccountSelection(
     uiState: CalendarAccountUiState,
     modifier: Modifier = Modifier,
-    onAccountChange: (accountName: String) -> Unit = {},
+    onAccountChange: (account: Account) -> Unit = {},
     onCalendarChange: (calendar: Calendar) -> Unit = {},
 ) {
     val launcher =
-        rememberLauncherForActivityResult(ChooseAccountContract()) { newAccountName ->
-            newAccountName?.let {
+        rememberLauncherForActivityResult(ChooseAccountContract()) { account ->
+            account?.let {
                 onAccountChange(it)
             }
         }
@@ -70,7 +72,7 @@ internal fun CalendarAccountSelection(
             }
 
             is CalendarAccountUiState.AccountSelected -> {
-                val accountName = uiState.accountName
+                val accountName = uiState.account
                 TextButton(
                     onClick = {
                         launcher.launch(accountName)
@@ -163,7 +165,7 @@ private val calendar2 = Calendar(id = CalendarId("2"), title = "calendar2")
 private val calendar3 = Calendar(id = CalendarId("3"), title = "calendar3")
 
 internal val fakeUiStateAccountSelected = CalendarAccountUiState.AccountSelected(
-    accountName = "taro",
+    account = Account(AccountId("taro")),
     calendars = listOf(calendar1, calendar2, calendar3),
     targetCalendar = calendar1,
 )

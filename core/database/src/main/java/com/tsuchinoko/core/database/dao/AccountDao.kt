@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: AccountEntity)
+    suspend fun insert(entity: AccountEntity)
 
-    @Query("SELECT * FROM AccountEntity WHERE userId = :id")
-    fun get(id: String): Flow<AccountEntity>
+    @Query("SELECT * FROM AccountEntity")
+    fun get(): Flow<AccountEntity?>
 }

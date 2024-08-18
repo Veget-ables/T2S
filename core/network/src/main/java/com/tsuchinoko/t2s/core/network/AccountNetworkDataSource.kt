@@ -1,8 +1,7 @@
 package com.tsuchinoko.t2s.core.network
 
-import android.accounts.Account
+import com.tsuchinoko.t2s.core.model.Account
 
 interface AccountNetworkDataSource {
-    fun getAccount(): Account?
-    fun setAccountName(accountName: String)
+    fun setAccount(account: Account)
 }

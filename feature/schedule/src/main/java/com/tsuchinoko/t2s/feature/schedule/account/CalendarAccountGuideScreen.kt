@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
+import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.feature.schedule.R
 
@@ -42,7 +43,7 @@ internal fun CalendarAccountGuideScreen(
 private fun CalendarAccountGuideScreen(
     modifier: Modifier = Modifier,
     uiState: CalendarAccountUiState,
-    onAccountChange: (accountName: String) -> Unit = {},
+    onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onCompleteClick: () -> Unit = {},
 ) {

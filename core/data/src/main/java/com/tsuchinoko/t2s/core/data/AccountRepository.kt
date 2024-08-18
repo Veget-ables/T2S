@@ -1,8 +1,9 @@
 package com.tsuchinoko.t2s.core.data
 
-import android.accounts.Account
+import com.tsuchinoko.t2s.core.model.Account
+import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
-    fun getAccount(): Account?
-    fun setAccountName(accountName: String)
+    fun getAccount(): Flow<Account?>
+    suspend fun setAccount(account: Account)
 }

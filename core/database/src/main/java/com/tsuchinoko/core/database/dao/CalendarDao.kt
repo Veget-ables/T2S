@@ -9,8 +9,8 @@ import com.tsuchinoko.core.database.entity.CalendarEntity
 @Dao
 interface CalendarDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(entities: List<CalendarEntity>)
+    suspend fun insertAll(entities: List<CalendarEntity>)
 
     @Query("SELECT * FROM calendarentity")
-    fun getAll(): List<CalendarEntity>
+    suspend fun getAll(): List<CalendarEntity>
 }

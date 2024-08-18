@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
+import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,12 +24,12 @@ internal class CalendarAccountGuideViewModel @Inject constructor(
     val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         _calendarAccountUiState.asStateFlow()
 
-    fun fetchCalendars(accountName: String) {
+    fun fetchCalendars(account: Account) {
         viewModelScope.launch {
-            val calendars = getAccountCalendarsUseCase(accountName)
+            val calendars = getAccountCalendarsUseCase(account)
             _calendarAccountUiState.update {
                 CalendarAccountUiState.AccountSelected(
-                    accountName = accountName,
+                    account = account,
                     calendars = calendars,
                     targetCalendar = calendars[0],
                 )

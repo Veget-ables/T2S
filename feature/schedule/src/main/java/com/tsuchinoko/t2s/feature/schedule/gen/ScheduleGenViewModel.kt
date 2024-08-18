@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
+import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
@@ -27,13 +28,13 @@ internal class ScheduleGenViewModel @Inject constructor(
         MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
 
-    fun fetchCalendars(accountName: String) {
+    fun fetchCalendars(account: Account) {
         viewModelScope.launch {
-            val calendars = getAccountCalendarsUseCase(accountName)
+            val calendars = getAccountCalendarsUseCase(account)
             _scheduleGenUiState.update {
                 it.copy(
                     calendarAccountUiState = CalendarAccountUiState.AccountSelected(
-                        accountName = accountName,
+                        account = account,
                         calendars = calendars,
                         targetCalendar = calendars[0],
                     ),

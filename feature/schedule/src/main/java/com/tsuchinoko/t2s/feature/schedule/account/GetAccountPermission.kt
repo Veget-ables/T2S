@@ -1,6 +1,5 @@
 package com.tsuchinoko.t2s.feature.schedule.account
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -13,13 +12,15 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.common.AccountPicker
+import com.tsuchinoko.t2s.core.model.Account
+import com.tsuchinoko.t2s.core.model.AccountId
 
 /**
  * input: Selected Account Name
  */
-class ChooseAccountContract : ActivityResultContract<String?, String?>() {
-    override fun createIntent(context: Context, input: String?): Intent {
-        val account = if (input != null) Account(input, "google") else null
+class ChooseAccountContract : ActivityResultContract<Account?, Account?>() {
+    override fun createIntent(context: Context, input: Account?): Intent {
+        val account = input?.toSystemAccount("google")
         return AccountPicker.newChooseAccountIntent(
             AccountPicker
                 .AccountChooserOptions
@@ -29,14 +30,17 @@ class ChooseAccountContract : ActivityResultContract<String?, String?>() {
         )
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): String? {
+    override fun parseResult(resultCode: Int, intent: Intent?): Account? {
         return if (resultCode == RESULT_OK) {
-            intent?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            val accountName = intent?.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) ?: return null
+            Account(AccountId(accountName))
         } else {
             return null
         }
     }
 }
+
+private fun Account.toSystemAccount(type: String): android.accounts.Account = android.accounts.Account(id.value, type)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
