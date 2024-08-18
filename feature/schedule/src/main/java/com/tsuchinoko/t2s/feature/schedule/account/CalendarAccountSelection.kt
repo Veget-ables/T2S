@@ -72,13 +72,13 @@ internal fun CalendarAccountSelection(
             }
 
             is CalendarAccountUiState.AccountSelected -> {
-                val accountName = uiState.account
+                val account = uiState.account
                 TextButton(
                     onClick = {
-                        launcher.launch(accountName)
+                        launcher.launch(account)
                     },
                 ) {
-                    Text("選択中: $accountName")
+                    Text("選択中: ${account.id.value}")
                 }
 
                 HorizontalDivider()
