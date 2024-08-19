@@ -12,8 +12,10 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,15 +54,25 @@ internal class CalendarAccountUiStateLogicImpl @Inject constructor(
     private val _calendarAccountUiState: MutableStateFlow<CalendarAccountUiState> =
         MutableStateFlow(CalendarAccountUiState.Initial)
     override val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
-        _calendarAccountUiState.asStateFlow()
+        combine(
+            accountRepository.getAccount(),
+            calendarRepository.getAccountCalendars()
+        ) { account, calendars ->
+            CalendarAccountUiState.AccountSelected(
+                account = account!!,
+                calendars = calendars,
+                targetCalendar = calendars[0],
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            CalendarAccountUiState.Initial,
+        )
 
     context(ViewModel)
     override fun initCalendarAccountUiState() {
         viewModelScope.launch {
             accountRepository.getAccount().collect { account ->
-                account?.let {
-                    fetchCalendars(it)
-                }
             }
         }
     }
