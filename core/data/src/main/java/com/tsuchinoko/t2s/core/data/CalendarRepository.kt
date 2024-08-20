@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CalendarRepository {
     fun getAccountCalendars(): Flow<List<Calendar>>
-    suspend fun fetchCalendars(): List<Calendar>
+    suspend fun fetchCalendars()
     suspend fun setTargetCalendar(calendarId: CalendarId)
     suspend fun registryEvents(calendarId: CalendarId, events: List<ScheduleEvent>)
 }

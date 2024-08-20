@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
+import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
-import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
-import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiStateLogic
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,19 +16,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class ScheduleGenViewModel @Inject constructor(
-    calendarAccountUiStateLogic: CalendarAccountUiStateLogic,
     private val calendarRepository: CalendarRepository,
     private val scheduleGenRepository: ScheduleGenRepository,
-) : ViewModel(),
-    CalendarAccountUiStateLogic by calendarAccountUiStateLogic {
+) : ViewModel() {
 
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
         MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
-
-    init {
-        initCalendarAccountUiState()
-    }
 
     fun updateInputEvent(event: ScheduleEvent) {
         val uiState = _scheduleGenUiState.value.generatedEventsUiState
@@ -67,16 +60,12 @@ internal class ScheduleGenViewModel @Inject constructor(
         }
     }
 
-    fun registryEvents() {
-        val calendarUiState = calendarAccountUiState.value
-        val generatedEventsUiState = scheduleGenUiState.value.generatedEventsUiState
-        if (calendarUiState is CalendarAccountUiState.AccountSelected && generatedEventsUiState is GeneratedEventsUiState.Generated) {
-            viewModelScope.launch {
-                calendarRepository.registryEvents(
-                    calendarId = calendarUiState.targetCalendar.id,
-                    events = generatedEventsUiState.events,
-                )
-            }
+    fun registryEvents(calendarId: CalendarId, events: List<ScheduleEvent>) {
+        viewModelScope.launch {
+            calendarRepository.registryEvents(
+                calendarId = calendarId,
+                events = events,
+            )
         }
     }
 }

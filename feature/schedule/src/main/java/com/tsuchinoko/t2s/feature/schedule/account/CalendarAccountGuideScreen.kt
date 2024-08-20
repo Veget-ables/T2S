@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
@@ -26,19 +25,15 @@ import com.tsuchinoko.t2s.feature.schedule.R
 @Composable
 internal fun CalendarAccountGuideScreen(
     modifier: Modifier = Modifier,
-    viewModel: CalendarAccountGuideViewModel = hiltViewModel(),
+    calendarAccountViewModel: CalendarAccountViewModel,
     onCompleteClick: () -> Unit = {},
 ) {
-    val uiState by viewModel.calendarAccountUiState.collectAsState()
+    val uiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
     CalendarAccountGuideScreen(
         modifier = modifier,
         uiState = uiState,
-        onAccountChange = {
-            with(viewModel) { fetchCalendars(it) }
-        },
-        onTargetCalendarChange = {
-            with(viewModel) { updateTargetCalendar(it) }
-        },
+        onAccountChange = calendarAccountViewModel::fetchCalendars,
+        onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onCompleteClick = onCompleteClick,
     )
 }

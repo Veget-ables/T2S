@@ -32,34 +32,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.feature.schedule.R
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun ScheduleInputScreen(
     modifier: Modifier = Modifier,
     initialInput: String,
-    viewModel: ScheduleInputViewModel = hiltViewModel(),
+    calendarAccountViewModel: CalendarAccountViewModel,
     onGenerateClick: (input: String) -> Unit = {},
 ) {
-    val calendarAccountUiState by viewModel.calendarAccountUiState.collectAsState()
+    val calendarAccountUiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
 
     ScheduleInputScreen(
         modifier = modifier,
         uiState = calendarAccountUiState,
         initialInput = initialInput,
-        onAccountChange = {
-            with(viewModel) { fetchCalendars(it) }
-        },
-        onTargetCalendarChange = {
-            with(viewModel) { updateTargetCalendar(it) }
-        },
+        onAccountChange = calendarAccountViewModel::fetchCalendars,
+        onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onGenerateClick = onGenerateClick,
     )
 }

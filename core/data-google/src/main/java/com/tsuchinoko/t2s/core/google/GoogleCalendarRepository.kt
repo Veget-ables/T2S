@@ -1,6 +1,7 @@
 package com.tsuchinoko.t2s.core.google
 
 import com.tsuchinoko.core.database.dao.CalendarDao
+import com.tsuchinoko.core.database.entity.convertToEntity
 import com.tsuchinoko.core.database.entity.convertToModel
 import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.model.Calendar
@@ -15,12 +16,16 @@ class GoogleCalendarRepository @Inject constructor(
     private val calendarDao: CalendarDao,
     private val networkSource: GoogleCalendarDataSource,
 ) : CalendarRepository {
-    override fun getAccountCalendars(): Flow<List<Calendar>> = calendarDao.getAll()
-        .map {
+    override fun getAccountCalendars(): Flow<List<Calendar>> =
+        calendarDao.getAll().map {
             it.map { it.convertToModel() }
         }
 
-    override suspend fun fetchCalendars(): List<Calendar> = networkSource.getCalendars()
+    override suspend fun fetchCalendars() {
+        val calendars = networkSource.getCalendars()
+        val entities = calendars.map { it.convertToEntity() }
+        calendarDao.insertAll(entities)
+    }
 
     override suspend fun setTargetCalendar(calendarId: CalendarId) {
         // TODO

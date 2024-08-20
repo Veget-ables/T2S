@@ -12,3 +12,5 @@ data class CalendarEntity(
 )
 
 fun CalendarEntity.convertToModel(): Calendar = Calendar(id = CalendarId(id), title = title)
+
+fun Calendar.convertToEntity(): CalendarEntity = CalendarEntity(id = id.value, title = title)

@@ -29,33 +29,32 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
+import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.R
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
+import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import com.tsuchinoko.t2s.feature.schedule.account.fakeUiStateAccountSelected
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
-    viewModel: ScheduleGenViewModel = hiltViewModel(),
+    calendarAccountViewModel: CalendarAccountViewModel,
+    scheduleGenViewModel: ScheduleGenViewModel = hiltViewModel(),
 ) {
-    val calendarAccountUiState by viewModel.calendarAccountUiState.collectAsState()
-    val scheduleGenUiState by viewModel.scheduleGenUiState.collectAsState()
+    val calendarAccountUiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
+    val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
 
     ScheduleGenScreen(
         modifier = modifier,
         calendarAccountUiState = calendarAccountUiState,
         scheduleGenUiState = scheduleGenUiState,
-        onAccountChange = {
-            with(viewModel) { fetchCalendars(it) }
-        },
-        onTargetCalendarChange = {
-            with(viewModel) { updateTargetCalendar(it) }
-        },
-        onEventChange = viewModel::updateInputEvent,
-        onRegistryClick = viewModel::registryEvents,
+        onAccountChange = calendarAccountViewModel::fetchCalendars,
+        onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
+        onEventChange = scheduleGenViewModel::updateInputEvent,
+        onRegistryClick = scheduleGenViewModel::registryEvents,
     )
 }
 
@@ -67,10 +66,11 @@ private fun ScheduleGenScreen(
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
-    onRegistryClick: () -> Unit = {},
+    onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val generatedEventsUiState = scheduleGenUiState.generatedEventsUiState
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -112,9 +112,16 @@ private fun ScheduleGenScreen(
                         }
                     },
                     floatingActionButton = {
-                        if (scheduleGenUiState.generatedEventsUiState is GeneratedEventsUiState.Generated) {
+                        if (generatedEventsUiState is GeneratedEventsUiState.Generated) {
                             FloatingActionButton(
-                                onClick = onRegistryClick,
+                                onClick = {
+                                    if (calendarAccountUiState is CalendarAccountUiState.AccountSelected) {
+                                        onRegistryClick(
+                                            calendarAccountUiState.targetCalendar.id,
+                                            generatedEventsUiState.events,
+                                        )
+                                    }
+                                },
                                 containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                             ) {
@@ -136,7 +143,7 @@ private fun ScheduleGenScreen(
                         state = rememberScrollState(),
                         orientation = Orientation.Vertical,
                     ),
-                uiState = scheduleGenUiState.generatedEventsUiState,
+                uiState = generatedEventsUiState,
                 onEventChange = onEventChange,
             )
         }
