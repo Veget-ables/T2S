@@ -8,12 +8,10 @@ import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,19 +21,18 @@ internal class CalendarAccountViewModel @Inject constructor(
     private val calendarRepository: CalendarRepository,
     private val getAccountCalendarsUseCase: GetAccountCalendarsUseCase,
 ) : ViewModel() {
-    private val _calendarAccountUiState: MutableStateFlow<CalendarAccountUiState> =
-        MutableStateFlow(CalendarAccountUiState.Initial)
-
     val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         combine(
             accountRepository.getAccount(),
             calendarRepository.getAccountCalendars(),
-        ) { account, calendars ->
+            calendarRepository.getTargetCalendarId(),
+        ) { account, calendars, calendarId ->
             if (account != null && calendars.isNotEmpty()) {
+                val targetCalendar = if (calendarId == null) calendars[0] else calendars.first { it.id == calendarId }
                 CalendarAccountUiState.AccountSelected(
                     account = account,
                     calendars = calendars,
-                    targetCalendar = calendars[0],
+                    targetCalendar = targetCalendar,
                 )
             } else {
                 CalendarAccountUiState.Initial
@@ -53,14 +50,8 @@ internal class CalendarAccountViewModel @Inject constructor(
     }
 
     fun updateTargetCalendar(calendar: Calendar) {
-        val uiState = _calendarAccountUiState.value
-        if (uiState is CalendarAccountUiState.AccountSelected) {
-            viewModelScope.launch {
-                calendarRepository.setTargetCalendar(calendar.id)
-                _calendarAccountUiState.update {
-                    uiState.copy(targetCalendar = calendar)
-                }
-            }
+        viewModelScope.launch {
+            calendarRepository.setTargetCalendar(calendar)
         }
     }
 }
