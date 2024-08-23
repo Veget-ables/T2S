@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
@@ -148,11 +149,17 @@ private fun ScheduleInputScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Text(
+                    text = "予定に変換するテキストを入力してください",
+                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it },
                     modifier = Modifier
-                        .padding(start = 36.dp, top = 36.dp, end = 36.dp)
+                        .padding(start = 36.dp, top = 16.dp, end = 36.dp)
                         .weight(1f)
                         .fillMaxWidth(),
                 )
