@@ -4,10 +4,12 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -16,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -135,17 +138,29 @@ private fun ScheduleGenScreen(
                 )
             },
         ) { paddingValues ->
-            ScheduleGenContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .scrollable(
-                        state = rememberScrollState(),
-                        orientation = Orientation.Vertical,
-                    ),
-                uiState = generatedEventsUiState,
-                onEventChange = onEventChange,
-            )
+            Column(Modifier.padding(paddingValues)) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, top = 24.dp, end = 24.dp),
+                ) {
+                    Text(
+                        text = scheduleGenUiState.prompt,
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    )
+                }
+
+                ScheduleGenContent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .scrollable(
+                            state = rememberScrollState(),
+                            orientation = Orientation.Vertical,
+                        ),
+                    uiState = generatedEventsUiState,
+                    onEventChange = onEventChange,
+                )
+            }
         }
     }
 }
@@ -198,6 +213,7 @@ fun ScheduleGenScreenPreview_Generated() {
         ScheduleGenScreen(
             calendarAccountUiState = CalendarAccountUiState.Initial,
             scheduleGenUiState = ScheduleGenUiState(
+                prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
             ),
         )

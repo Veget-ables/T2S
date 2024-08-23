@@ -35,7 +35,10 @@ internal class ScheduleGenViewModel @Inject constructor(
 
     private fun sendPrompt(prompt: String) {
         _scheduleGenUiState.update {
-            it.copy(generatedEventsUiState = GeneratedEventsUiState.Loading)
+            it.copy(
+                prompt = prompt,
+                generatedEventsUiState = GeneratedEventsUiState.Loading,
+            )
         }
 
         viewModelScope.launch {
