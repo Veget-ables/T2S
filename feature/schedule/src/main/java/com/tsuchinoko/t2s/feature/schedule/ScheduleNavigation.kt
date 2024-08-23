@@ -73,7 +73,12 @@ fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
                 controller.getBackStackEntry(ScheduleRoute)
             }
             val calendarAccountViewModel = hiltViewModel<CalendarAccountViewModel>(routeEntry)
-            ScheduleGenScreen(calendarAccountViewModel = calendarAccountViewModel)
+            ScheduleGenScreen(
+                calendarAccountViewModel = calendarAccountViewModel,
+                onInputEditClick = {
+                    controller.popBackStack()
+                },
+            )
         }
     }
 }

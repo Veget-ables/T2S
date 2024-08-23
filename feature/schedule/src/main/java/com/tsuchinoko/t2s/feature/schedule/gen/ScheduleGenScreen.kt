@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -18,7 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,6 +44,7 @@ internal fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     calendarAccountViewModel: CalendarAccountViewModel,
     scheduleGenViewModel: ScheduleGenViewModel = hiltViewModel(),
+    onInputEditClick: () -> Unit = {},
 ) {
     val calendarAccountUiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
     val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
@@ -56,6 +55,7 @@ internal fun ScheduleGenScreen(
         scheduleGenUiState = scheduleGenUiState,
         onAccountChange = calendarAccountViewModel::fetchCalendars,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
+        onInputEditClick = onInputEditClick,
         onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
     )
@@ -68,6 +68,7 @@ private fun ScheduleGenScreen(
     scheduleGenUiState: ScheduleGenUiState,
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
+    onInputEditClick: () -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
@@ -103,16 +104,6 @@ private fun ScheduleGenScreen(
                                 contentDescription = "アカウントを設定",
                             )
                         }
-                        IconButton(
-                            onClick = {
-                                scope.launch { drawerState.open() }
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.edit_text),
-                                contentDescription = "テキストを入力",
-                            )
-                        }
                     },
                     floatingActionButton = {
                         if (generatedEventsUiState is GeneratedEventsUiState.Generated) {
@@ -139,16 +130,13 @@ private fun ScheduleGenScreen(
             },
         ) { paddingValues ->
             Column(Modifier.padding(paddingValues)) {
-                Card(
+                ScheduleInputCard(
+                    text = scheduleGenUiState.prompt,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                ) {
-                    Text(
-                        text = scheduleGenUiState.prompt,
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    )
-                }
+                    onEditClick = onInputEditClick,
+                )
 
                 ScheduleGenContent(
                     modifier = Modifier
