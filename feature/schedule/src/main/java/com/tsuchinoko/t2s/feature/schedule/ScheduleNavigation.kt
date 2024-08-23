@@ -6,11 +6,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import androidx.navigation.toRoute
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountGuideScreen
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import com.tsuchinoko.t2s.feature.schedule.gen.ScheduleGenScreen
-import com.tsuchinoko.t2s.feature.schedule.input.ScheduleInputGuideScreen
 import com.tsuchinoko.t2s.feature.schedule.input.ScheduleInputScreen
 import kotlinx.serialization.Serializable
 
@@ -21,10 +19,7 @@ object ScheduleRoute
 object CalendarAccountGuide
 
 @Serializable
-private object ScheduleInputGuide
-
-@Serializable
-data class ScheduleInput(val input: String)
+data object ScheduleInput
 
 @Serializable
 internal data class ScheduleGen(val prompt: String)
@@ -39,28 +34,17 @@ fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
             CalendarAccountGuideScreen(
                 calendarAccountViewModel = calendarAccountViewModel,
                 onCompleteClick = {
-                    controller.navigate(ScheduleInputGuide)
-                },
-            )
-        }
-
-        composable<ScheduleInputGuide> {
-            ScheduleInputGuideScreen(
-                onInputClick = { input ->
-                    controller.navigate(ScheduleInput(input))
+                    controller.navigate(ScheduleInput)
                 },
             )
         }
 
         composable<ScheduleInput> { backStackEntry ->
-            val args = backStackEntry.toRoute<ScheduleInput>()
-
             val routeEntry = remember(backStackEntry) {
                 controller.getBackStackEntry(ScheduleRoute)
             }
             val calendarAccountViewModel = hiltViewModel<CalendarAccountViewModel>(routeEntry)
             ScheduleInputScreen(
-                initialInput = args.input,
                 calendarAccountViewModel = calendarAccountViewModel,
                 onGenerateClick = { input ->
                     controller.navigate(ScheduleGen(input))

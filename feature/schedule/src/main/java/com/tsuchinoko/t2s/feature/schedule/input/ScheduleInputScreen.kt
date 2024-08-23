@@ -30,7 +30,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,7 +45,6 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun ScheduleInputScreen(
     modifier: Modifier = Modifier,
-    initialInput: String,
     calendarAccountViewModel: CalendarAccountViewModel,
     onGenerateClick: (input: String) -> Unit = {},
 ) {
@@ -55,7 +53,6 @@ internal fun ScheduleInputScreen(
     ScheduleInputScreen(
         modifier = modifier,
         uiState = calendarAccountUiState,
-        initialInput = initialInput,
         onAccountChange = calendarAccountViewModel::fetchCalendars,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onGenerateClick = onGenerateClick,
@@ -66,12 +63,11 @@ internal fun ScheduleInputScreen(
 private fun ScheduleInputScreen(
     modifier: Modifier = Modifier,
     uiState: CalendarAccountUiState,
-    initialInput: String,
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onGenerateClick: (input: String) -> Unit = {},
 ) {
-    var input by rememberSaveable { mutableStateOf(initialInput) }
+    var input by rememberSaveable { mutableStateOf("") }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -102,18 +98,6 @@ private fun ScheduleInputScreen(
                             Icon(
                                 painter = painterResource(R.drawable.perm_contact_calendar),
                                 contentDescription = "アカウントを設定",
-                            )
-                        }
-
-                        val clipboardManager = LocalClipboardManager.current
-                        IconButton(
-                            onClick = {
-                                input += clipboardManager.getText()?.text ?: ""
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.assignment),
-                                contentDescription = "クリップボードから貼り付け",
                             )
                         }
 
@@ -188,7 +172,6 @@ fun ScheduleInputScreenPreview() {
     T2STheme {
         ScheduleInputScreen(
             uiState = CalendarAccountUiState.Initial,
-            initialInput = "",
         )
     }
 }
