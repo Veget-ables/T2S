@@ -27,7 +27,7 @@ private object ScheduleInputGuide
 data class ScheduleInput(val input: String)
 
 @Serializable
-private object ScheduleGen
+internal data class ScheduleGen(val prompt: String)
 
 fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
     navigation<ScheduleRoute>(startDestination = CalendarAccountGuide) {
@@ -62,8 +62,8 @@ fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
             ScheduleInputScreen(
                 initialInput = args.input,
                 calendarAccountViewModel = calendarAccountViewModel,
-                onGenerateClick = {
-                    controller.navigate(ScheduleGen)
+                onGenerateClick = { input ->
+                    controller.navigate(ScheduleGen(input))
                 },
             )
         }
