@@ -1,22 +1,24 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +41,8 @@ import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import com.tsuchinoko.t2s.feature.schedule.account.fakeUiStateAccountSelected
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Composable
 internal fun ScheduleGenScreen(
@@ -129,55 +134,55 @@ private fun ScheduleGenScreen(
                 )
             },
         ) { paddingValues ->
-            Column(Modifier.padding(paddingValues)) {
-                ScheduleInputCard(
-                    text = scheduleGenUiState.prompt,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                    onEditClick = onInputEditClick,
-                )
+            LazyColumn(
+                modifier = Modifier.padding(paddingValues),
+            ) {
+                item {
+                    ScheduleInputCard(
+                        text = scheduleGenUiState.prompt,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, top = 24.dp, end = 24.dp),
+                        onEditClick = onInputEditClick,
+                    )
 
-                ScheduleGenContent(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .scrollable(
-                            state = rememberScrollState(),
-                            orientation = Orientation.Vertical,
-                        ),
-                    uiState = generatedEventsUiState,
-                    onEventChange = onEventChange,
-                )
-            }
-        }
-    }
-}
+                    Spacer(Modifier.height(36.dp))
+                }
 
-@Composable
-private fun ScheduleGenContent(
-    modifier: Modifier = Modifier,
-    uiState: GeneratedEventsUiState,
-    onEventChange: (ScheduleEvent) -> Unit = {},
-) {
-    Column(
-        modifier = modifier,
-    ) {
-        when (uiState) {
-            GeneratedEventsUiState.Loading -> {
-            }
+                when (generatedEventsUiState) {
+                    GeneratedEventsUiState.Loading -> {
+                        item {
+                            CircularProgressIndicator()
+                        }
+                    }
 
-            is GeneratedEventsUiState.Generated -> {
-                GeneratedEvents(
-                    uiState = uiState,
-                    modifier = Modifier
-                        .weight(0.8f)
-                        .fillMaxSize()
-                        .padding(start = 8.dp, top = 16.dp, end = 8.dp),
-                    onEventChange = onEventChange,
-                )
-            }
+                    is GeneratedEventsUiState.Generated -> {
+                        items(
+                            items = generatedEventsUiState.events,
+                            key = { it.id },
+                        ) { event ->
+                            GeneratedEvent(
+                                event = event,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                                onEventChange = onEventChange,
+                            )
+                            Spacer(Modifier.height(8.dp))
+                        }
+                    }
 
-            is GeneratedEventsUiState.Error -> {
+                    is GeneratedEventsUiState.Error -> {
+                        item {
+                            Text(
+                                text = generatedEventsUiState.message,
+                                textAlign = TextAlign.Start,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(16.dp),
+                            )
+                        }
+                    }
+                }
             }
         }
     }
