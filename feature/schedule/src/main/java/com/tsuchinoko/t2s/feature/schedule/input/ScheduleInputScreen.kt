@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,6 +70,8 @@ private fun ScheduleInputScreen(
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onGenerateClick: (input: String) -> Unit = {},
 ) {
+    var input by rememberSaveable { mutableStateOf(initialInput) }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
@@ -101,8 +104,11 @@ private fun ScheduleInputScreen(
                             )
                         }
 
+                        val clipboardManager = LocalClipboardManager.current
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                input += clipboardManager.getText()?.text ?: ""
+                            },
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.assignment),
@@ -122,7 +128,9 @@ private fun ScheduleInputScreen(
                         Spacer(Modifier.weight(1f))
 
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                input = ""
+                            },
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.delete),
@@ -140,7 +148,6 @@ private fun ScheduleInputScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                var input by rememberSaveable { mutableStateOf(initialInput) }
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it },
