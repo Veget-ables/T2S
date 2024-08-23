@@ -1,6 +1,7 @@
 package com.tsuchinoko.t2s.feature.schedule.account
 
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -115,10 +116,16 @@ private fun AccountCalendars(
 ) {
     LazyColumn(modifier = modifier) {
         items(calendars) { calendar ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onCalendarChange(calendar) }
+                    .padding(16.dp),
+            ) {
                 RadioButton(
                     selected = calendar == selectedCalendar,
-                    onClick = { onCalendarChange(calendar) },
+                    onClick = null,
                 )
                 Text(calendar.title)
             }
