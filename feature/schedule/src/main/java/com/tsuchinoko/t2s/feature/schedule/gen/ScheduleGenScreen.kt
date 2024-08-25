@@ -41,8 +41,6 @@ import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import com.tsuchinoko.t2s.feature.schedule.account.fakeUiStateAccountSelected
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Composable
 internal fun ScheduleGenScreen(

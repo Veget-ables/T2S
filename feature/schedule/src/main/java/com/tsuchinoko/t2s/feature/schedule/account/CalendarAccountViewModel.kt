@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsuchinoko.t2s.core.data.AccountRepository
 import com.tsuchinoko.t2s.core.data.CalendarRepository
-import com.tsuchinoko.t2s.core.domain.GetAccountCalendarsUseCase
+import com.tsuchinoko.t2s.core.domain.FetchAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 internal class CalendarAccountViewModel @Inject constructor(
     accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
-    private val getAccountCalendarsUseCase: GetAccountCalendarsUseCase,
+    private val fetchAccountCalendarsUseCase: FetchAccountCalendarsUseCase,
 ) : ViewModel() {
     val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         combine(
@@ -45,7 +45,7 @@ internal class CalendarAccountViewModel @Inject constructor(
 
     fun fetchCalendars(account: Account) {
         viewModelScope.launch {
-            getAccountCalendarsUseCase(account)
+            fetchAccountCalendarsUseCase(account)
         }
     }
 

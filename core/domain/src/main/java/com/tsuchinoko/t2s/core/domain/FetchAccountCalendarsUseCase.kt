@@ -5,7 +5,7 @@ import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.model.Account
 import javax.inject.Inject
 
-class GetAccountCalendarsUseCase @Inject constructor(
+class FetchAccountCalendarsUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
 ) {
