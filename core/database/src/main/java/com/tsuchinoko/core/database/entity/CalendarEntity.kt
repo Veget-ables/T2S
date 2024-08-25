@@ -1,16 +1,24 @@
 package com.tsuchinoko.core.database.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
 
-@Entity
+@Entity(primaryKeys = ["id", "accountId"])
 data class CalendarEntity(
-    @PrimaryKey val id: String,
+    val id: String,
+    val accountId: String,
     val title: String,
 )
 
-fun CalendarEntity.convertToModel(): Calendar = Calendar(id = CalendarId(id), title = title)
+fun CalendarEntity.convertToModel(): Calendar = Calendar(
+    id = CalendarId(id),
+    title = title,
+)
 
-fun Calendar.convertToEntity(): CalendarEntity = CalendarEntity(id = id.value, title = title)
+fun Calendar.convertToEntity(account: Account): CalendarEntity = CalendarEntity(
+    id = id.value,
+    accountId = account.id.value,
+    title = title,
+)

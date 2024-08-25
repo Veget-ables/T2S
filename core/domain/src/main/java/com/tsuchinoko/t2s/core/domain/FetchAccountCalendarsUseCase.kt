@@ -11,6 +11,6 @@ class FetchAccountCalendarsUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(account: Account) {
         accountRepository.setAccount(account)
-        calendarRepository.fetchCalendars()
+        calendarRepository.fetchCalendars(account)
     }
 }

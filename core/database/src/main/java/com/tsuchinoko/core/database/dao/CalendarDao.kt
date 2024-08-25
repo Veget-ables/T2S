@@ -12,6 +12,6 @@ interface CalendarDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: List<CalendarEntity>)
 
-    @Query("SELECT * FROM CalendarEntity")
-    fun getAll(): Flow<List<CalendarEntity>>
+    @Query("SELECT * FROM CalendarEntity WHERE accountId = :accountId")
+    fun get(accountId: String): Flow<List<CalendarEntity>>
 }
