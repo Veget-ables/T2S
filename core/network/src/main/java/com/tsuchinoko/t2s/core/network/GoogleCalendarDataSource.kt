@@ -1,10 +1,10 @@
 package com.tsuchinoko.t2s.core.network
 
-import android.content.Intent
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.calendar.model.CalendarList
 import com.tsuchinok.t2s.core.common.Dispatcher
 import com.tsuchinok.t2s.core.common.T2SDispatchers
+import com.tsuchinok.t2s.core.common.error.RecoverableIntentError
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
@@ -22,7 +22,7 @@ class GoogleCalendarDataSource @Inject constructor(
                 val calendars = service.calendarList().list().execute()
                 return@withContext calendars.convert()
             } catch (e: UserRecoverableAuthIOException) {
-                throw GoogleServiceRecoverableError(
+                throw RecoverableIntentError(
                     message = e.message,
                     intent = e.intent,
                 )
@@ -40,18 +40,13 @@ class GoogleCalendarDataSource @Inject constructor(
                     .execute()
             }
         } catch (e: UserRecoverableAuthIOException) {
-            throw GoogleServiceRecoverableError(
+            throw RecoverableIntentError(
                 message = e.message,
                 intent = e.intent,
             )
         }
     }
 }
-
-data class GoogleServiceRecoverableError(
-    override val message: String?,
-    val intent: Intent,
-) : Exception()
 
 private fun CalendarList.convert(): List<Calendar> = this.items.map { item ->
     Calendar(
