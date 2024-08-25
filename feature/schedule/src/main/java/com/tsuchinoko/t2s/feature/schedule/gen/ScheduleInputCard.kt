@@ -1,7 +1,9 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +13,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,20 +37,42 @@ internal fun ScheduleInputCard(
         modifier = modifier
             .animateContentSize(),
     ) {
-        OutlinedButton(
-            onClick = onEditClick,
+        Row(
             modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                .align(Alignment.End),
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(R.drawable.edit_text),
-                contentDescription = null,
-            )
+            OutlinedButton(
+                onClick = { isExpanded = !isExpanded },
+            ) {
+                Icon(
+                    painter = painterResource(if (isExpanded) R.drawable.collapse else R.drawable.expand),
+                    contentDescription = null,
+                )
 
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
 
-            Text(text = "編集")
+                Text(if (isExpanded) "縮小" else "展開")
+            }
+
+            OutlinedButton(
+                onClick = onEditClick,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.edit_text),
+                    contentDescription = null,
+                )
+
+                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+
+                Text(text = "編集")
+            }
         }
 
         if (isExpanded) {
@@ -59,28 +82,14 @@ internal fun ScheduleInputCard(
                     .fillMaxWidth()
                     .padding(16.dp),
             )
-
-            TextButton(
-                onClick = { isExpanded = false },
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            ) {
-                Text("とじる")
-            }
         } else {
             Text(
                 text = text,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                maxLines = 2,
+                maxLines = 3,
             )
-
-            TextButton(
-                onClick = { isExpanded = true },
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            ) {
-                Text("もっと")
-            }
         }
     }
 }
