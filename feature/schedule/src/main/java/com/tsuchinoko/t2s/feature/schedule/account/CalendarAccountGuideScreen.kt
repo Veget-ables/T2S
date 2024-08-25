@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,9 +47,11 @@ private fun CalendarAccountGuideScreen(
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onCompleteClick: () -> Unit = {},
 ) {
-    Surface(modifier = modifier) {
+    Scaffold(modifier = modifier) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
