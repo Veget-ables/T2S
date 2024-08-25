@@ -127,7 +127,10 @@ private fun AccountCalendars(
                     selected = calendar == selectedCalendar,
                     onClick = null,
                 )
-                Text(calendar.title)
+                Text(
+                    text = calendar.title,
+                    modifier = Modifier.padding(start = 16.dp),
+                )
             }
         }
     }
