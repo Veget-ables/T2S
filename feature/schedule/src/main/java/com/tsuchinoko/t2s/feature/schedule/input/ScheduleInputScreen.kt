@@ -84,7 +84,7 @@ private fun ScheduleInputScreen(
         },
     ) {
         Scaffold(
-            modifier = modifier.padding(),
+            modifier = modifier,
             topBar = {
             },
             bottomBar = {
