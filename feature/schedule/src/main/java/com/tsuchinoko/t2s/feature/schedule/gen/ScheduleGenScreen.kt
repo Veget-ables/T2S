@@ -51,7 +51,7 @@ internal fun ScheduleGenScreen(
         modifier = modifier,
         calendarAccountUiState = calendarAccountUiState,
         scheduleGenUiState = scheduleGenUiState,
-        onAccountChange = calendarAccountViewModel::fetchCalendars,
+        onAccountChange = calendarAccountViewModel::updateAccount,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onInputEditClick = onInputEditClick,
         onEventChange = scheduleGenViewModel::updateInputEvent,

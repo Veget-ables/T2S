@@ -5,35 +5,41 @@ import androidx.lifecycle.viewModelScope
 import com.tsuchinok.t2s.core.common.error.RecoverableIntentError
 import com.tsuchinoko.t2s.core.data.AccountRepository
 import com.tsuchinoko.t2s.core.data.CalendarRepository
-import com.tsuchinoko.t2s.core.domain.FetchAccountCalendarsUseCase
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
-import com.tsuchinoko.t2s.core.ui.ObservableResult
 import com.tsuchinoko.t2s.core.ui.Result
-import com.tsuchinoko.t2s.core.ui.collect
 import com.tsuchinoko.t2s.core.ui.resultFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class CalendarAccountViewModel @Inject constructor(
-    accountRepository: AccountRepository,
+    private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
-    private val fetchAccountCalendarsUseCase: FetchAccountCalendarsUseCase,
 ) : ViewModel() {
-    private val fetchAccountCalendarsResult = ObservableResult<Unit>()
+    private val fetchAccountCalendarsResult = accountRepository
+        .getAccount()
+        .flatMapLatest { account ->
+            resultFlow {
+                if (account == null) return@resultFlow
+                calendarRepository.fetchCalendars(account)
+            }
+        }
 
     val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         combine(
             accountRepository.getAccount(),
             calendarRepository.getAccountCalendars(),
             calendarRepository.getTargetCalendarId(),
-            fetchAccountCalendarsResult.state,
+            fetchAccountCalendarsResult,
         ) { account, calendars, calendarId, result ->
             when {
                 result is Result.Loading -> {
@@ -69,11 +75,9 @@ internal class CalendarAccountViewModel @Inject constructor(
             CalendarAccountUiState.Initial,
         )
 
-    fun fetchCalendars(account: Account) {
+    fun updateAccount(account: Account) {
         viewModelScope.launch {
-            resultFlow {
-                fetchAccountCalendarsUseCase(account)
-            }.collect(fetchAccountCalendarsResult)
+            accountRepository.setAccount(account)
         }
     }
 

@@ -9,7 +9,7 @@ import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.network.GoogleAccountDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class GoogleAccountRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAccount(): Flow<Account?> = dataStore.getTargetAccountId()
-        .flatMapMerge { id ->
+        .flatMapLatest { id ->
             if (id == null) {
                 flow { emit(null) }
             } else {
@@ -33,8 +33,8 @@ class GoogleAccountRepository @Inject constructor(
         }
 
     override suspend fun setAccount(account: Account) {
+        networkSource.setAccount(account)
         accountDao.insert(account.convertToEntity())
         dataStore.setTargetAccount(account)
-        networkSource.setAccount(account)
     }
 }

@@ -12,7 +12,7 @@ import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.core.network.GoogleCalendarDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -25,7 +25,7 @@ class GoogleCalendarRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAccountCalendars(): Flow<List<Calendar>> = dataStore.getTargetAccountId()
-        .flatMapMerge { accountId ->
+        .flatMapLatest { accountId ->
             if (accountId == null) {
                 flow { emit(emptyList()) }
             } else {

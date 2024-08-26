@@ -33,7 +33,7 @@ internal fun CalendarAccountGuideScreen(
     CalendarAccountGuideScreen(
         modifier = modifier,
         uiState = uiState,
-        onAccountChange = calendarAccountViewModel::fetchCalendars,
+        onAccountChange = calendarAccountViewModel::updateAccount,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onCompleteClick = onCompleteClick,
     )

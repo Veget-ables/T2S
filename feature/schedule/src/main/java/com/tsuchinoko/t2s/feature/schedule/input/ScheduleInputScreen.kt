@@ -53,7 +53,7 @@ internal fun ScheduleInputScreen(
     ScheduleInputScreen(
         modifier = modifier,
         uiState = calendarAccountUiState,
-        onAccountChange = calendarAccountViewModel::fetchCalendars,
+        onAccountChange = calendarAccountViewModel::updateAccount,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onGenerateClick = onGenerateClick,
     )
