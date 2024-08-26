@@ -1,6 +1,8 @@
 package com.tsuchinoko.t2s.feature.schedule.account
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +18,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +44,7 @@ internal sealed interface CalendarAccountUiState {
     ) : CalendarAccountUiState
 
     data class Error(val message: String) : CalendarAccountUiState
+    data class RecoverableIntentError(val intent: Intent) : CalendarAccountUiState
 }
 
 @Composable
@@ -46,9 +54,22 @@ internal fun CalendarAccountSelection(
     onAccountChange: (account: Account) -> Unit = {},
     onCalendarChange: (calendar: Calendar) -> Unit = {},
 ) {
+    var selectedAccount: Account? by remember {
+        mutableStateOf(null)
+    }
+
     val launcher =
         rememberLauncherForActivityResult(ChooseAccountContract()) { account ->
             account?.let {
+                onAccountChange(it)
+                selectedAccount = it
+            }
+        }
+
+    val recoverableLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.resultCode
+            selectedAccount?.let {
                 onAccountChange(it)
             }
         }
@@ -102,6 +123,12 @@ internal fun CalendarAccountSelection(
 
             is CalendarAccountUiState.Error -> {
                 Text(uiState.message)
+            }
+
+            is CalendarAccountUiState.RecoverableIntentError -> {
+                LaunchedEffect(uiState) {
+                    recoverableLauncher.launch(uiState.intent)
+                }
             }
         }
     }

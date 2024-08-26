@@ -33,10 +33,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-// TODO
-//
-//    private var mService: Calendar? = null
 //
 //    private fun chooseCalendar() {
 //        if (isGooglePlayServicesAvailable()) {
@@ -88,44 +84,6 @@ class MainActivity : ComponentActivity() {
 //            }
 //        }
 //    }
-//
-//    private fun insertEvent(scheduleEvent: ScheduleEvent) {
-//        val (startDateTime, endDateTime) = if (scheduleEvent.isAllDay) {
-//            val startDateTime = EventDateTime()
-//                .setDate(
-//                    DateTime(scheduleEvent.start.toLocalDate().toString())
-//                )
-//            startDateTime to startDateTime
-//        } else {
-//            val startDateTime = scheduleEvent.start.toEventDateTime()
-//            val endDateTime = scheduleEvent.end.toEventDateTime()
-//            startDateTime to endDateTime
-//        }
-//
-//        val event = Event()
-//            .setStart(startDateTime)
-//            .setEnd(endDateTime)
-//            .setSummary(scheduleEvent.title)
-//
-//        val resultEvent = mService!!
-//            .events()
-//            .insert("primary", event)
-//            .execute()
-//        System.out.printf("Event created: %s\n", resultEvent.htmlLink)
-//    }
-// }
-//
-// @SuppressLint("SimpleDateFormat")
-// private fun LocalDateTime.toEventDateTime(): EventDateTime {
-//    val zonedDateTime = atZone(ZoneId.systemDefault())
-//    val date = Date.from(zonedDateTime.toInstant())
-//    return EventDateTime()
-//        .setDateTime(
-//            DateTime(
-//                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(date)
-//            )
-//        )
-// }
 //
 // object Constants {
 //    const val REQUEST_AUTHORIZATION = 1001
