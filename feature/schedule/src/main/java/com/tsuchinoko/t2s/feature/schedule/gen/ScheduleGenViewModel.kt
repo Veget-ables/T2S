@@ -88,4 +88,10 @@ internal class ScheduleGenViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateDisplayType(displayType: DisplayType) {
+        _scheduleGenUiState.update {
+            it.copy(displayType = displayType)
+        }
+    }
 }

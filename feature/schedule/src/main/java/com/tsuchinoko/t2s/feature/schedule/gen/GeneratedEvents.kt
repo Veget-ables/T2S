@@ -1,15 +1,20 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -27,8 +32,10 @@ internal sealed interface GeneratedEventsUiState {
     data class Error(val message: String) : GeneratedEventsUiState
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 internal fun LazyListScope.generatedEvents(
     uiState: GeneratedEventsUiState,
+    displayType: DisplayType,
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     when (uiState) {
@@ -47,22 +54,45 @@ internal fun LazyListScope.generatedEvents(
         }
 
         is GeneratedEventsUiState.Generated -> {
-            items(
-                items = uiState.events,
-                key = { it.id },
-            ) { event ->
-                GeneratedEvent(
-                    event = event,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .placeholder(visible = false),
-                    onEventChange = onEventChange,
-                )
-                Spacer(Modifier.height(8.dp))
+            val events = uiState.events
+            if (displayType == DisplayType.List) {
+                items(
+                    items = events,
+                    key = { it.id },
+                ) { event ->
+                    GeneratedEvent(
+                        event = event,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .placeholder(visible = false),
+                        onEventChange = onEventChange,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+            } else {
+                item {
+                    HorizontalUncontainedCarousel(
+                        state = rememberCarouselState { events.count() },
+                        modifier = Modifier
+                            .width(412.dp)
+                            .height(221.dp),
+                        itemWidth = 186.dp,
+                        itemSpacing = 8.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                    ) { i ->
+                        GeneratedEvent(
+                            event = events[i],
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .placeholder(visible = false),
+                            onEventChange = onEventChange,
+                        )
+                    }
+                }
             }
         }
-
         is GeneratedEventsUiState.Error -> {
             item {
                 Text(
@@ -91,11 +121,29 @@ private val skeletonEvents: List<ScheduleEvent> = run {
 
 @Preview
 @Composable
-fun GeneratedEventsPreview_Generated() {
+fun GeneratedEventsPreview_Generated_List() {
     T2STheme {
         Surface {
             LazyColumn {
-                generatedEvents(uiState = GeneratedEventsUiState.Generated(fakeEvents))
+                generatedEvents(
+                    uiState = GeneratedEventsUiState.Generated(fakeEvents),
+                    displayType = DisplayType.List,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun GeneratedEventsPreview_Generated_Carousel() {
+    T2STheme {
+        Surface {
+            LazyColumn {
+                generatedEvents(
+                    uiState = GeneratedEventsUiState.Generated(fakeEvents),
+                    displayType = DisplayType.Carousel,
+                )
             }
         }
     }
@@ -107,7 +155,10 @@ fun GeneratedEventsPreview_Error() {
     T2STheme {
         Surface {
             LazyColumn {
-                generatedEvents(uiState = GeneratedEventsUiState.Error("予定の生成に失敗しました"))
+                generatedEvents(
+                    uiState = GeneratedEventsUiState.Error("予定の生成に失敗しました"),
+                    displayType = DisplayType.Carousel,
+                )
             }
         }
     }

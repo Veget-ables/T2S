@@ -207,6 +207,7 @@ private fun ScheduleGenScreen(
 
                 generatedEvents(
                     uiState = generatedEventsUiState,
+                    displayType = scheduleGenUiState.displayType,
                     onEventChange = onEventChange,
                 )
             }
@@ -228,13 +229,30 @@ fun ScheduleGenScreenPreview_Initial() {
 
 @Preview
 @Composable
-fun ScheduleGenScreenPreview_Generated() {
+fun ScheduleGenScreenPreview_Generated_List() {
     T2STheme {
         ScheduleGenScreen(
             calendarAccountUiState = CalendarAccountUiState.Initial,
             scheduleGenUiState = ScheduleGenUiState(
                 prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
+                displayType = DisplayType.List,
+            ),
+            registryResultUiState = RegistryResultUiState.Standby,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ScheduleGenScreenPreview_Generated_Carousel() {
+    T2STheme {
+        ScheduleGenScreen(
+            calendarAccountUiState = CalendarAccountUiState.Initial,
+            scheduleGenUiState = ScheduleGenUiState(
+                prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
+                generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
+                displayType = DisplayType.Carousel,
             ),
             registryResultUiState = RegistryResultUiState.Standby,
         )
