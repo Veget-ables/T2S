@@ -171,6 +171,7 @@ fun ScheduleGenScreenPreview_Generated() {
             scheduleGenUiState = ScheduleGenUiState(
                 prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
+                eventsRegistryUiState = null,
             ),
         )
     }

@@ -8,6 +8,8 @@ import com.tsuchinoko.t2s.core.data.CalendarRepository
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
+import com.tsuchinoko.t2s.core.ui.Result
+import com.tsuchinoko.t2s.core.ui.resultFlow
 import com.tsuchinoko.t2s.feature.schedule.ScheduleGen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,36 +25,29 @@ internal class ScheduleGenViewModel @Inject constructor(
     private val calendarRepository: CalendarRepository,
     private val scheduleGenRepository: ScheduleGenRepository,
 ) : ViewModel() {
-
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
         MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
 
     init {
         val prompt = savedStateHandle.toRoute<ScheduleGen>().prompt
-        sendPrompt(prompt)
-    }
-
-    private fun sendPrompt(prompt: String) {
-        _scheduleGenUiState.update {
-            it.copy(
-                prompt = prompt,
-                generatedEventsUiState = GeneratedEventsUiState.Loading,
-            )
-        }
-
         viewModelScope.launch {
-            try {
-                val scheduleEvents = scheduleGenRepository.generate(prompt)
-                _scheduleGenUiState.update {
-                    it.copy(generatedEventsUiState = GeneratedEventsUiState.Generated(scheduleEvents))
+            resultFlow {
+                scheduleGenRepository.generate(prompt)
+            }.collect { result ->
+                val eventsUiState = when (result) {
+                    Result.Standby,
+                    Result.Loading,
+                    -> GeneratedEventsUiState.Loading
+                    is Result.Success -> GeneratedEventsUiState.Generated(result.data)
+                    is Result.Error -> {
+                        GeneratedEventsUiState.Error(result.exception.localizedMessage ?: "")
+                    }
                 }
-            } catch (e: Exception) {
                 _scheduleGenUiState.update {
                     it.copy(
-                        generatedEventsUiState = GeneratedEventsUiState.Error(
-                            e.localizedMessage ?: "",
-                        ),
+                        prompt = prompt,
+                        generatedEventsUiState = eventsUiState,
                     )
                 }
             }
@@ -74,10 +69,25 @@ internal class ScheduleGenViewModel @Inject constructor(
 
     fun registryEvents(calendarId: CalendarId, events: List<ScheduleEvent>) {
         viewModelScope.launch {
-            calendarRepository.registryEvents(
-                calendarId = calendarId,
-                events = events,
-            )
+            resultFlow {
+                calendarRepository.registryEvents(
+                    calendarId = calendarId,
+                    events = events,
+                )
+            }.collect { result ->
+                val uiState = when (result) {
+                    Result.Standby,
+                    Result.Loading,
+                    -> EventsRegistryUiState.Loading
+                    is Result.Success -> EventsRegistryUiState.Success
+                    is Result.Error -> {
+                        EventsRegistryUiState.Error(result.exception.localizedMessage ?: "")
+                    }
+                }
+                _scheduleGenUiState.update {
+                    it.copy(eventsRegistryUiState = uiState)
+                }
+            }
         }
     }
 }
