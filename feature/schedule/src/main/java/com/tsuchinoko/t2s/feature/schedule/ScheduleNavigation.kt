@@ -34,6 +34,7 @@ fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
             CalendarAccountGuideScreen(
                 calendarAccountViewModel = calendarAccountViewModel,
                 onCompleteClick = {
+                    controller.popBackStack()
                     controller.navigate(ScheduleInput)
                 },
             )

@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,13 +31,20 @@ internal fun CalendarAccountGuideScreen(
     onCompleteClick: () -> Unit = {},
 ) {
     val uiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
-    CalendarAccountGuideScreen(
-        modifier = modifier,
-        uiState = uiState,
-        onAccountChange = calendarAccountViewModel::updateAccount,
-        onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
-        onCompleteClick = onCompleteClick,
-    )
+    val shouldAccountGuide by calendarAccountViewModel.shouldAccountGuide.collectAsState()
+    if (shouldAccountGuide) {
+        CalendarAccountGuideScreen(
+            modifier = modifier,
+            uiState = uiState,
+            onAccountChange = calendarAccountViewModel::updateAccount,
+            onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
+            onCompleteClick = onCompleteClick,
+        )
+    } else {
+        LaunchedEffect(uiState) {
+            onCompleteClick()
+        }
+    }
 }
 
 @Composable

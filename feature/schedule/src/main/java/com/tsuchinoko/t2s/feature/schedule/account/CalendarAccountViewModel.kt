@@ -11,10 +11,14 @@ import com.tsuchinoko.t2s.core.ui.Result
 import com.tsuchinoko.t2s.core.ui.resultFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +29,9 @@ internal class CalendarAccountViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
 ) : ViewModel() {
+    private val _shouldAccountGuide: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    val shouldAccountGuide: StateFlow<Boolean> = _shouldAccountGuide.asStateFlow()
+
     private val fetchAccountCalendarsResult = accountRepository
         .getAccount()
         .flatMapLatest { account ->
@@ -74,6 +81,17 @@ internal class CalendarAccountViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000),
             CalendarAccountUiState.Initial,
         )
+
+    init {
+        viewModelScope.launch {
+            _shouldAccountGuide.value = accountRepository
+                .getAccount()
+                .map { account ->
+                    account == null
+                }
+                .first()
+        }
+    }
 
     fun updateAccount(account: Account) {
         viewModelScope.launch {
