@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
@@ -32,6 +35,7 @@ import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.AccountId
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
+import com.tsuchinoko.t2s.feature.schedule.R
 
 internal sealed interface CalendarAccountUiState {
     data object Initial : CalendarAccountUiState
@@ -78,6 +82,18 @@ internal fun CalendarAccountSelection(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Icon(
+            painter = painterResource(R.drawable.perm_contact_calendar),
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+        )
+
+        Text(
+            text = "登録先のアカウントとカレンダーを選択してください",
+            modifier = Modifier.padding(32.dp),
+            style = MaterialTheme.typography.headlineMedium,
+        )
+
         when (uiState) {
             CalendarAccountUiState.Initial -> {
                 TextButton(
