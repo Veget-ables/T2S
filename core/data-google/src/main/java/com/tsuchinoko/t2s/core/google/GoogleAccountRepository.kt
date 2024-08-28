@@ -28,12 +28,16 @@ class GoogleAccountRepository @Inject constructor(
             } else {
                 accountDao
                     .get(id.value)
-                    .map { it?.convertToModel() }
+                    .map { entity ->
+                        entity ?: return@map null
+                        entity.convertToModel().also { account ->
+                            networkSource.setAccount(account)
+                        }
+                    }
             }
         }
 
     override suspend fun setAccount(account: Account) {
-        networkSource.setAccount(account)
         accountDao.insert(account.convertToEntity())
         dataStore.setTargetAccount(account)
     }
