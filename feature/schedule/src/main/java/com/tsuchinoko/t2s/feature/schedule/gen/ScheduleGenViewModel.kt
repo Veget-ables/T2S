@@ -29,6 +29,10 @@ internal class ScheduleGenViewModel @Inject constructor(
         MutableStateFlow(ScheduleGenUiState.Initial)
     val scheduleGenUiState: StateFlow<ScheduleGenUiState> = _scheduleGenUiState.asStateFlow()
 
+    private val _registryResultUiState: MutableStateFlow<RegistryResultUiState> = MutableStateFlow(RegistryResultUiState.Standby)
+    val registryResultUiState: StateFlow<RegistryResultUiState> =
+        _registryResultUiState.asStateFlow()
+
     init {
         val prompt = savedStateHandle.toRoute<ScheduleGen>().prompt
         viewModelScope.launch {
@@ -36,9 +40,7 @@ internal class ScheduleGenViewModel @Inject constructor(
                 scheduleGenRepository.generate(prompt)
             }.collect { result ->
                 val eventsUiState = when (result) {
-                    Result.Standby,
-                    Result.Loading,
-                    -> GeneratedEventsUiState.Loading
+                    Result.Loading -> GeneratedEventsUiState.Loading
                     is Result.Success -> GeneratedEventsUiState.Generated(result.data)
                     is Result.Error -> {
                         GeneratedEventsUiState.Error(result.exception.localizedMessage ?: "")
@@ -76,17 +78,13 @@ internal class ScheduleGenViewModel @Inject constructor(
                 )
             }.collect { result ->
                 val uiState = when (result) {
-                    Result.Standby,
-                    Result.Loading,
-                    -> EventsRegistryUiState.Loading
-                    is Result.Success -> EventsRegistryUiState.Success
+                    Result.Loading -> RegistryResultUiState.Loading
+                    is Result.Success -> RegistryResultUiState.Success
                     is Result.Error -> {
-                        EventsRegistryUiState.Error(result.exception.localizedMessage ?: "")
+                        RegistryResultUiState.Error(result.exception.localizedMessage ?: "")
                     }
                 }
-                _scheduleGenUiState.update {
-                    it.copy(eventsRegistryUiState = uiState)
-                }
+                _registryResultUiState.update { uiState }
             }
         }
     }

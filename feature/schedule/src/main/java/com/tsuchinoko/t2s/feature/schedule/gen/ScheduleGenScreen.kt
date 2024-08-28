@@ -4,23 +4,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,11 +53,13 @@ internal fun ScheduleGenScreen(
 ) {
     val calendarAccountUiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
     val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
+    val registryResultUiState by scheduleGenViewModel.registryResultUiState.collectAsState()
 
     ScheduleGenScreen(
         modifier = modifier,
         calendarAccountUiState = calendarAccountUiState,
         scheduleGenUiState = scheduleGenUiState,
+        registryResultUiState = registryResultUiState,
         onAccountChange = calendarAccountViewModel::updateAccount,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onInputEditClick = onInputEditClick,
@@ -64,6 +73,7 @@ private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     calendarAccountUiState: CalendarAccountUiState,
     scheduleGenUiState: ScheduleGenUiState,
+    registryResultUiState: RegistryResultUiState,
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onInputEditClick: () -> Unit = {},
@@ -73,7 +83,26 @@ private fun ScheduleGenScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val generatedEventsUiState = scheduleGenUiState.generatedEventsUiState
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    when (registryResultUiState) {
+        RegistryResultUiState.Standby,
+        RegistryResultUiState.Loading,
+        -> {}
+        RegistryResultUiState.Success -> {
+            scope.launch {
+                snackbarHostState.showSnackbar("カレンダーに予定を登録しました")
+            }
+        }
+        is RegistryResultUiState.Error -> {
+            scope.launch {
+                snackbarHostState.showSnackbar("予定の登録に失敗しました")
+            }
+        }
+    }
+
     ModalNavigationDrawer(
+        modifier = modifier,
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
@@ -86,9 +115,6 @@ private fun ScheduleGenScreen(
         },
     ) {
         Scaffold(
-            modifier = modifier.padding(),
-            topBar = {
-            },
             bottomBar = {
                 BottomAppBar(
                     actions = {
@@ -104,27 +130,49 @@ private fun ScheduleGenScreen(
                         }
                     },
                     floatingActionButton = {
-                        if (generatedEventsUiState is GeneratedEventsUiState.Generated) {
-                            FloatingActionButton(
-                                onClick = {
-                                    if (calendarAccountUiState is CalendarAccountUiState.AccountSelected) {
-                                        onRegistryClick(
-                                            calendarAccountUiState.targetCalendar.id,
-                                            generatedEventsUiState.events,
-                                        )
-                                    }
-                                },
-                                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.event_upcoming),
-                                    contentDescription = "カレンダーに登録",
-                                )
+                        when {
+                            generatedEventsUiState is GeneratedEventsUiState.Loading ||
+                                registryResultUiState is RegistryResultUiState.Loading -> {
+                                FloatingActionButton(
+                                    onClick = {},
+                                    containerColor = Color.Transparent,
+                                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        strokeWidth = 3.dp,
+                                    )
+                                }
                             }
+
+                            generatedEventsUiState is GeneratedEventsUiState.Generated -> {
+                                FloatingActionButton(
+                                    onClick = {
+                                        if (calendarAccountUiState is CalendarAccountUiState.AccountSelected) {
+                                            onRegistryClick(
+                                                calendarAccountUiState.targetCalendar.id,
+                                                generatedEventsUiState.events,
+                                            )
+                                        }
+                                    },
+                                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.event_upcoming),
+                                        contentDescription = "カレンダーに登録",
+                                    )
+                                }
+                            }
+
+                            else -> {}
                         }
                     },
                 )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
             },
         ) { paddingValues ->
             LazyColumn(
@@ -158,6 +206,7 @@ fun ScheduleGenScreenPreview_Initial() {
         ScheduleGenScreen(
             calendarAccountUiState = CalendarAccountUiState.Initial,
             scheduleGenUiState = ScheduleGenUiState.Initial,
+            registryResultUiState = RegistryResultUiState.Standby,
         )
     }
 }
@@ -171,8 +220,8 @@ fun ScheduleGenScreenPreview_Generated() {
             scheduleGenUiState = ScheduleGenUiState(
                 prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
-                eventsRegistryUiState = null,
             ),
+            registryResultUiState = RegistryResultUiState.Standby,
         )
     }
 }
