@@ -25,12 +25,12 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal class CalendarAccountViewModel @Inject constructor(
+class CalendarAccountViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
 ) : ViewModel() {
-    private val _shouldAccountGuide: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    val shouldAccountGuide: StateFlow<Boolean> = _shouldAccountGuide.asStateFlow()
+    private val _needAccount: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val needAccount: StateFlow<Boolean> = _needAccount.asStateFlow()
 
     private val fetchAccountCalendarsResult = accountRepository
         .getAccount()
@@ -41,7 +41,7 @@ internal class CalendarAccountViewModel @Inject constructor(
             }
         }
 
-    val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
+    internal val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         combine(
             accountRepository.getAccount(),
             calendarRepository.getAccountCalendars(),
@@ -84,7 +84,7 @@ internal class CalendarAccountViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _shouldAccountGuide.value = accountRepository
+            _needAccount.value = accountRepository
                 .getAccount()
                 .map { account ->
                     account == null

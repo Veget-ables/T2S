@@ -1,7 +1,5 @@
 package com.tsuchinoko.t2s.feature.schedule
 
-import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -19,18 +17,17 @@ object ScheduleRoute
 object CalendarAccountGuide
 
 @Serializable
-data object ScheduleInput
+internal object ScheduleInput
 
 @Serializable
 internal data class ScheduleGen(val prompt: String)
 
-fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
-    navigation<ScheduleRoute>(startDestination = CalendarAccountGuide) {
-        composable<CalendarAccountGuide> { backStackEntry ->
-            val routeEntry = remember(backStackEntry) {
-                controller.getBackStackEntry(ScheduleRoute)
-            }
-            val calendarAccountViewModel = hiltViewModel<CalendarAccountViewModel>(routeEntry)
+fun NavGraphBuilder.scheduleNavigation(
+    controller: NavHostController,
+    calendarAccountViewModel: CalendarAccountViewModel,
+) {
+    navigation<ScheduleRoute>(startDestination = ScheduleInput) {
+        composable<CalendarAccountGuide> {
             CalendarAccountGuideScreen(
                 calendarAccountViewModel = calendarAccountViewModel,
                 onCompleteClick = {
@@ -40,11 +37,7 @@ fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
             )
         }
 
-        composable<ScheduleInput> { backStackEntry ->
-            val routeEntry = remember(backStackEntry) {
-                controller.getBackStackEntry(ScheduleRoute)
-            }
-            val calendarAccountViewModel = hiltViewModel<CalendarAccountViewModel>(routeEntry)
+        composable<ScheduleInput> {
             ScheduleInputScreen(
                 calendarAccountViewModel = calendarAccountViewModel,
                 onGenerateClick = { input ->
@@ -53,11 +46,7 @@ fun NavGraphBuilder.scheduleNavigation(controller: NavHostController) {
             )
         }
 
-        composable<ScheduleGen> { backStackEntry ->
-            val routeEntry = remember(backStackEntry) {
-                controller.getBackStackEntry(ScheduleRoute)
-            }
-            val calendarAccountViewModel = hiltViewModel<CalendarAccountViewModel>(routeEntry)
+        composable<ScheduleGen> {
             ScheduleGenScreen(
                 calendarAccountViewModel = calendarAccountViewModel,
                 onInputEditClick = {
