@@ -11,12 +11,10 @@ import com.tsuchinoko.t2s.core.ui.Result
 import com.tsuchinoko.t2s.core.ui.resultFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -29,29 +27,38 @@ class CalendarAccountViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val calendarRepository: CalendarRepository,
 ) : ViewModel() {
-    private val _needAccount: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val needAccount: StateFlow<Boolean> = _needAccount.asStateFlow()
+    private val account: Flow<Account?> = accountRepository.getAccount()
 
-    private val fetchAccountCalendarsResult = accountRepository
-        .getAccount()
-        .flatMapLatest { account ->
-            resultFlow {
-                if (account == null) return@resultFlow
-                calendarRepository.fetchCalendars(account)
-            }
+    val needAccount: StateFlow<Boolean> = account.map { it == null }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            false,
+        )
+
+    private val fetchAccountCalendarsResult = account.flatMapLatest { account ->
+        resultFlow {
+            if (account == null) return@resultFlow
+            calendarRepository.fetchCalendars(account)
         }
+    }
 
     internal val calendarAccountUiState: StateFlow<CalendarAccountUiState> =
         combine(
-            accountRepository.getAccount(),
+            account,
+            fetchAccountCalendarsResult,
             calendarRepository.getAccountCalendars(),
             calendarRepository.getTargetCalendarId(),
-            fetchAccountCalendarsResult,
-        ) { account, calendars, calendarId, result ->
+        ) { account, result, calendars, calendarId ->
             when {
+                account == null -> {
+                    CalendarAccountUiState.Initial
+                }
+
                 result is Result.Loading -> {
                     CalendarAccountUiState.Loading
                 }
+
                 result is Result.Error -> {
                     when (val exception = result.exception) {
                         is RecoverableIntentError -> {
@@ -63,7 +70,8 @@ class CalendarAccountViewModel @Inject constructor(
                         }
                     }
                 }
-                account != null && calendars.isNotEmpty() -> {
+
+                calendars.isNotEmpty() -> {
                     val targetCalendar =
                         if (calendarId == null) calendars[0] else calendars.first { it.id == calendarId }
                     CalendarAccountUiState.AccountSelected(
@@ -72,6 +80,7 @@ class CalendarAccountViewModel @Inject constructor(
                         targetCalendar = targetCalendar,
                     )
                 }
+
                 else -> {
                     CalendarAccountUiState.Initial
                 }
@@ -81,17 +90,6 @@ class CalendarAccountViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000),
             CalendarAccountUiState.Initial,
         )
-
-    init {
-        viewModelScope.launch {
-            _needAccount.value = accountRepository
-                .getAccount()
-                .map { account ->
-                    account == null
-                }
-                .first()
-        }
-    }
 
     fun updateAccount(account: Account) {
         viewModelScope.launch {
