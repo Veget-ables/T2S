@@ -73,7 +73,7 @@ class CalendarAccountViewModel @Inject constructor(
 
                 calendars.isNotEmpty() -> {
                     val targetCalendar =
-                        if (calendarId == null) calendars[0] else calendars.first { it.id == calendarId }
+                        calendars.firstOrNull { it.id == calendarId } ?: calendars[0]
                     CalendarAccountUiState.AccountSelected(
                         account = account,
                         calendars = calendars,
