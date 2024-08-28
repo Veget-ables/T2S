@@ -4,7 +4,8 @@ import com.tsuchinoko.core.database.dao.CalendarDao
 import com.tsuchinoko.core.database.entity.convertToEntity
 import com.tsuchinoko.core.database.entity.convertToModel
 import com.tsuchinoko.t2s.core.data.CalendarRepository
-import com.tsuchinoko.t2s.core.datastore.T2SPreferencesDataStore
+import com.tsuchinoko.t2s.core.datastore.AccountPreferencesDataStore
+import com.tsuchinoko.t2s.core.datastore.CalendarPreferencesDataStore
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
@@ -19,12 +20,13 @@ import javax.inject.Inject
 
 class GoogleCalendarRepository @Inject constructor(
     private val calendarDao: CalendarDao,
-    private val dataStore: T2SPreferencesDataStore,
+    private val accountDataStore: AccountPreferencesDataStore,
+    private val calendarDataStore: CalendarPreferencesDataStore,
     private val networkSource: GoogleCalendarDataSource,
 ) : CalendarRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAccountCalendars(): Flow<List<Calendar>> = dataStore.getTargetAccountId()
+    override fun getAccountCalendars(): Flow<List<Calendar>> = accountDataStore.getTargetAccountId()
         .flatMapLatest { accountId ->
             if (accountId == null) {
                 flow { emit(emptyList()) }
@@ -35,7 +37,7 @@ class GoogleCalendarRepository @Inject constructor(
             }
         }
 
-    override fun getTargetCalendarId(): Flow<CalendarId?> = dataStore.getTargetCalendarId()
+    override fun getTargetCalendarId(): Flow<CalendarId?> = calendarDataStore.getTargetCalendarId()
 
     override suspend fun fetchCalendars(account: Account) {
         val calendars = networkSource.getCalendars()
@@ -44,7 +46,7 @@ class GoogleCalendarRepository @Inject constructor(
     }
 
     override suspend fun setTargetCalendar(calendar: Calendar) {
-        dataStore.setTargetCalendar(calendar)
+        calendarDataStore.setTargetCalendar(calendar)
     }
 
     override suspend fun registryEvents(calendarId: CalendarId, events: List<ScheduleEvent>) {

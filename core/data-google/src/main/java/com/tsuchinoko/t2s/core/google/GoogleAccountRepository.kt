@@ -4,7 +4,7 @@ import com.tsuchinoko.core.database.dao.AccountDao
 import com.tsuchinoko.core.database.entity.convertToEntity
 import com.tsuchinoko.core.database.entity.convertToModel
 import com.tsuchinoko.t2s.core.data.AccountRepository
-import com.tsuchinoko.t2s.core.datastore.T2SPreferencesDataStore
+import com.tsuchinoko.t2s.core.datastore.AccountPreferencesDataStore
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.network.GoogleAccountDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class GoogleAccountRepository @Inject constructor(
     private val accountDao: AccountDao,
-    private val dataStore: T2SPreferencesDataStore,
+    private val dataStore: AccountPreferencesDataStore,
     private val networkSource: GoogleAccountDataSource,
 ) : AccountRepository {
 
