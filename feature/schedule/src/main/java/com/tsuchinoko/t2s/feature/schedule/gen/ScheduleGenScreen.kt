@@ -1,5 +1,7 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +22,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -80,8 +84,9 @@ private fun ScheduleGenScreen(
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val generatedEventsUiState = scheduleGenUiState.generatedEventsUiState
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -91,7 +96,17 @@ private fun ScheduleGenScreen(
         -> {}
         RegistryResultUiState.Success -> {
             scope.launch {
-                snackbarHostState.showSnackbar("カレンダーに予定を登録しました")
+                val result = snackbarHostState.showSnackbar(
+                    message = "カレンダーに予定を登録しました",
+                    actionLabel = "開く",
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        val data = Uri.parse("content://com.android.calendar/time")
+                        setData(data)
+                    }
+                    context.startActivity(intent)
+                }
             }
         }
         is RegistryResultUiState.Error -> {
