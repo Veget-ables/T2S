@@ -1,20 +1,20 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
@@ -39,16 +39,40 @@ internal fun CarouselScheduleGenContent(
     onInputEditClick: () -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
-    Column(modifier = Modifier.padding(paddingValues)) {
-        ScheduleInputCard(
-            text = prompt,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+    ) {
+        OutlinedButton(
+            onClick = onInputEditClick,
+            modifier = Modifier
+                .padding(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                )
+                .align(Alignment.End),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.edit_text),
+                contentDescription = null,
+            )
+
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+
+            Text(text = "編集")
+        }
+
+        OutlinedTextField(
+            value = prompt,
+            onValueChange = {},
+            readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-            onEditClick = onInputEditClick,
+                .padding(16.dp)
+                .weight(1f),
         )
-
-        Spacer(Modifier.height(36.dp))
 
         when (generatedEventsUiState) {
             GeneratedEventsUiState.Loading -> {
@@ -75,6 +99,8 @@ internal fun CarouselScheduleGenContent(
                 )
             }
         }
+
+        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -101,45 +127,6 @@ private fun CarouselScheduleEvents(
                 .padding(start = if (i == 0 || events.lastIndex == i) 0.dp else 16.dp)
                 .placeholder(visible = placeholder),
             onEventChange = onEventChange,
-        )
-    }
-}
-
-@Composable
-private fun ScheduleInputCard(
-    text: String,
-    modifier: Modifier = Modifier,
-    onEditClick: () -> Unit = {},
-) {
-    Card(
-        modifier = modifier
-            .animateContentSize(),
-    ) {
-        OutlinedButton(
-            onClick = onEditClick,
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                )
-                .align(Alignment.End),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.edit_text),
-                contentDescription = null,
-            )
-
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-
-            Text(text = "編集")
-        }
-
-        Text(
-            text = text,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
         )
     }
 }

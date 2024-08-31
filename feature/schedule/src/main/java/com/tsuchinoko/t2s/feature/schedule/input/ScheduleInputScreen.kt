@@ -143,7 +143,7 @@ private fun ScheduleInputScreen(
                     value = input,
                     onValueChange = { input = it },
                     modifier = Modifier
-                        .padding(start = 36.dp, top = 16.dp, end = 36.dp)
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f)
                         .fillMaxWidth(),
                 )
