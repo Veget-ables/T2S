@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -73,15 +74,16 @@ internal fun LazyListScope.generatedEvents(
                 item {
                     HorizontalMultiBrowseCarousel(
                         state = rememberCarouselState { events.count() },
-                        preferredItemWidth = 200.dp,
+                        preferredItemWidth = 600.dp,
                         itemSpacing = 8.dp,
-                        contentPadding = PaddingValues(end = 16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
                     ) { i ->
                         GeneratedEvent(
                             event = events[i],
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = if (events.lastIndex == i) 0.dp else 16.dp)
+                                .maskClip(CardDefaults.shape)
+                                .padding(start = if (i == 0 || events.lastIndex == i) 0.dp else 16.dp)
                                 .placeholder(visible = false),
                             onEventChange = onEventChange,
                         )
