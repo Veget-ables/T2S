@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tsuchinoko.t2s.core.data.CalendarRepository
-import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
+import com.tsuchinoko.t2s.core.domain.SuggestScheduleEventsUseCase
 import com.tsuchinoko.t2s.core.model.CalendarId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.core.ui.Result
@@ -23,7 +23,7 @@ import javax.inject.Inject
 internal class ScheduleGenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val calendarRepository: CalendarRepository,
-    private val scheduleGenRepository: ScheduleGenRepository,
+    private val suggestScheduleEventsUseCase: SuggestScheduleEventsUseCase,
 ) : ViewModel() {
     private val _scheduleGenUiState: MutableStateFlow<ScheduleGenUiState> =
         MutableStateFlow(ScheduleGenUiState.Initial)
@@ -37,7 +37,7 @@ internal class ScheduleGenViewModel @Inject constructor(
         val prompt = savedStateHandle.toRoute<ScheduleGen>().prompt
         viewModelScope.launch {
             resultFlow {
-                scheduleGenRepository.generate(prompt)
+                suggestScheduleEventsUseCase(prompt)
             }.collect { result ->
                 val eventsUiState = when (result) {
                     Result.Loading -> GeneratedEventsUiState.Loading

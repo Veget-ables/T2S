@@ -5,6 +5,7 @@ import com.google.ai.client.generativeai.type.Schema
 import com.google.ai.client.generativeai.type.Tool
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.defineFunction
+import com.tsuchinok.t2s.core.common.EMPTY_SYMBOL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +22,7 @@ class GeminiModule {
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.apiKey,
         tools = listOf(Tool(listOf(getScheduleStructure))),
-        systemInstruction = content { text("あなたはGoogle Calendarに予定を登録しようとしている人です。") },
+        systemInstruction = content { text("あなたはカレンダーに予定を登録しようとしている人です。") },
     )
 
     private val getScheduleStructure = defineFunction(
@@ -38,9 +39,5 @@ class GeminiModule {
             put("start", start)
             put("end", end)
         }
-    }
-
-    companion object {
-        internal const val EMPTY_SYMBOL = "@EMPTY"
     }
 }
