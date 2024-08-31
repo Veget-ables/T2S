@@ -1,6 +1,5 @@
 package com.tsuchinoko.t2s.core.domain
 
-import com.tsuchinok.t2s.core.common.EMPTY_SYMBOL
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import javax.inject.Inject
@@ -15,9 +14,9 @@ class SuggestScheduleEventsUseCase @Inject constructor(
 
     private fun createPrompt(scheduleInput: String) = """
 「# 予定表のメモ書き」の内容を整理して、予定毎にカレンダーに登録したいので「# 予定表のメモ書き」の内容を「# フォーマット」の形に変換してください。
-変換方法は「# 変換例」のように行ってください。
+変換方法は「# 変換のルール」に従ってください。
 
-# メモ書き
+# 予定表のメモ書き
 $scheduleInput
 
 ### 予定表のメモ書きここまで ###
@@ -25,76 +24,35 @@ $scheduleInput
 # フォーマット
 - title: <予定のタイトル>
 - memo: <予定のメモ>
-- start(yyyy-MM-ddTHH:mm:ss): <予定の開始日時>
-- end(yyyy-MM-ddTHH:mm:ss): <予定の終了日時>
-※ memoは情報が無ければ省略
-※ start、endが不明な場合は省略
+- start: <予定の開始日時>
+- end: <予定の終了日時>
+- base:<title, memo, start, endを決定する証拠となったテキスト>
 
 ### フォーマットここまで ###
 
-# 変換例
+# 変換のルール
+・1つの日付に対して複数の予定が含まれている場合がある
+・予定の区切り位置は「予定のタイトルを表す絵文字 + 人物名やイベント名や場所名や固有名詞」
+・時間帯に応じた行動リストが無い場合は終日予定と判断する
+・フォーマットのルール
+　・titleのルール
+　　・人物名や場所名も含める
+　・memoのルール
+　　・時間帯に応じた行動リストも含める
+　　・何もなければ省略する
+　・startとendのルール
+　　・必ずyyyy-MM-ddTHH:mmのフォーマットで入力する
+　　・西暦が判断できない場合は、最新の西暦を入力する
+　　・月日が判断できない場合は、前後の予定から推測して入力する
+　　・終日予定と判断した場合は、startの時刻(HH:mm)には00:00、endの時刻(HH:mm)には23:59を入力する
+　　・終日予定以外で、時間帯に応じた行動リストがある場合は、行動リストの一番最初の時刻をstartの時刻(HH:mm)に入力して、最後の時刻をendの時刻(THH:mm)に入力する
+　　　例えば、次の時間帯に応じた行動リストの場合、startの時刻(HH:mm)は10:30を入力し、endの時刻(HH:mm)は13:55を入力する
+　　　　・10:30入り
+　　　　・11:40 全体打ち合わせ
+　　　　・11:55-13:55 生放送
+　・baseのルール
+　　・フォーマットのtitle, memo, start, endを決定する証拠となったテキストを入力する
 
-<例1>
-- 変換前: 
-　●6/25(火)
-　OFF①
-
-- 変換後: 
-　title: OFF①
-  memo: $EMPTY_SYMBOL
-　start: 2024-06-25 00:00
-　end: 2024-06-25 23:59
-
-<例2>
-- 変換前: 
-　●6/26(水)
-　▼【武田】TKM「ラジオ」＠TKM
-　11:20 TOKYO FM入り
-　14:20 生放送出演
-　14:45 終了
-　▼【武田】TKM「Youtube」撮影
-
-- 変換後:
-　title:【武田】TKM「ラジオ」＠TKM
-　memo:　11:20 TOKYO FM入り
-　　　　　14:20 生放送出演
-　　　　　14:45 終了
-　start: 2024-06-26 11:20
-　end: 2024-06-26 14:45
-
-　title:【武田】TKM「Youtube」撮影
-　start: 2024-06-26 00:00
-　end: 2024-06-26 23:59
-
-<例3>
-- 変換前: 
-　●6/30(日)
-　▼【武田】HBC「サタブラ」＠HBC
-　10:30入り
-　11:55-13:30生放送
-
-- 変換後:
-　title:【武田】HBC「サタブラ」＠HBC
-  memo: 10:30入り
-        11:55-13:30生放送
-　start: 2024-06-30 10:30
-　end: 2024-06-30 13:30
-
-<例4>
-- 変換前: 
-　●7/4(木)
-　▼【武田】TJK「BreakingDown」＠荻窪
-　08:00 入り
-　10:15-18:55 生放送
-
-- 変換後:
-　title: 【武田】TJK「BreakingDown」＠荻窪
-  memo: 08:00 入り
-　      10:15-18:55 生放送
-　start: 2024-07-04 08:00
-　end: 2024-07-04 18:55
-
-### 変換例ここまで ###
-
+### 変換のルールここまで ###
 """
 }

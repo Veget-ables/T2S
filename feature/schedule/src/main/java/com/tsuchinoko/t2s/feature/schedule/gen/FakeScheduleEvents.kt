@@ -53,4 +53,6 @@ private fun createScheduleEvent(
     memo: String? = null,
     start: LocalDateTime,
     end: LocalDateTime,
-): ScheduleEvent = ScheduleEvent(id = id, title = title, memo = memo, start = start, end = end)
+    base: String = "",
+): ScheduleEvent =
+    ScheduleEvent(id = id, title = title, memo = memo, start = start, end = end, base = base)

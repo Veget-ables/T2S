@@ -107,6 +107,7 @@ internal val skeletonEvents: List<ScheduleEvent> = run {
             memo = null,
             start = time,
             end = time,
+            base = "",
         )
     }
 }
