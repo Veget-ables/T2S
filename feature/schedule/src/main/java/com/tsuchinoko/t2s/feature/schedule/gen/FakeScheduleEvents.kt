@@ -4,6 +4,8 @@ import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import java.time.LocalDateTime
 import java.util.UUID
 
+internal val fakePrompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n 2020年2月17日　終日予定\n これはメモです\n "
+
 internal val fakeRegularEvent = createScheduleEvent(
     title = "通常予定",
     memo = "これはメモです",

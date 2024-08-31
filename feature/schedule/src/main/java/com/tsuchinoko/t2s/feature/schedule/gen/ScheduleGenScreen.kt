@@ -2,12 +2,7 @@ package com.tsuchinoko.t2s.feature.schedule.gen
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -69,6 +64,7 @@ internal fun ScheduleGenScreen(
         onInputEditClick = onInputEditClick,
         onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
+        onDisplayTypeChange = scheduleGenViewModel::updateDisplayType,
     )
 }
 
@@ -80,6 +76,7 @@ private fun ScheduleGenScreen(
     registryResultUiState: RegistryResultUiState,
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
+    onDisplayTypeChange: (type: DisplayType) -> Unit = {},
     onInputEditClick: () -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
@@ -93,7 +90,9 @@ private fun ScheduleGenScreen(
     when (registryResultUiState) {
         RegistryResultUiState.Standby,
         RegistryResultUiState.Loading,
-        -> {}
+        -> {
+        }
+
         RegistryResultUiState.Success -> {
             scope.launch {
                 val result = snackbarHostState.showSnackbar(
@@ -109,6 +108,7 @@ private fun ScheduleGenScreen(
                 }
             }
         }
+
         is RegistryResultUiState.Error -> {
             scope.launch {
                 snackbarHostState.showSnackbar("予定の登録に失敗しました")
@@ -143,11 +143,27 @@ private fun ScheduleGenScreen(
                                 contentDescription = "アカウントを設定",
                             )
                         }
+
+                        IconButton(
+                            onClick = {
+                                if (scheduleGenUiState.displayType == DisplayType.List) {
+                                    onDisplayTypeChange(DisplayType.Carousel)
+                                } else {
+                                    onDisplayTypeChange(DisplayType.List)
+                                }
+                            },
+                        ) {
+                            val drawableId =
+                                if (scheduleGenUiState.displayType == DisplayType.List) R.drawable.carousel else R.drawable.list
+                            Icon(
+                                painter = painterResource(drawableId),
+                                contentDescription = "アカウントを設定",
+                            )
+                        }
                     },
                     floatingActionButton = {
                         when {
-                            generatedEventsUiState is GeneratedEventsUiState.Loading ||
-                                registryResultUiState is RegistryResultUiState.Loading -> {
+                            generatedEventsUiState is GeneratedEventsUiState.Loading || registryResultUiState is RegistryResultUiState.Loading -> {
                                 FloatingActionButton(
                                     onClick = {},
                                     containerColor = Color.Transparent,
@@ -190,24 +206,20 @@ private fun ScheduleGenScreen(
                 SnackbarHost(hostState = snackbarHostState)
             },
         ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier.padding(paddingValues),
-            ) {
-                item {
-                    ScheduleInputCard(
-                        text = scheduleGenUiState.prompt,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                        onEditClick = onInputEditClick,
-                    )
+            when (scheduleGenUiState.displayType) {
+                DisplayType.List -> ListScheduleGenContent(
+                    paddingValues = paddingValues,
+                    prompt = scheduleGenUiState.prompt,
+                    generatedEventsUiState = generatedEventsUiState,
+                    onInputEditClick = onInputEditClick,
+                    onEventChange = onEventChange,
+                )
 
-                    Spacer(Modifier.height(36.dp))
-                }
-
-                generatedEvents(
-                    uiState = generatedEventsUiState,
-                    displayType = scheduleGenUiState.displayType,
+                DisplayType.Carousel -> CarouselScheduleGenContent(
+                    paddingValues = paddingValues,
+                    prompt = scheduleGenUiState.prompt,
+                    generatedEventsUiState = generatedEventsUiState,
+                    onInputEditClick = onInputEditClick,
                     onEventChange = onEventChange,
                 )
             }
