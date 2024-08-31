@@ -1,9 +1,7 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,7 +39,6 @@ internal fun ListScheduleGenContent(
     paddingValues: PaddingValues,
     prompt: String,
     generatedEventsUiState: GeneratedEventsUiState,
-    onInputEditClick: () -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     LazyColumn(
@@ -53,7 +50,6 @@ internal fun ListScheduleGenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                onEditClick = onInputEditClick,
             )
 
             Spacer(Modifier.height(36.dp))
@@ -123,49 +119,29 @@ internal val skeletonEvents: List<ScheduleEvent> = run {
 private fun ScheduleInputCard(
     text: String,
     modifier: Modifier = Modifier,
-    onEditClick: () -> Unit = {},
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     Card(
         modifier = modifier
             .animateContentSize(),
     ) {
-        Row(
+        OutlinedButton(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(
                     start = 16.dp,
                     top = 16.dp,
                     end = 16.dp,
-                ),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+                ).align(Alignment.End),
+            onClick = { isExpanded = !isExpanded },
         ) {
-            OutlinedButton(
-                onClick = { isExpanded = !isExpanded },
-            ) {
-                Icon(
-                    painter = painterResource(if (isExpanded) R.drawable.collapse else R.drawable.expand),
-                    contentDescription = null,
-                )
+            Icon(
+                painter = painterResource(if (isExpanded) R.drawable.collapse else R.drawable.expand),
+                contentDescription = null,
+            )
 
-                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
 
-                Text(if (isExpanded) "縮小" else "展開")
-            }
-
-            OutlinedButton(
-                onClick = onEditClick,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.edit_text),
-                    contentDescription = null,
-                )
-
-                Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-
-                Text(text = "編集")
-            }
+            Text(if (isExpanded) "縮小" else "展開")
         }
 
         if (isExpanded) {

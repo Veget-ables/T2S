@@ -7,36 +7,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.component.placeholder
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
-import com.tsuchinoko.t2s.feature.schedule.R
 
 @Composable
 internal fun CarouselScheduleGenContent(
     paddingValues: PaddingValues,
     prompt: String,
     generatedEventsUiState: GeneratedEventsUiState,
-    onInputEditClick: () -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     Column(
@@ -44,26 +36,6 @@ internal fun CarouselScheduleGenContent(
             .fillMaxSize()
             .padding(paddingValues),
     ) {
-        OutlinedButton(
-            onClick = onInputEditClick,
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                )
-                .align(Alignment.End),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.edit_text),
-                contentDescription = null,
-            )
-
-            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-
-            Text(text = "編集")
-        }
-
         OutlinedTextField(
             value = prompt,
             onValueChange = {},

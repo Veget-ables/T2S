@@ -49,7 +49,7 @@ fun NavGraphBuilder.scheduleNavigation(
         composable<ScheduleGen> {
             ScheduleGenScreen(
                 calendarAccountViewModel = calendarAccountViewModel,
-                onInputEditClick = {
+                onBackClick = {
                     controller.popBackStack()
                 },
             )

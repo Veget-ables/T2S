@@ -3,10 +3,13 @@ package com.tsuchinoko.t2s.feature.schedule.gen
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -18,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -48,7 +52,7 @@ internal fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     calendarAccountViewModel: CalendarAccountViewModel,
     scheduleGenViewModel: ScheduleGenViewModel = hiltViewModel(),
-    onInputEditClick: () -> Unit = {},
+    onBackClick: () -> Unit = {},
 ) {
     val calendarAccountUiState by calendarAccountViewModel.calendarAccountUiState.collectAsState()
     val scheduleGenUiState by scheduleGenViewModel.scheduleGenUiState.collectAsState()
@@ -59,25 +63,26 @@ internal fun ScheduleGenScreen(
         calendarAccountUiState = calendarAccountUiState,
         scheduleGenUiState = scheduleGenUiState,
         registryResultUiState = registryResultUiState,
+        onBackClick = onBackClick,
         onAccountChange = calendarAccountViewModel::updateAccount,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
-        onInputEditClick = onInputEditClick,
         onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
         onDisplayTypeChange = scheduleGenViewModel::updateDisplayType,
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleGenScreen(
     modifier: Modifier = Modifier,
     calendarAccountUiState: CalendarAccountUiState,
     scheduleGenUiState: ScheduleGenUiState,
     registryResultUiState: RegistryResultUiState,
+    onBackClick: () -> Unit = {},
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onDisplayTypeChange: (type: DisplayType) -> Unit = {},
-    onInputEditClick: () -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
@@ -130,6 +135,19 @@ private fun ScheduleGenScreen(
         },
     ) {
         Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "戻る",
+                            )
+                        }
+                    },
+                )
+            },
             bottomBar = {
                 BottomAppBar(
                     actions = {
@@ -211,7 +229,6 @@ private fun ScheduleGenScreen(
                     paddingValues = paddingValues,
                     prompt = scheduleGenUiState.prompt,
                     generatedEventsUiState = generatedEventsUiState,
-                    onInputEditClick = onInputEditClick,
                     onEventChange = onEventChange,
                 )
 
@@ -219,7 +236,6 @@ private fun ScheduleGenScreen(
                     paddingValues = paddingValues,
                     prompt = scheduleGenUiState.prompt,
                     generatedEventsUiState = generatedEventsUiState,
-                    onInputEditClick = onInputEditClick,
                     onEventChange = onEventChange,
                 )
             }
