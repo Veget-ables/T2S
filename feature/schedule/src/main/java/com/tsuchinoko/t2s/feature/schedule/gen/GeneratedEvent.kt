@@ -13,7 +13,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -29,12 +28,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
-import com.tsuchinoko.t2s.feature.schedule.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -285,30 +282,9 @@ private fun EventTimeSelection(
 
 @Composable
 private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Column(
-            modifier = Modifier
-                .padding(
-                    start = 8.dp,
-                    end = 4.dp,
-                    top = 4.dp,
-                    bottom = 4.dp,
-                )
-                .weight(0.9f),
-        ) {
-            Text(text = event.displayDateTime.value)
-            Text(text = event.title)
-        }
-        if (event.memo != null) {
-            Icon(
-                painter = painterResource(R.drawable.memo),
-                contentDescription = "memo",
-                modifier = Modifier
-                    .weight(0.1f),
-            )
-        } else {
-            Spacer(Modifier.weight(0.1f))
-        }
+    Column(modifier = modifier.padding(8.dp)) {
+        Text(text = event.displayDateTime.value)
+        Text(text = event.title)
     }
 }
 
