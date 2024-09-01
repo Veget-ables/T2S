@@ -1,5 +1,6 @@
 package com.tsuchinoko.t2s.core.domain
 
+import android.icu.util.Calendar
 import com.tsuchinoko.t2s.core.data.ScheduleGenRepository
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import javax.inject.Inject
@@ -7,6 +8,8 @@ import javax.inject.Inject
 class SuggestScheduleEventsUseCase @Inject constructor(
     private val scheduleGenRepository: ScheduleGenRepository,
 ) {
+    private val year = Calendar.getInstance().get(Calendar.YEAR)
+
     suspend operator fun invoke(scheduleInput: String): List<ScheduleEvent> {
         val prompt = createPrompt(scheduleInput)
         return scheduleGenRepository.generate(prompt)
@@ -42,7 +45,7 @@ $scheduleInput
 　　・何もなければ省略する
 　・startとendのルール
 　　・必ずyyyy-MM-ddTHH:mmのフォーマットで入力する
-　　・西暦が判断できない場合は、最新の西暦を入力する
+　　・西暦が判断できない場合は、西暦（yyyy）に${year}を入力する
 　　・月日が判断できない場合は、前後の予定から推測して入力する
 　　・終日予定と判断した場合は、startの時刻(HH:mm)には00:00、endの時刻(HH:mm)には23:59を入力する
 　　・終日予定以外で、時間帯に応じた行動リストがある場合は、行動リストの一番最初の時刻をstartの時刻(HH:mm)に入力して、最後の時刻をendの時刻(THH:mm)に入力する
