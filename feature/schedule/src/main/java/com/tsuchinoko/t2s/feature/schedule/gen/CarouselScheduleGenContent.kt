@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -48,17 +49,12 @@ internal fun CarouselScheduleGenContent(
             .fillMaxSize()
             .padding(paddingValues),
     ) {
-        var baseText: String? by remember { mutableStateOf(null) }
-
-        OutlinedTextField(
-            value = TextFieldValue(
-                buildAnnotatedString {
-                    val base = baseText
-                    if (base == null) {
-                        append(scheduleInput)
-                        return@buildAnnotatedString
-                    } else {
-                        val sentence = scheduleInput.split(base)
+        var baseText: String by remember(scheduleInput) { mutableStateOf("") }
+        val textFieldValue by remember(baseText) {
+            val sentence = if (baseText.isEmpty()) listOf(scheduleInput) else scheduleInput.split(baseText)
+            mutableStateOf(
+                TextFieldValue(
+                    annotatedString = buildAnnotatedString {
                         append(sentence[0])
                         withStyle(
                             style = SpanStyle(
@@ -66,14 +62,19 @@ internal fun CarouselScheduleGenContent(
                                 fontWeight = FontWeight.Bold,
                             ),
                         ) {
-                            append(base)
+                            append(baseText)
                         }
                         if (sentence.size > 1) {
                             append(sentence[1])
                         }
-                    }
-                },
-            ),
+                    },
+                    selection = TextRange(sentence[0].length + baseText.length),
+                ),
+            )
+        }
+
+        OutlinedTextField(
+            value = textFieldValue,
             onValueChange = {},
             readOnly = true,
             modifier = Modifier
