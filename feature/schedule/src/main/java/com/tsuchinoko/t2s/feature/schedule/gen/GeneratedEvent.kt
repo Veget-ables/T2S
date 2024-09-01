@@ -69,7 +69,7 @@ internal fun GeneratedEvent(
 }
 
 @Composable
-private fun EditableEventContent(
+internal fun EditableEventContent(
     event: ScheduleEvent,
     modifier: Modifier = Modifier,
     onEventChange: (ScheduleEvent) -> Unit = {},
@@ -82,8 +82,8 @@ private fun EditableEventContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 24.dp,
-                    vertical = 24.dp,
+                    horizontal = 16.dp,
+                    vertical = 16.dp,
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -111,7 +111,7 @@ private fun EditableEventContent(
             }
 
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             ) {
                 val start = event.start
@@ -173,6 +173,7 @@ private fun EditableEventContent(
                     val new = event.copy(title = it)
                     onEventChange(new)
                 },
+                maxLines = 2,
                 label = {
                     Text("予定のタイトル")
                 },
@@ -189,7 +190,7 @@ private fun EditableEventContent(
                 label = {
                     Text("予定のメモ")
                 },
-                maxLines = 6,
+                maxLines = 3,
             )
         }
     }

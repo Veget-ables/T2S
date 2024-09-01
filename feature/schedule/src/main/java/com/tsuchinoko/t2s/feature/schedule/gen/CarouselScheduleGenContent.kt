@@ -1,5 +1,6 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -128,16 +130,24 @@ private fun CarouselScheduleEvents(
         itemSpacing = 8.dp,
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) { i ->
-        GeneratedEvent(
-            event = events[i],
+        val event = events[i]
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .maskClip(CardDefaults.shape)
                 .padding(start = if (i == 0 || events.lastIndex == i) 0.dp else 16.dp)
-                .placeholder(visible = placeholder),
-            onEventClick = onEventClick,
-            onEventChange = onEventChange,
-        )
+                .placeholder(visible = placeholder)
+                .animateContentSize(),
+            onClick = {
+                onEventClick(event.base)
+            },
+        ) {
+            EditableEventContent(
+                event = event,
+                modifier = Modifier.fillMaxWidth(),
+                onEventChange = onEventChange,
+            )
+        }
     }
 }
 
