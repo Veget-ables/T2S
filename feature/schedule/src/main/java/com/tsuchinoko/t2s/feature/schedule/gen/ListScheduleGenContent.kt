@@ -77,6 +77,7 @@ internal fun ListScheduleGenContent(
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp)
                                 .placeholder(visible = false),
+                            onEventClick = {},
                             onEventChange = onEventChange,
                         )
                         Spacer(Modifier.height(8.dp))
@@ -119,7 +120,7 @@ fun ListScheduleGenContentPreview_Loading() {
         Surface {
             ListScheduleGenContent(
                 paddingValues = PaddingValues(0.dp),
-                prompt = fakePrompt,
+                prompt = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Loading,
             )
         }
@@ -133,7 +134,7 @@ fun ListScheduleGenContentPreview_Generated_List() {
         Surface {
             ListScheduleGenContent(
                 paddingValues = PaddingValues(0.dp),
-                prompt = fakePrompt,
+                prompt = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
             )
         }
@@ -147,7 +148,7 @@ fun ListScheduleGenContentPreview_Error() {
         Surface {
             ListScheduleGenContent(
                 paddingValues = PaddingValues(0.dp),
-                prompt = fakePrompt,
+                prompt = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Error("予定の生成に失敗しました"),
             )
         }

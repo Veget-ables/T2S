@@ -44,13 +44,17 @@ private val TimeZoneUTC = ZoneId.of("UTC")
 internal fun GeneratedEvent(
     event: ScheduleEvent,
     modifier: Modifier = Modifier,
+    onEventClick: (baseText: String) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     Card(
         modifier = modifier
             .animateContentSize(),
-        onClick = { isExpanded = !isExpanded },
+        onClick = {
+            onEventClick(event.base)
+            isExpanded = !isExpanded
+        },
     ) {
         if (isExpanded) {
             EditableEventContent(
@@ -285,7 +289,6 @@ private fun EventContent(event: ScheduleEvent, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(8.dp)) {
         Text(text = event.displayDateTime.value)
         Text(text = event.title)
-        Text(text = event.base) // FIXME
     }
 }
 

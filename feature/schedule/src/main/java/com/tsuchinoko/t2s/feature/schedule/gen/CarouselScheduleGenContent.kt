@@ -16,8 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.component.placeholder
@@ -27,7 +37,7 @@ import com.tsuchinoko.t2s.core.model.ScheduleEvent
 @Composable
 internal fun CarouselScheduleGenContent(
     paddingValues: PaddingValues,
-    prompt: String,
+    scheduleInput: String,
     generatedEventsUiState: GeneratedEventsUiState,
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
@@ -36,8 +46,32 @@ internal fun CarouselScheduleGenContent(
             .fillMaxSize()
             .padding(paddingValues),
     ) {
+        var baseText: String? by remember { mutableStateOf(null) }
+
         OutlinedTextField(
-            value = prompt,
+            value = TextFieldValue(
+                buildAnnotatedString {
+                    val base = baseText
+                    if (base == null) {
+                        append(scheduleInput)
+                        return@buildAnnotatedString
+                    } else {
+                        val sentence = scheduleInput.split(base)
+                        append(sentence[0])
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Blue,
+                                fontWeight = FontWeight.Bold,
+                            ),
+                        ) {
+                            append(base)
+                        }
+                        if (sentence.size > 1) {
+                            append(sentence[1])
+                        }
+                    }
+                },
+            ),
             onValueChange = {},
             readOnly = true,
             modifier = Modifier
@@ -58,6 +92,7 @@ internal fun CarouselScheduleGenContent(
                 CarouselScheduleEvents(
                     events = generatedEventsUiState.events,
                     placeholder = false,
+                    onEventClick = { baseText = it },
                     onEventChange = onEventChange,
                 )
             }
@@ -82,10 +117,12 @@ private fun CarouselScheduleEvents(
     events: List<ScheduleEvent>,
     placeholder: Boolean,
     modifier: Modifier = Modifier,
+    onEventClick: (baseText: String) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
+    val carouselState = rememberCarouselState { events.count() }
     HorizontalMultiBrowseCarousel(
-        state = rememberCarouselState { events.count() },
+        state = carouselState,
         preferredItemWidth = 600.dp,
         modifier = modifier,
         itemSpacing = 8.dp,
@@ -98,6 +135,7 @@ private fun CarouselScheduleEvents(
                 .maskClip(CardDefaults.shape)
                 .padding(start = if (i == 0 || events.lastIndex == i) 0.dp else 16.dp)
                 .placeholder(visible = placeholder),
+            onEventClick = onEventClick,
             onEventChange = onEventChange,
         )
     }
@@ -110,7 +148,7 @@ fun CarouselScheduleGenContentPreview_Loading() {
         Surface {
             CarouselScheduleGenContent(
                 paddingValues = PaddingValues(0.dp),
-                prompt = fakePrompt,
+                scheduleInput = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Loading,
             )
         }
@@ -124,7 +162,7 @@ fun CarouselScheduleGenContentPreview_Generated_List() {
         Surface {
             CarouselScheduleGenContent(
                 paddingValues = PaddingValues(0.dp),
-                prompt = fakePrompt,
+                scheduleInput = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
             )
         }
@@ -138,7 +176,7 @@ fun CarouselScheduleGenContentPreview_Error() {
         Surface {
             CarouselScheduleGenContent(
                 paddingValues = PaddingValues(0.dp),
-                prompt = fakePrompt,
+                scheduleInput = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Error("予定の生成に失敗しました"),
             )
         }

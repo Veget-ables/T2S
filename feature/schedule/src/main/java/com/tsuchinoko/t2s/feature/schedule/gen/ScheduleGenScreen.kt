@@ -234,7 +234,7 @@ private fun ScheduleGenScreen(
 
                 DisplayType.Carousel -> CarouselScheduleGenContent(
                     paddingValues = paddingValues,
-                    prompt = scheduleGenUiState.prompt,
+                    scheduleInput = scheduleGenUiState.prompt,
                     generatedEventsUiState = generatedEventsUiState,
                     onEventChange = onEventChange,
                 )

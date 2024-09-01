@@ -6,7 +6,6 @@ import com.google.ai.client.generativeai.type.FunctionDeclaration
 import com.google.ai.client.generativeai.type.Schema
 import com.google.ai.client.generativeai.type.Tool
 import com.google.ai.client.generativeai.type.content
-import com.tsuchinok.t2s.core.common.EMPTY_SYMBOL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,14 +35,16 @@ class GeminiModule {
         Schema.str(name = "base", description = "title, memo, start, endを決定する証拠となったテキスト"),
     ) { title, memo, start, end, base ->
         JSONObject().apply {
-            put("title", title)
-            if (memo == EMPTY_SYMBOL) put("memo", "") else put("memo", memo)
+            put("title", title.formatToNewLine())
+            put("memo", memo.formatToNewLine())
             put("start", start)
             put("end", end)
-            put("base", base)
+            put("base", base.formatToNewLine())
         }
     }
 }
+
+private fun String.formatToNewLine(): String = replace("\\n", "\n")
 
 private fun <T, U, V, W, X> defineFunction(
     name: String,
