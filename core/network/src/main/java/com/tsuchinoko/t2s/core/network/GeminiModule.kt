@@ -32,7 +32,7 @@ class GeminiModule {
         Schema.str(name = "memo", description = "予定のメモ"),
         Schema.str(name = "start", description = "予定の開始日時"),
         Schema.str(name = "end", description = "予定の終了日時"),
-        Schema.str(name = "base", description = "title, memo, start, endを決定する証拠となったテキスト"),
+        Schema.str(name = "base", description = "予定フォーマットの「title」,「memo」,「start」の時刻(HH:mm),「end」の時刻(HH:mm)を決定する証拠となった元のテキスト"),
     ) { title, memo, start, end, base ->
         JSONObject().apply {
             put("title", title.formatToNewLine())
