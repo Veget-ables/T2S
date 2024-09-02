@@ -50,7 +50,7 @@ internal val fakeEvents = listOf(
 private fun createScheduleEvent(
     id: UUID = UUID.randomUUID(),
     title: String,
-    memo: String? = null,
+    memo: String = "メモなし",
     start: LocalDateTime,
     end: LocalDateTime,
     base: String = "",

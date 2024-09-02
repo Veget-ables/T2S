@@ -105,7 +105,7 @@ internal val skeletonEvents: List<ScheduleEvent> = run {
         ScheduleEvent(
             id = UUID.randomUUID(),
             title = "",
-            memo = null,
+            memo = "",
             start = time,
             end = time,
             base = "",

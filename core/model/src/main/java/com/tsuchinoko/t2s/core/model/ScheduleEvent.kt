@@ -6,7 +6,7 @@ import java.util.UUID
 data class ScheduleEvent(
     val id: UUID,
     val title: String,
-    val memo: String?,
+    val memo: String,
     val start: LocalDateTime,
     val end: LocalDateTime,
     val base: String,

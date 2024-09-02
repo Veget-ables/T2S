@@ -175,7 +175,7 @@ internal fun EditableEventContent(
             },
         )
         OutlinedTextField(
-            value = event.memo ?: "",
+            value = event.memo,
             onValueChange = {
                 val new = event.copy(memo = it)
                 onEventChange(new)
