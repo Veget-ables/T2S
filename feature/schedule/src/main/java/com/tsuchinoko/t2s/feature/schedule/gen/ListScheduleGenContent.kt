@@ -21,8 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.component.placeholder
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Composable
 internal fun ListScheduleGenContent(
@@ -100,16 +98,8 @@ internal fun ListScheduleGenContent(
 }
 
 internal val skeletonEvents: List<ScheduleEvent> = run {
-    val time = LocalDateTime.parse("2024-08-25T00:00")
     (0..10).toList().map {
-        ScheduleEvent(
-            id = UUID.randomUUID(),
-            title = "",
-            memo = "",
-            start = time,
-            end = time,
-            base = "",
-        )
+        fakeLongTitleAndMemoEvent
     }
 }
 

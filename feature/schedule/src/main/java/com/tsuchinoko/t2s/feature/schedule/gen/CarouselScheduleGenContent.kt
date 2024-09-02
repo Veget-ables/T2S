@@ -1,6 +1,5 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -94,6 +93,7 @@ internal fun CarouselScheduleGenContent(
                 CarouselScheduleEvents(
                     events = skeletonEvents,
                     placeholder = true,
+                    modifier = Modifier.weight(0.4f),
                 )
             }
 
@@ -102,7 +102,7 @@ internal fun CarouselScheduleGenContent(
                     events = generatedEventsUiState.events,
                     placeholder = false,
                     modifier = Modifier.weight(0.4f),
-                    onEventClick = { baseText = it },
+                    onTargetClick = { baseText = it },
                     onEventChange = onEventChange,
                 )
             }
@@ -127,7 +127,7 @@ private fun CarouselScheduleEvents(
     events: List<ScheduleEvent>,
     placeholder: Boolean,
     modifier: Modifier = Modifier,
-    onEventClick: (baseText: String) -> Unit = {},
+    onTargetClick: (baseText: String) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
     val carouselState = rememberCarouselState { events.count() }
@@ -144,14 +144,18 @@ private fun CarouselScheduleEvents(
                 .fillMaxWidth()
                 .maskClip(CardDefaults.shape)
                 .padding(start = if (i == 0 || events.lastIndex == i) 0.dp else 16.dp)
-                .placeholder(visible = placeholder)
-                .animateContentSize(),
+                .placeholder(visible = placeholder),
+            onTargetClick = onTargetClick,
         )
     }
 }
 
 @Composable
-private fun GeneratedEventCard(event: ScheduleEvent, modifier: Modifier = Modifier) {
+private fun GeneratedEventCard(
+    event: ScheduleEvent,
+    modifier: Modifier = Modifier,
+    onTargetClick: (baseText: String) -> Unit = {},
+) {
     Card(modifier = modifier) {
         Column(
             modifier = Modifier.padding(
@@ -162,7 +166,7 @@ private fun GeneratedEventCard(event: ScheduleEvent, modifier: Modifier = Modifi
             ),
         ) {
             Row {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { onTargetClick(event.base) }) {
                     Icon(
                         painter = painterResource(R.drawable.location_search),
                         contentDescription = "Location",

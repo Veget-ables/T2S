@@ -33,6 +33,13 @@ internal val fakeLongMemoEvent = createScheduleEvent(
     end = LocalDateTime.parse("2020-02-16T21:30"),
 )
 
+internal val fakeLongTitleAndMemoEvent = createScheduleEvent(
+    title = "タイトルとメモがとても長くてタイトルは2行以上になってしまう予定",
+    memo = "6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。6行以上にまたがるように作るられたメモ。これは6行にまたがってもレイアウトが壊れなければOK。",
+    start = LocalDateTime.parse("2020-02-15T21:30"),
+    end = LocalDateTime.parse("2020-02-16T21:30"),
+)
+
 internal val fake2DaysEvent = createScheduleEvent(
     title = "日をまたぐ予定",
     start = LocalDateTime.parse("2020-02-15T21:30"),
@@ -45,6 +52,7 @@ internal val fakeEvents = listOf(
     fake2DaysEvent,
     fakeLongTitleEvent,
     fakeLongMemoEvent,
+    fakeLongTitleAndMemoEvent,
 )
 
 private fun createScheduleEvent(
