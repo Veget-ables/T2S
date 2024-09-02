@@ -74,125 +74,120 @@ internal fun EditableEventContent(
     modifier: Modifier = Modifier,
     onEventChange: (ScheduleEvent) -> Unit = {},
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 16.dp,
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 16.dp,
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text("終日")
-                Switch(
-                    checked = event.isAllDay,
-                    onCheckedChange = {
-                        if (event.isAllDay) {
-                            val newStart = event.start.withHour(0).withMinute(0)
-                            val new = event.copy(start = newStart, end = newStart)
-                            onEventChange(new)
-                        } else {
-                            val newStart = event.start.withHour(0).withMinute(0)
-                            val newEnd = newStart.withHour(23).withMinute(59)
-                            val new = event.copy(start = newStart, end = newEnd)
-                            onEventChange(new)
-                        }
-                    },
-                )
-            }
+            Text("終日")
+            Switch(
+                checked = event.isAllDay,
+                onCheckedChange = {
+                    if (event.isAllDay) {
+                        val newStart = event.start.withHour(0).withMinute(0)
+                        val new = event.copy(start = newStart, end = newStart)
+                        onEventChange(new)
+                    } else {
+                        val newStart = event.start.withHour(0).withMinute(0)
+                        val newEnd = newStart.withHour(23).withMinute(59)
+                        val new = event.copy(start = newStart, end = newEnd)
+                        onEventChange(new)
+                    }
+                },
+            )
+        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-            ) {
-                val start = event.start
-                EventDateSelection(
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+        ) {
+            val start = event.start
+            EventDateSelection(
+                localDateTime = start,
+                modifier = Modifier.weight(1f, true),
+                onDateChange = {
+                    val newDateTime = it.atTime(start.hour, start.minute)
+                    val new = event.copy(start = newDateTime)
+                    onEventChange(new)
+                },
+            )
+            if (event.isAllDay.not()) {
+                EventTimeSelection(
                     localDateTime = start,
-                    modifier = Modifier.weight(1f, true),
-                    onDateChange = {
-                        val newDateTime = it.atTime(start.hour, start.minute)
+                    onTimeChange = { hour, minute ->
+                        val newDateTime = start.withHour(hour).withMinute(minute)
                         val new = event.copy(start = newDateTime)
                         onEventChange(new)
                     },
                 )
-                if (event.isAllDay.not()) {
-                    EventTimeSelection(
-                        localDateTime = start,
-                        onTimeChange = { hour, minute ->
-                            val newDateTime = start.withHour(hour).withMinute(minute)
-                            val new = event.copy(start = newDateTime)
-                            onEventChange(new)
-                        },
-                    )
-                }
             }
-
-            Spacer(Modifier.height(8.dp))
-
-            if (event.isAllDay.not()) {
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-                ) {
-                    val end = event.end
-                    EventDateSelection(
-                        localDateTime = end,
-                        modifier = Modifier.weight(1f, true),
-                        onDateChange = {
-                            val newDateTime = it.atTime(end.hour, end.minute)
-                            val new = event.copy(end = newDateTime)
-                            onEventChange(new)
-                        },
-                    )
-                    EventTimeSelection(
-                        localDateTime = end,
-                        onTimeChange = { hour, minute ->
-                            val newDateTime = end.withHour(hour).withMinute(minute)
-                            val new = event.copy(end = newDateTime)
-                            onEventChange(new)
-                        },
-                    )
-                }
-            }
-
-            OutlinedTextField(
-                value = event.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                onValueChange = {
-                    val new = event.copy(title = it)
-                    onEventChange(new)
-                },
-                maxLines = 2,
-                label = {
-                    Text("予定のタイトル")
-                },
-            )
-            OutlinedTextField(
-                value = event.memo ?: "",
-                onValueChange = {
-                    val new = event.copy(memo = it)
-                    onEventChange(new)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                label = {
-                    Text("予定のメモ")
-                },
-                maxLines = 3,
-            )
         }
+
+        Spacer(Modifier.height(8.dp))
+
+        if (event.isAllDay.not()) {
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+            ) {
+                val end = event.end
+                EventDateSelection(
+                    localDateTime = end,
+                    modifier = Modifier.weight(1f, true),
+                    onDateChange = {
+                        val newDateTime = it.atTime(end.hour, end.minute)
+                        val new = event.copy(end = newDateTime)
+                        onEventChange(new)
+                    },
+                )
+                EventTimeSelection(
+                    localDateTime = end,
+                    onTimeChange = { hour, minute ->
+                        val newDateTime = end.withHour(hour).withMinute(minute)
+                        val new = event.copy(end = newDateTime)
+                        onEventChange(new)
+                    },
+                )
+            }
+        }
+
+        OutlinedTextField(
+            value = event.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            onValueChange = {
+                val new = event.copy(title = it)
+                onEventChange(new)
+            },
+            maxLines = 2,
+            label = {
+                Text("予定のタイトル")
+            },
+        )
+        OutlinedTextField(
+            value = event.memo ?: "",
+            onValueChange = {
+                val new = event.copy(memo = it)
+                onEventChange(new)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            label = {
+                Text("予定のメモ")
+            },
+            maxLines = 3,
+        )
     }
 }
 
