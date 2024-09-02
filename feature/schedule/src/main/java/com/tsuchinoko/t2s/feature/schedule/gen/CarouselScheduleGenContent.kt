@@ -46,7 +46,7 @@ internal fun CarouselScheduleGenContent(
     paddingValues: PaddingValues,
     scheduleInput: String,
     generatedEventsUiState: GeneratedEventsUiState,
-    onEventChange: (ScheduleEvent) -> Unit = {},
+    onEditClick: (ScheduleEvent) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -103,7 +103,7 @@ internal fun CarouselScheduleGenContent(
                     placeholder = false,
                     modifier = Modifier.weight(0.4f),
                     onTargetClick = { baseText = it },
-                    onEventChange = onEventChange,
+                    onEditClick = onEditClick,
                 )
             }
 
@@ -128,7 +128,7 @@ private fun CarouselScheduleEvents(
     placeholder: Boolean,
     modifier: Modifier = Modifier,
     onTargetClick: (baseText: String) -> Unit = {},
-    onEventChange: (ScheduleEvent) -> Unit = {},
+    onEditClick: (ScheduleEvent) -> Unit = {},
 ) {
     val carouselState = rememberCarouselState { events.count() }
     HorizontalMultiBrowseCarousel(
@@ -146,6 +146,7 @@ private fun CarouselScheduleEvents(
                 .padding(start = if (i == 0 || events.lastIndex == i) 0.dp else 16.dp)
                 .placeholder(visible = placeholder),
             onTargetClick = onTargetClick,
+            onEditClick = onEditClick,
         )
     }
 }
@@ -155,6 +156,7 @@ private fun GeneratedEventCard(
     event: ScheduleEvent,
     modifier: Modifier = Modifier,
     onTargetClick: (baseText: String) -> Unit = {},
+    onEditClick: (ScheduleEvent) -> Unit = {},
 ) {
     Card(modifier = modifier) {
         Column(
@@ -175,7 +177,7 @@ private fun GeneratedEventCard(
 
                 Spacer(Modifier.weight(1f))
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = { onEditClick(event) }) {
                     Icon(
                         painter = painterResource(R.drawable.edit),
                         contentDescription = "Edit",

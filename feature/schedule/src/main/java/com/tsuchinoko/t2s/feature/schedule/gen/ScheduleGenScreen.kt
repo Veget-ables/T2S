@@ -15,6 +15,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -23,11 +24,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -224,6 +228,7 @@ private fun ScheduleGenScreen(
                 SnackbarHost(hostState = snackbarHostState)
             },
         ) { paddingValues ->
+            var editTargetEvent: ScheduleEvent? by remember { mutableStateOf(null) }
             when (scheduleGenUiState.displayType) {
                 DisplayType.List -> ListScheduleGenContent(
                     paddingValues = paddingValues,
@@ -236,8 +241,24 @@ private fun ScheduleGenScreen(
                     paddingValues = paddingValues,
                     scheduleInput = scheduleGenUiState.prompt,
                     generatedEventsUiState = generatedEventsUiState,
-                    onEventChange = onEventChange,
+                    onEditClick = {
+                        scope.launch { editTargetEvent = it }
+                    },
                 )
+            }
+
+            editTargetEvent?.let { event ->
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        editTargetEvent = null
+                    },
+                    sheetState = rememberModalBottomSheetState(),
+                ) {
+                    EditableEventContent(
+                        event = event,
+                        onEventChange = onEventChange,
+                    )
+                }
             }
         }
     }

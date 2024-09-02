@@ -1,5 +1,6 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import com.tsuchinoko.t2s.core.model.EventId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import java.time.LocalDateTime
 import java.util.UUID
@@ -56,7 +57,7 @@ internal val fakeEvents = listOf(
 )
 
 private fun createScheduleEvent(
-    id: UUID = UUID.randomUUID(),
+    id: EventId = EventId(UUID.randomUUID()),
     title: String,
     memo: String = "メモなし",
     start: LocalDateTime,

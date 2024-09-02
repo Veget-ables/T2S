@@ -186,7 +186,7 @@ internal fun EditableEventContent(
             label = {
                 Text("予定のメモ")
             },
-            maxLines = 3,
+            maxLines = 5,
         )
     }
 }

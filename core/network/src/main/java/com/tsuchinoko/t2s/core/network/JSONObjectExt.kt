@@ -1,5 +1,6 @@
 package com.tsuchinoko.t2s.core.network
 
+import com.tsuchinoko.t2s.core.model.EventId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -12,7 +13,7 @@ internal fun JSONObject.toScheduleEvent(): ScheduleEvent {
     val start = LocalDateTime.parse(getString("start"))
     val end = LocalDateTime.parse(getString("end"))
     return ScheduleEvent(
-        id = UUID.randomUUID(),
+        id = EventId(UUID.randomUUID()),
         title = title,
         memo = memo,
         start = start,
