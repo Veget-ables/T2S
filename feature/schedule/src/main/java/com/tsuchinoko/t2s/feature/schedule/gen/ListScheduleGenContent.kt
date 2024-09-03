@@ -67,7 +67,7 @@ internal fun ListScheduleGenContent(
                     val events = generatedEventsUiState.events
                     items(
                         items = events,
-                        key = { it.id },
+                        key = { it.id.value },
                     ) { event ->
                         GeneratedEvent(
                             event = event,
