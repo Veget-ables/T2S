@@ -2,6 +2,7 @@ package com.tsuchinoko.t2s.feature.schedule.gen
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -246,14 +247,17 @@ private fun ScheduleGenScreen(
                     },
                 )
             }
-
+            val sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = false,
+            )
             editTargetEvent?.let { event ->
                 ModalBottomSheet(
+                    modifier = Modifier.fillMaxHeight(),
                     onDismissRequest = {
                         onEventChange(event)
                         editTargetEvent = null
                     },
-                    sheetState = rememberModalBottomSheetState(),
+                    sheetState = sheetState,
                 ) {
                     EditableEventContent(
                         event = event,
