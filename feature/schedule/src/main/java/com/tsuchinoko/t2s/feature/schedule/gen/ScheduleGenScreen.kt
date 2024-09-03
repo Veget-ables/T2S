@@ -250,13 +250,17 @@ private fun ScheduleGenScreen(
             editTargetEvent?.let { event ->
                 ModalBottomSheet(
                     onDismissRequest = {
+                        onEventChange(event)
                         editTargetEvent = null
                     },
                     sheetState = rememberModalBottomSheetState(),
                 ) {
                     EditableEventContent(
                         event = event,
-                        onEventChange = onEventChange,
+                        onEventChange = { newEvent ->
+                            editTargetEvent = newEvent
+                            onEventChange(newEvent)
+                        },
                     )
                 }
             }
