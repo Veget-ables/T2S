@@ -214,6 +214,12 @@ private fun GeneratedEventCard(
     }
 }
 
+internal val skeletonEvents: List<ScheduleEvent> = run {
+    (0..10).toList().map {
+        fakeLongTitleAndMemoEvent
+    }
+}
+
 @Preview
 @Composable
 fun CarouselScheduleGenContentPreview_Loading() {

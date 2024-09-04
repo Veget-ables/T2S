@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -72,7 +73,6 @@ internal fun ScheduleGenScreen(
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
-        onDisplayTypeChange = scheduleGenViewModel::updateDisplayType,
     )
 }
 
@@ -86,7 +86,6 @@ private fun ScheduleGenScreen(
     onBackClick: () -> Unit = {},
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
-    onDisplayTypeChange: (type: DisplayType) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
@@ -167,19 +166,11 @@ private fun ScheduleGenScreen(
                         }
 
                         IconButton(
-                            onClick = {
-                                if (scheduleGenUiState.displayType == DisplayType.List) {
-                                    onDisplayTypeChange(DisplayType.Carousel)
-                                } else {
-                                    onDisplayTypeChange(DisplayType.List)
-                                }
-                            },
+                            onClick = {},
                         ) {
-                            val drawableId =
-                                if (scheduleGenUiState.displayType == DisplayType.List) R.drawable.carousel else R.drawable.list
                             Icon(
-                                painter = painterResource(drawableId),
-                                contentDescription = "アカウントを設定",
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "追加",
                             )
                         }
                     },
@@ -229,23 +220,16 @@ private fun ScheduleGenScreen(
             },
         ) { paddingValues ->
             var editTargetEvent: ScheduleEvent? by remember { mutableStateOf(null) }
-            when (scheduleGenUiState.displayType) {
-                DisplayType.List -> ListScheduleGenContent(
-                    paddingValues = paddingValues,
-                    prompt = scheduleGenUiState.prompt,
-                    generatedEventsUiState = generatedEventsUiState,
-                    onEventChange = onEventChange,
-                )
 
-                DisplayType.Carousel -> CarouselScheduleGenContent(
-                    paddingValues = paddingValues,
-                    scheduleInput = scheduleGenUiState.prompt,
-                    generatedEventsUiState = generatedEventsUiState,
-                    onEditClick = {
-                        scope.launch { editTargetEvent = it }
-                    },
-                )
-            }
+            CarouselScheduleGenContent(
+                paddingValues = paddingValues,
+                scheduleInput = scheduleGenUiState.prompt,
+                generatedEventsUiState = generatedEventsUiState,
+                onEditClick = {
+                    scope.launch { editTargetEvent = it }
+                },
+            )
+
             val sheetState = rememberModalBottomSheetState(
                 skipPartiallyExpanded = true,
             )
@@ -284,22 +268,6 @@ fun ScheduleGenScreenPreview_Initial() {
 
 @Preview
 @Composable
-fun ScheduleGenScreenPreview_Generated_List() {
-    T2STheme {
-        ScheduleGenScreen(
-            calendarAccountUiState = CalendarAccountUiState.Initial,
-            scheduleGenUiState = ScheduleGenUiState(
-                prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
-                generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
-                displayType = DisplayType.List,
-            ),
-            registryResultUiState = RegistryResultUiState.Standby,
-        )
-    }
-}
-
-@Preview
-@Composable
 fun ScheduleGenScreenPreview_Generated_Carousel() {
     T2STheme {
         ScheduleGenScreen(
@@ -307,7 +275,6 @@ fun ScheduleGenScreenPreview_Generated_Carousel() {
             scheduleGenUiState = ScheduleGenUiState(
                 prompt = "2020年2月15日1:30〜25日23:30　通常予定\n これはメモです\n ",
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
-                displayType = DisplayType.Carousel,
             ),
             registryResultUiState = RegistryResultUiState.Standby,
         )
