@@ -17,8 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -130,7 +130,9 @@ private fun CarouselScheduleEvents(
     onTargetClick: (baseText: String) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
 ) {
-    val carouselState = rememberCarouselState { events.count() }
+    val carouselState = remember(events.size) {
+        CarouselState { events.count() }
+    }
     HorizontalMultiBrowseCarousel(
         state = carouselState,
         preferredItemWidth = 600.dp,

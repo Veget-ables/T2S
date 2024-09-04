@@ -56,6 +56,16 @@ internal class ScheduleGenViewModel @Inject constructor(
         }
     }
 
+    fun addEvent(event: ScheduleEvent) {
+        val uiState = _scheduleGenUiState.value.generatedEventsUiState
+        if (uiState is GeneratedEventsUiState.Generated) {
+            val newEvents = uiState.events.toMutableList().apply { add(0, event) }
+            _scheduleGenUiState.update {
+                it.copy(generatedEventsUiState = GeneratedEventsUiState.Generated(newEvents))
+            }
+        }
+    }
+
     fun updateInputEvent(event: ScheduleEvent) {
         val uiState = _scheduleGenUiState.value.generatedEventsUiState
         if (uiState is GeneratedEventsUiState.Generated) {

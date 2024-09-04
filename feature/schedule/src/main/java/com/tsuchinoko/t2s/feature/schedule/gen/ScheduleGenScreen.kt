@@ -44,6 +44,7 @@ import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Account
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
+import com.tsuchinoko.t2s.core.model.EventId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.R
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
@@ -51,6 +52,8 @@ import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import com.tsuchinoko.t2s.feature.schedule.account.fakeUiStateAccountSelected
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Composable
 internal fun ScheduleGenScreen(
@@ -71,6 +74,7 @@ internal fun ScheduleGenScreen(
         onBackClick = onBackClick,
         onAccountChange = calendarAccountViewModel::updateAccount,
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
+        onAddClick = scheduleGenViewModel::addEvent,
         onEventChange = scheduleGenViewModel::updateInputEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
     )
@@ -86,6 +90,7 @@ private fun ScheduleGenScreen(
     onBackClick: () -> Unit = {},
     onAccountChange: (account: Account) -> Unit = {},
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
+    onAddClick: (ScheduleEvent) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
@@ -137,6 +142,8 @@ private fun ScheduleGenScreen(
             }
         },
     ) {
+        var editTargetEvent: ScheduleEvent? by remember { mutableStateOf(null) }
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -166,7 +173,19 @@ private fun ScheduleGenScreen(
                         }
 
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                val now = LocalDateTime.now()
+                                val newEvent = ScheduleEvent(
+                                    id = EventId(value = UUID.randomUUID()),
+                                    title = "",
+                                    memo = "",
+                                    start = now,
+                                    end = now,
+                                    base = "",
+                                )
+                                onAddClick(newEvent)
+                                editTargetEvent = newEvent
+                            },
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -219,8 +238,6 @@ private fun ScheduleGenScreen(
                 SnackbarHost(hostState = snackbarHostState)
             },
         ) { paddingValues ->
-            var editTargetEvent: ScheduleEvent? by remember { mutableStateOf(null) }
-
             CarouselScheduleGenContent(
                 paddingValues = paddingValues,
                 scheduleInput = scheduleGenUiState.prompt,
