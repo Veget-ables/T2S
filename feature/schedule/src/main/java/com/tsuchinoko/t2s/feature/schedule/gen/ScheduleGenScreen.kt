@@ -76,6 +76,7 @@ internal fun ScheduleGenScreen(
         onTargetCalendarChange = calendarAccountViewModel::updateTargetCalendar,
         onAddClick = scheduleGenViewModel::addEvent,
         onEventChange = scheduleGenViewModel::updateInputEvent,
+        onDeleteClick = scheduleGenViewModel::deleteEvent,
         onRegistryClick = scheduleGenViewModel::registryEvents,
     )
 }
@@ -92,6 +93,7 @@ private fun ScheduleGenScreen(
     onTargetCalendarChange: (calendar: Calendar) -> Unit = {},
     onAddClick: (ScheduleEvent) -> Unit = {},
     onEventChange: (ScheduleEvent) -> Unit = {},
+    onDeleteClick: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (calendarId: CalendarId, events: List<ScheduleEvent>) -> Unit = { _, _ -> },
 ) {
     val scope = rememberCoroutineScope()
@@ -245,6 +247,7 @@ private fun ScheduleGenScreen(
                 onEditClick = {
                     scope.launch { editTargetEvent = it }
                 },
+                onDeleteClick = onDeleteClick,
             )
 
             val sheetState = rememberModalBottomSheetState(

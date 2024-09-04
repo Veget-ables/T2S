@@ -47,6 +47,7 @@ internal fun CarouselScheduleGenContent(
     scheduleInput: String,
     generatedEventsUiState: GeneratedEventsUiState,
     onEditClick: (ScheduleEvent) -> Unit = {},
+    onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -104,6 +105,7 @@ internal fun CarouselScheduleGenContent(
                     modifier = Modifier.weight(0.4f),
                     onTargetClick = { baseText = it },
                     onEditClick = onEditClick,
+                    onDeleteClick = onDeleteClick,
                 )
             }
 
@@ -129,6 +131,7 @@ private fun CarouselScheduleEvents(
     modifier: Modifier = Modifier,
     onTargetClick: (baseText: String) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
+    onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
     val carouselState = remember(events.size) {
         CarouselState { events.count() }
@@ -149,6 +152,7 @@ private fun CarouselScheduleEvents(
                 .placeholder(visible = placeholder),
             onTargetClick = onTargetClick,
             onEditClick = onEditClick,
+            onDeleteClick = onDeleteClick,
         )
     }
 }
@@ -159,6 +163,7 @@ private fun GeneratedEventCard(
     modifier: Modifier = Modifier,
     onTargetClick: (baseText: String) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
+    onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
     Card(modifier = modifier) {
         Column(
@@ -186,7 +191,7 @@ private fun GeneratedEventCard(
                     )
                 }
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = { onDeleteClick(event) }) {
                     Icon(
                         painter = painterResource(R.drawable.delete),
                         contentDescription = "Delete",

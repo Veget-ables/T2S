@@ -79,6 +79,18 @@ internal class ScheduleGenViewModel @Inject constructor(
         }
     }
 
+    fun deleteEvent(event: ScheduleEvent) {
+        val uiState = _scheduleGenUiState.value.generatedEventsUiState
+        if (uiState is GeneratedEventsUiState.Generated) {
+            val newEvents = uiState.events.toMutableList().apply {
+                remove(event)
+            }
+            _scheduleGenUiState.update {
+                it.copy(generatedEventsUiState = GeneratedEventsUiState.Generated(newEvents))
+            }
+        }
+    }
+
     fun registryEvents(calendarId: CalendarId, events: List<ScheduleEvent>) {
         viewModelScope.launch {
             resultFlow {
