@@ -1,6 +1,5 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -24,10 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
@@ -39,34 +39,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val TimeZoneUTC = ZoneId.of("UTC")
-
-@Composable
-internal fun GeneratedEvent(
-    event: ScheduleEvent,
-    modifier: Modifier = Modifier,
-    onEventClick: (baseText: String) -> Unit = {},
-    onEventChange: (ScheduleEvent) -> Unit = {},
-) {
-    var isExpanded by rememberSaveable { mutableStateOf(false) }
-    Card(
-        modifier = modifier
-            .animateContentSize(),
-        onClick = {
-            onEventClick(event.base)
-            isExpanded = !isExpanded
-        },
-    ) {
-        if (isExpanded) {
-            EditableEventContent(
-                event = event,
-                modifier = Modifier.fillMaxWidth(),
-                onEventChange = onEventChange,
-            )
-        } else {
-            EventContent(event = event)
-        }
-    }
-}
 
 @Composable
 internal fun EditableEventContent(
@@ -83,8 +55,23 @@ internal fun EditableEventContent(
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        OutlinedTextField(
+            value = event.title,
+            modifier = Modifier
+                .fillMaxWidth(),
+            textStyle = TextStyle(fontSize = MaterialTheme.typography.titleLarge.fontSize),
+            onValueChange = {
+                val new = event.copy(title = it)
+                onEventChange(new)
+            },
+            maxLines = 2,
+            label = {
+                Text("予定のタイトル")
+            },
+        )
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -161,20 +148,6 @@ internal fun EditableEventContent(
         }
 
         OutlinedTextField(
-            value = event.title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            onValueChange = {
-                val new = event.copy(title = it)
-                onEventChange(new)
-            },
-            maxLines = 2,
-            label = {
-                Text("予定のタイトル")
-            },
-        )
-        OutlinedTextField(
             value = event.memo,
             onValueChange = {
                 val new = event.copy(memo = it)
@@ -182,7 +155,7 @@ internal fun EditableEventContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp),
+                .padding(top = 12.dp),
             label = {
                 Text("予定のメモ")
             },
