@@ -239,7 +239,7 @@ private fun GeneratedEventCard(
     }
 }
 
-internal val skeletonEvents: List<ScheduleEvent> = run {
+private val skeletonEvents: List<ScheduleEvent> = run {
     (0..10).toList().map {
         fakeLongTitleAndMemoEvent
     }
