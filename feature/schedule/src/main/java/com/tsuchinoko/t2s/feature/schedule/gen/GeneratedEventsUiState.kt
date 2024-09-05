@@ -7,3 +7,9 @@ internal sealed interface GeneratedEventsUiState {
     data class Generated(val events: List<ScheduleEvent>) : GeneratedEventsUiState
     data class Error(val message: String) : GeneratedEventsUiState
 }
+
+internal val List<ScheduleEvent>.copiedText: String
+    get() = map { event -> event.copiedText }.joinToString(separator = "") { it + "\n\n" }
+
+internal val ScheduleEvent.copiedText: String
+    get() = "${displayDateTime.value}\n$title\n$memo"

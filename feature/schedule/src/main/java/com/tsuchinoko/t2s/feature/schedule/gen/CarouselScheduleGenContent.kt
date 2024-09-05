@@ -303,9 +303,6 @@ private fun GeneratedEventCard(
     }
 }
 
-private val ScheduleEvent.copiedText: String
-    get() = "$title\n${displayDateTime.value}\n$memo"
-
 private val skeletonEvents: List<ScheduleEvent> = run {
     (0..10).toList().map {
         fakeLongTitleAndMemoEvent
