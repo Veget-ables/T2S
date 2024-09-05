@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class GeminiScheduleGenDataSource @Inject constructor(
     @Dispatcher(T2SDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-    private val generativeModel: GenerativeModel,
+    @ScheduleGenerativeModel private val generativeModel: GenerativeModel,
 ) : ScheduleGenNetworkDataSource {
     override suspend fun generate(prompt: String): List<ScheduleEvent> {
         return withContext(ioDispatcher) {

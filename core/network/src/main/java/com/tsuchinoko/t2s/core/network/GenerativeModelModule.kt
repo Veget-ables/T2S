@@ -11,21 +11,27 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.json.JSONObject
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ScheduleGenerativeModel
 
 @Module
 @InstallIn(SingletonComponent::class)
-class GeminiModule {
+class GenerativeModelModule {
     @Singleton
     @Provides
-    fun provideGenerativeModel(): GenerativeModel = GenerativeModel(
+    @ScheduleGenerativeModel
+    fun provideScheduleGenerativeModel(): GenerativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.apiKey,
-        tools = listOf(Tool(listOf(getScheduleStructure))),
+        tools = listOf(Tool(listOf(scheduleDeclarationFunction))),
         systemInstruction = content { text("あなたはカレンダーに予定を登録しようとしている人です。") },
     )
 
-    private val getScheduleStructure = defineFunction(
+    private val scheduleDeclarationFunction = defineFunction(
         name = "getScheduleStructure",
         description = "予定を表す文字列から整理された予定のJson構造を取得する",
         Schema.str(name = "title", description = "予定のタイトル"),
