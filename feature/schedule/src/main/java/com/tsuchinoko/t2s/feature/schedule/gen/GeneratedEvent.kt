@@ -64,7 +64,7 @@ internal fun EditableEventContent(
                 val new = event.copy(title = it)
                 onEventChange(new)
             },
-            maxLines = 2,
+            maxLines = 3,
             label = {
                 Text("予定のタイトル")
             },
