@@ -30,8 +30,8 @@ class GoogleCalendarDataSource @Inject constructor(
         }
     }
 
-    override suspend fun insertEvents(calendarId: CalendarId, events: List<ScheduleEvent>) = withContext(ioDispatcher) {
-        try {
+    override suspend fun insertEvents(calendarId: CalendarId, events: List<ScheduleEvent>) =
+        withContext(ioDispatcher) {
             events.forEach { event ->
                 val googleCalendarEvent = event.convertToGoogleCalendarEvent()
                 service
@@ -39,13 +39,7 @@ class GoogleCalendarDataSource @Inject constructor(
                     .insert(calendarId.value, googleCalendarEvent)
                     .execute()
             }
-        } catch (e: UserRecoverableAuthIOException) {
-            throw RecoverableIntentError(
-                message = e.message,
-                intent = e.intent,
-            )
         }
-    }
 }
 
 private fun CalendarList.convert(): List<Calendar> = this.items.map { item ->
