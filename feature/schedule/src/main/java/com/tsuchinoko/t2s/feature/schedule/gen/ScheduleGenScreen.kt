@@ -20,6 +20,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -116,6 +117,7 @@ private fun ScheduleGenScreen(
                 val result = snackbarHostState.showSnackbar(
                     message = "カレンダーに予定を登録しました",
                     actionLabel = "開く",
+                    duration = SnackbarDuration.Long,
                 )
                 if (result == SnackbarResult.ActionPerformed) {
                     val intent = Intent(Intent.ACTION_VIEW).apply {
