@@ -50,7 +50,7 @@ internal fun EditableEventContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 16.dp,
+                horizontal = 24.dp,
                 vertical = 16.dp,
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -94,7 +94,9 @@ internal fun EditableEventContent(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         ) {
             val start = event.start
@@ -155,7 +157,7 @@ internal fun EditableEventContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp),
+                .padding(top = 16.dp),
             label = {
                 Text("予定のメモ")
             },
