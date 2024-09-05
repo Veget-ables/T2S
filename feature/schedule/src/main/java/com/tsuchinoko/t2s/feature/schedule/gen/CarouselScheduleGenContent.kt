@@ -1,5 +1,6 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,9 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +57,7 @@ internal fun CarouselScheduleGenContent(
     scheduleInput: String,
     generatedEventsUiState: GeneratedEventsUiState,
     onEditClick: (ScheduleEvent) -> Unit = {},
+    onRegistryClick: (ScheduleEvent) -> Unit = {},
     onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
     Column(
@@ -108,6 +116,7 @@ internal fun CarouselScheduleGenContent(
                     modifier = Modifier.weight(0.5f),
                     onTargetClick = { baseText = it },
                     onEditClick = onEditClick,
+                    onRegistryClick = onRegistryClick,
                     onDeleteClick = onDeleteClick,
                 )
             }
@@ -134,6 +143,7 @@ private fun CarouselScheduleEvents(
     modifier: Modifier = Modifier,
     onTargetClick: (baseText: String) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
+    onRegistryClick: (ScheduleEvent) -> Unit = {},
     onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
     val carouselState = remember(events.size) {
@@ -155,6 +165,7 @@ private fun CarouselScheduleEvents(
                 .placeholder(visible = placeholder),
             onTargetClick = onTargetClick,
             onEditClick = onEditClick,
+            onRegistryClick = onRegistryClick,
             onDeleteClick = onDeleteClick,
         )
     }
@@ -166,6 +177,7 @@ private fun GeneratedEventCard(
     modifier: Modifier = Modifier,
     onTargetClick: (baseText: String) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
+    onRegistryClick: (ScheduleEvent) -> Unit = {},
     onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
     Card(modifier = modifier) {
@@ -194,11 +206,58 @@ private fun GeneratedEventCard(
                     )
                 }
 
-                IconButton(onClick = { onDeleteClick(event) }) {
-                    Icon(
-                        painter = painterResource(R.drawable.delete),
-                        contentDescription = "Delete",
-                    )
+                var expanded by remember { mutableStateOf(false) }
+
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart),
+                ) {
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "メニュー")
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(
+                            text = { Text("コピー") },
+                            onClick = {
+                                expanded = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.copy),
+                                    contentDescription = null,
+                                )
+                            },
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("カレンダーに登録") },
+                            onClick = {
+                                onRegistryClick(event)
+                                expanded = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.event_upcoming),
+                                    contentDescription = null,
+                                )
+                            },
+                        )
+                        HorizontalDivider()
+
+                        DropdownMenuItem(
+                            text = { Text("削除") },
+                            onClick = {
+                                onDeleteClick(event)
+                                expanded = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.delete),
+                                    contentDescription = null,
+                                )
+                            },
+                        )
+                    }
                 }
             }
 

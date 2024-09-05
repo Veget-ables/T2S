@@ -247,6 +247,14 @@ private fun ScheduleGenScreen(
                 onEditClick = {
                     scope.launch { editTargetEvent = it }
                 },
+                onRegistryClick = { event ->
+                    if (calendarAccountUiState is CalendarAccountUiState.AccountSelected) {
+                        onRegistryClick(
+                            calendarAccountUiState.targetCalendar.id,
+                            listOf(event),
+                        )
+                    }
+                },
                 onDeleteClick = onDeleteClick,
             )
 
