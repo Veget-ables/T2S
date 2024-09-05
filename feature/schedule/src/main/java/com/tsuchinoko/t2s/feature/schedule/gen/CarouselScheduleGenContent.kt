@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,7 +89,7 @@ internal fun CarouselScheduleGenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .weight(0.6f),
+                .weight(0.5f),
         )
 
         when (generatedEventsUiState) {
@@ -94,7 +97,7 @@ internal fun CarouselScheduleGenContent(
                 CarouselScheduleEvents(
                     events = skeletonEvents,
                     placeholder = true,
-                    modifier = Modifier.weight(0.4f),
+                    modifier = Modifier.weight(0.5f),
                 )
             }
 
@@ -102,7 +105,7 @@ internal fun CarouselScheduleGenContent(
                 CarouselScheduleEvents(
                     events = generatedEventsUiState.events,
                     placeholder = false,
-                    modifier = Modifier.weight(0.4f),
+                    modifier = Modifier.weight(0.5f),
                     onTargetClick = { baseText = it },
                     onEditClick = onEditClick,
                     onDeleteClick = onDeleteClick,
@@ -202,20 +205,35 @@ private fun GeneratedEventCard(
             Text(
                 text = event.title,
                 modifier = Modifier.padding(top = 4.dp),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            Text(
-                text = event.displayDateTime.value,
-                style = MaterialTheme.typography.bodyLarge,
-            )
+            Row(
+                modifier = Modifier.padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.schedule_datetime),
+                    contentDescription = "",
+                )
 
-            Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.width(8.dp))
+
+                Text(
+                    text = event.displayDateTime.value,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
 
             Text(
                 text = event.memo,
-                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
