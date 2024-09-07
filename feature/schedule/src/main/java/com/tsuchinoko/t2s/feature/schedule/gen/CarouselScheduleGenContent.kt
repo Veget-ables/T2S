@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.component.placeholder
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
+import com.tsuchinoko.t2s.core.model.BaseInput
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import com.tsuchinoko.t2s.feature.schedule.R
 
@@ -68,31 +70,11 @@ internal fun CarouselScheduleGenContent(
             .fillMaxSize()
             .padding(paddingValues),
     ) {
-        var baseText: String by remember(scheduleInput) { mutableStateOf("") }
-        val textFieldValue by remember(baseText) {
-            val sentence =
-                if (baseText.isEmpty()) listOf(scheduleInput) else scheduleInput.split(baseText)
-            mutableStateOf(
-                TextFieldValue(
-                    annotatedString = buildAnnotatedString {
-                        append(sentence[0])
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Blue,
-                                fontWeight = FontWeight.Bold,
-                            ),
-                        ) {
-                            append(baseText)
-                        }
-                        if (sentence.size > 1) {
-                            append(sentence[1])
-                        }
-                    },
-                    selection = TextRange(sentence[0].length + baseText.length),
-                ),
-            )
-        }
-
+        var baseInput: BaseInput? by remember(scheduleInput) { mutableStateOf(null) }
+        val textFieldValue by rememberHighlightTextValue(
+            scheduleInput = scheduleInput,
+            baseInput = baseInput,
+        )
         OutlinedTextField(
             value = textFieldValue,
             onValueChange = {},
@@ -117,7 +99,7 @@ internal fun CarouselScheduleGenContent(
                     events = generatedEventsUiState.events,
                     placeholder = false,
                     modifier = Modifier.weight(0.5f),
-                    onTargetClick = { baseText = it },
+                    onTargetClick = { baseInput = it },
                     onEditClick = onEditClick,
                     onRegistryClick = onRegistryClick,
                     onDeleteClick = onDeleteClick,
@@ -138,13 +120,53 @@ internal fun CarouselScheduleGenContent(
     }
 }
 
+@Composable
+private fun rememberHighlightTextValue(
+    scheduleInput: String,
+    baseInput: BaseInput?,
+): MutableState<TextFieldValue> {
+    if (baseInput == null) return remember { mutableStateOf(TextFieldValue(scheduleInput)) }
+
+    val splitTextByDate = scheduleInput.split(baseInput.date)
+    val splitTextByTitle = splitTextByDate[1].split(baseInput.title)
+
+    val highlightTextFieldValue = TextFieldValue(
+        annotatedString = buildAnnotatedString {
+            append(splitTextByDate[0])
+            withStyle(
+                style = SpanStyle(
+                    color = Color.Blue,
+                    fontWeight = FontWeight.Bold,
+                ),
+            ) {
+                append(baseInput.date)
+            }
+
+            append(splitTextByTitle[0])
+
+            withStyle(
+                style = SpanStyle(
+                    color = Color.Blue,
+                    fontWeight = FontWeight.Bold,
+                ),
+            ) {
+                append(baseInput.title)
+            }
+
+            append(splitTextByTitle[1])
+        },
+        selection = TextRange(splitTextByDate[0].length + baseInput.date.length + splitTextByTitle[0].length + baseInput.title.length),
+    )
+    return remember(baseInput) { mutableStateOf(highlightTextFieldValue) }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CarouselScheduleEvents(
     events: List<ScheduleEvent>,
     placeholder: Boolean,
     modifier: Modifier = Modifier,
-    onTargetClick: (baseText: String) -> Unit = {},
+    onTargetClick: (BaseInput) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (ScheduleEvent) -> Unit = {},
     onDeleteClick: (ScheduleEvent) -> Unit = {},
@@ -178,7 +200,7 @@ private fun CarouselScheduleEvents(
 private fun GeneratedEventCard(
     event: ScheduleEvent,
     modifier: Modifier = Modifier,
-    onTargetClick: (baseText: String) -> Unit = {},
+    onTargetClick: (BaseInput) -> Unit = {},
     onEditClick: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (ScheduleEvent) -> Unit = {},
     onDeleteClick: (ScheduleEvent) -> Unit = {},
@@ -294,7 +316,7 @@ private fun GeneratedEventCard(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = event.memo,
+                text = event.base.date,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
                 style = MaterialTheme.typography.bodyMedium,

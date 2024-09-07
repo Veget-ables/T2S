@@ -9,10 +9,12 @@ data class ScheduleEvent(
     val memo: String,
     val start: LocalDateTime,
     val end: LocalDateTime,
-    val base: String,
+    val base: BaseInput,
 ) {
     val isAllDay =
         start.hour == 0 && start.minute == 0 && end.hour == 23 && end.minute == 59
 }
 
 data class EventId(val value: UUID)
+
+data class BaseInput(val title: String, val date: String)

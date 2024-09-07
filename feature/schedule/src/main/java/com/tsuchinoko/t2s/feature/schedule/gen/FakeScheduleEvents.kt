@@ -1,5 +1,6 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import com.tsuchinoko.t2s.core.model.BaseInput
 import com.tsuchinoko.t2s.core.model.EventId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 import java.time.LocalDateTime
@@ -62,6 +63,14 @@ private fun createScheduleEvent(
     memo: String = "メモなし",
     start: LocalDateTime,
     end: LocalDateTime,
-    base: String = "",
+    baseTitle: String = "",
+    baseDate: String = "",
 ): ScheduleEvent =
-    ScheduleEvent(id = id, title = title, memo = memo, start = start, end = end, base = base)
+    ScheduleEvent(
+        id = id,
+        title = title,
+        memo = memo,
+        start = start,
+        end = end,
+        base = BaseInput(title = baseTitle, date = baseDate),
+    )

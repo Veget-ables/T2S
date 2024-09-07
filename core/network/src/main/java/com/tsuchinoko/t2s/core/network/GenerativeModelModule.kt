@@ -38,21 +38,23 @@ class GenerativeModelModule {
         Schema.str(name = "memo", description = "予定のメモ"),
         Schema.str(name = "start", description = "予定の開始日時"),
         Schema.str(name = "end", description = "予定の終了日時"),
-        Schema.str(name = "base", description = "予定フォーマットの「title」を決定する証拠となった元のテキスト"),
-    ) { title, memo, start, end, base ->
+        Schema.str(name = "baseTitle", description = "予定フォーマットの「title」を決定する証拠となった元のテキスト"),
+        Schema.str(name = "baseDate", description = "予定フォーマットの「start」を決定する証拠となった元のテキスト"),
+    ) { title, memo, start, end, baseTitle, baseDate ->
         JSONObject().apply {
             put("title", title.formatToNewLine())
             put("memo", memo.formatToNewLine())
             put("start", start)
             put("end", end)
-            put("base", base.formatToNewLine())
+            put("baseTitle", baseTitle.formatToNewLine())
+            put("baseDate", baseDate.formatToNewLine())
         }
     }
 }
 
 private fun String.formatToNewLine(): String = replace("\\n", "\n")
 
-private fun <T, U, V, W, X> defineFunction(
+private fun <T, U, V, W, X, Y> defineFunction(
     name: String,
     description: String,
     arg1: Schema<T>,
@@ -60,10 +62,11 @@ private fun <T, U, V, W, X> defineFunction(
     arg3: Schema<V>,
     arg4: Schema<W>,
     arg5: Schema<X>,
-    function: suspend (T, U, V, W, X) -> JSONObject,
-) = FiveParameterFunction(name, description, arg1, arg2, arg3, arg4, arg5, function)
+    arg6: Schema<Y>,
+    function: suspend (T, U, V, W, X, Y) -> JSONObject,
+) = SixParameterFunction(name, description, arg1, arg2, arg3, arg4, arg5, arg6, function)
 
-private class FiveParameterFunction<T, U, V, W, X>(
+private class SixParameterFunction<T, U, V, W, X, Y>(
     name: String,
     description: String,
     val param1: Schema<T>,
@@ -71,9 +74,10 @@ private class FiveParameterFunction<T, U, V, W, X>(
     val param3: Schema<V>,
     val param4: Schema<W>,
     val param5: Schema<X>,
-    val function: suspend (T, U, V, W, X) -> JSONObject,
+    val param6: Schema<Y>,
+    val function: suspend (T, U, V, W, X, Y) -> JSONObject,
 ) : FunctionDeclaration(name, description) {
-    override fun getParameters() = listOf(param1, param2, param3, param4, param5)
+    override fun getParameters() = listOf(param1, param2, param3, param4, param5, param6)
 
     override suspend fun execute(part: FunctionCallPart): JSONObject {
         val arg1 = part.getArgOrThrow(param1)
@@ -81,7 +85,8 @@ private class FiveParameterFunction<T, U, V, W, X>(
         val arg3 = part.getArgOrThrow(param3)
         val arg4 = part.getArgOrThrow(param4)
         val arg5 = part.getArgOrThrow(param5)
-        return function(arg1, arg2, arg3, arg4, arg5)
+        val arg6 = part.getArgOrThrow(param6)
+        return function(arg1, arg2, arg3, arg4, arg5, arg6)
     }
 }
 
