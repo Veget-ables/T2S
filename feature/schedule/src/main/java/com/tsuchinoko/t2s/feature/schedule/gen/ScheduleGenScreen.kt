@@ -2,6 +2,8 @@ package com.tsuchinoko.t2s.feature.schedule.gen
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -260,7 +262,9 @@ private fun ScheduleGenScreen(
             },
         ) { paddingValues ->
             CarouselScheduleGenContent(
-                paddingValues = paddingValues,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 scheduleInput = scheduleGenUiState.prompt,
                 generatedEventsUiState = generatedEventsUiState,
                 onEditClick = {

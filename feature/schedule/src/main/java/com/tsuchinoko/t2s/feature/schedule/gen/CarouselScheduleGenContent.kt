@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,26 +27,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.CarouselState
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.component.placeholder
@@ -58,18 +49,14 @@ import com.tsuchinoko.t2s.feature.schedule.R
 
 @Composable
 internal fun CarouselScheduleGenContent(
-    paddingValues: PaddingValues,
     scheduleInput: String,
     generatedEventsUiState: GeneratedEventsUiState,
+    modifier: Modifier = Modifier,
     onEditClick: (ScheduleEvent) -> Unit = {},
     onRegistryClick: (ScheduleEvent) -> Unit = {},
     onDeleteClick: (ScheduleEvent) -> Unit = {},
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-    ) {
+    Column(modifier = modifier) {
         var baseInput: BaseInput? by remember(scheduleInput) { mutableStateOf(null) }
         val textFieldValue by rememberHighlightTextValue(
             scheduleInput = scheduleInput,
@@ -118,46 +105,6 @@ internal fun CarouselScheduleGenContent(
 
         Spacer(Modifier.height(16.dp))
     }
-}
-
-@Composable
-private fun rememberHighlightTextValue(
-    scheduleInput: String,
-    baseInput: BaseInput?,
-): MutableState<TextFieldValue> {
-    if (baseInput == null) return remember { mutableStateOf(TextFieldValue(scheduleInput)) }
-
-    val splitTextByDate = scheduleInput.split(baseInput.date)
-    val splitTextByTitle = splitTextByDate[1].split(baseInput.title)
-
-    val highlightTextFieldValue = TextFieldValue(
-        annotatedString = buildAnnotatedString {
-            append(splitTextByDate[0])
-            withStyle(
-                style = SpanStyle(
-                    color = Color.Blue,
-                    fontWeight = FontWeight.Bold,
-                ),
-            ) {
-                append(baseInput.date)
-            }
-
-            append(splitTextByTitle[0])
-
-            withStyle(
-                style = SpanStyle(
-                    color = Color.Blue,
-                    fontWeight = FontWeight.Bold,
-                ),
-            ) {
-                append(baseInput.title)
-            }
-
-            append(splitTextByTitle[1])
-        },
-        selection = TextRange(splitTextByDate[0].length + baseInput.date.length + splitTextByTitle[0].length + baseInput.title.length),
-    )
-    return remember(baseInput) { mutableStateOf(highlightTextFieldValue) }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -337,7 +284,6 @@ fun CarouselScheduleGenContentPreview_Loading() {
     T2STheme {
         Surface {
             CarouselScheduleGenContent(
-                paddingValues = PaddingValues(0.dp),
                 scheduleInput = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Loading,
             )
@@ -351,7 +297,6 @@ fun CarouselScheduleGenContentPreview_Generated_List() {
     T2STheme {
         Surface {
             CarouselScheduleGenContent(
-                paddingValues = PaddingValues(0.dp),
                 scheduleInput = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Generated(fakeEvents),
             )
@@ -365,7 +310,6 @@ fun CarouselScheduleGenContentPreview_Error() {
     T2STheme {
         Surface {
             CarouselScheduleGenContent(
-                paddingValues = PaddingValues(0.dp),
                 scheduleInput = fakeScheduleInput,
                 generatedEventsUiState = GeneratedEventsUiState.Error("予定の生成に失敗しました"),
             )
