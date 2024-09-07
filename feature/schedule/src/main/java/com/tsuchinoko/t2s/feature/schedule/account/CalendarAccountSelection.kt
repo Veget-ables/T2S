@@ -72,7 +72,6 @@ internal fun CalendarAccountSelection(
 
     val recoverableLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            result.resultCode
             selectedAccount?.let {
                 onAccountChange(it)
             }

@@ -263,7 +263,7 @@ private fun GeneratedEventCard(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = event.base.date,
+                text = event.memo,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
                 style = MaterialTheme.typography.bodyMedium,
