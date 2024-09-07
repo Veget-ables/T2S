@@ -4,20 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -37,30 +29,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
 import com.tsuchinoko.t2s.core.model.Account
-import com.tsuchinoko.t2s.core.model.BaseInput
 import com.tsuchinoko.t2s.core.model.Calendar
 import com.tsuchinoko.t2s.core.model.CalendarId
-import com.tsuchinoko.t2s.core.model.EventId
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
-import com.tsuchinoko.t2s.feature.schedule.R
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountSelection
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountUiState
 import com.tsuchinoko.t2s.feature.schedule.account.CalendarAccountViewModel
 import com.tsuchinoko.t2s.feature.schedule.account.fakeUiStateAccountSelected
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Composable
 internal fun ScheduleGenScreen(
@@ -169,92 +150,16 @@ private fun ScheduleGenScreen(
                 )
             },
             bottomBar = {
-                BottomAppBar(
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                scope.launch { drawerState.open() }
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.perm_contact_calendar),
-                                contentDescription = "アカウントを設定",
-                            )
-                        }
-                        val clipboardManager: ClipboardManager = LocalClipboardManager.current
-                        IconButton(
-                            onClick = {
-                                if (generatedEventsUiState is GeneratedEventsUiState.Generated) {
-                                    clipboardManager.setText(AnnotatedString(generatedEventsUiState.events.copiedText))
-                                }
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.copy),
-                                contentDescription = "コピー",
-                            )
-                        }
-
-                        IconButton(
-                            onClick = {
-                                val now = LocalDateTime.now()
-                                val newEvent = ScheduleEvent(
-                                    id = EventId(value = UUID.randomUUID()),
-                                    title = "",
-                                    memo = "",
-                                    start = now,
-                                    end = now,
-                                    base = BaseInput(title = "", date = ""),
-                                )
-                                onAddClick(newEvent)
-                                editTargetEvent = newEvent
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "追加",
-                            )
-                        }
+                ScheduleGenBottomAppBar(
+                    drawerState = drawerState,
+                    generatedEventsUiState = generatedEventsUiState,
+                    registryResultUiState = registryResultUiState,
+                    calendarAccountUiState = calendarAccountUiState,
+                    onAddClick = { event ->
+                        onAddClick(event)
+                        editTargetEvent = event
                     },
-                    floatingActionButton = {
-                        when {
-                            generatedEventsUiState is GeneratedEventsUiState.Loading || registryResultUiState is RegistryResultUiState.Loading -> {
-                                FloatingActionButton(
-                                    onClick = {},
-                                    containerColor = Color.Transparent,
-                                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        strokeWidth = 3.dp,
-                                    )
-                                }
-                            }
-
-                            generatedEventsUiState is GeneratedEventsUiState.Generated -> {
-                                FloatingActionButton(
-                                    onClick = {
-                                        if (calendarAccountUiState is CalendarAccountUiState.AccountSelected) {
-                                            onRegistryClick(
-                                                calendarAccountUiState.targetCalendar.id,
-                                                generatedEventsUiState.events,
-                                            )
-                                        }
-                                    },
-                                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.event_upcoming),
-                                        contentDescription = "カレンダーに登録",
-                                    )
-                                }
-                            }
-
-                            else -> {}
-                        }
-                    },
+                    onRegistryClick = onRegistryClick,
                 )
             },
             snackbarHost = {
@@ -268,7 +173,7 @@ private fun ScheduleGenScreen(
                 scheduleInput = scheduleGenUiState.prompt,
                 generatedEventsUiState = generatedEventsUiState,
                 onEditClick = {
-                    scope.launch { editTargetEvent = it }
+                    editTargetEvent = it
                 },
                 onRegistryClick = { event ->
                     if (calendarAccountUiState is CalendarAccountUiState.AccountSelected) {
