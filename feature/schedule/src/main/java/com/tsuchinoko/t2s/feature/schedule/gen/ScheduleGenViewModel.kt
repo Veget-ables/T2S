@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class ScheduleGenViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val calendarRepository: CalendarRepository,
     private val suggestScheduleEventsUseCase: SuggestScheduleEventsUseCase,
 ) : ViewModel() {
@@ -34,6 +34,10 @@ internal class ScheduleGenViewModel @Inject constructor(
         _registryResultUiState.asStateFlow()
 
     init {
+        generateEvents()
+    }
+
+    fun generateEvents() {
         val prompt = savedStateHandle.toRoute<ScheduleGen>().prompt
         viewModelScope.launch {
             resultFlow {
