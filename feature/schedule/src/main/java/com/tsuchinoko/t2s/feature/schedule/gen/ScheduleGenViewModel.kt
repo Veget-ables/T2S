@@ -47,7 +47,7 @@ internal class ScheduleGenViewModel @Inject constructor(
                     Result.Loading -> GeneratedEventsUiState.Loading
                     is Result.Success -> GeneratedEventsUiState.Generated(result.data)
                     is Result.Error -> {
-                        GeneratedEventsUiState.Error(result.exception.localizedMessage ?: "")
+                        GeneratedEventsUiState.Error
                     }
                 }
                 _scheduleGenUiState.update {

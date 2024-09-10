@@ -95,10 +95,12 @@ internal fun CarouselScheduleGenContent(
 
             is GeneratedEventsUiState.Error -> {
                 Text(
-                    text = generatedEventsUiState.message,
+                    text = "予定オブジェクトの生成に失敗しました",
                     textAlign = TextAlign.Start,
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally),
                 )
             }
         }
@@ -311,7 +313,7 @@ fun CarouselScheduleGenContentPreview_Error() {
         Surface {
             CarouselScheduleGenContent(
                 scheduleInput = fakeScheduleInput,
-                generatedEventsUiState = GeneratedEventsUiState.Error("予定の生成に失敗しました"),
+                generatedEventsUiState = GeneratedEventsUiState.Error,
             )
         }
     }
