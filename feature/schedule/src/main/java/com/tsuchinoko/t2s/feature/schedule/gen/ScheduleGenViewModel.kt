@@ -107,7 +107,7 @@ internal class ScheduleGenViewModel @Inject constructor(
                     Result.Loading -> RegistryResultUiState.Loading
                     is Result.Success -> RegistryResultUiState.Success
                     is Result.Error -> {
-                        RegistryResultUiState.Error(result.exception.localizedMessage ?: "")
+                        RegistryResultUiState.Error
                     }
                 }
                 _registryResultUiState.update { uiState }

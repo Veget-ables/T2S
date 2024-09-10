@@ -118,7 +118,7 @@ private fun ScheduleGenScreen(
 
         is RegistryResultUiState.Error -> {
             scope.launch {
-                snackbarHostState.showSnackbar("予定の登録に失敗しました")
+                snackbarHostState.showSnackbar("登録に失敗しました")
             }
         }
     }
