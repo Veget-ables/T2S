@@ -289,7 +289,7 @@ fun CalendarAccountDrawerPreview_Error() {
             drawerContent = {
                 ModalDrawerSheet {
                     CalendarAccountSelection(
-                        uiState = CalendarAccountUiState.Error("アカウントの取得に失敗しました"),
+                        uiState = CalendarAccountUiState.Error,
                     )
                 }
             },

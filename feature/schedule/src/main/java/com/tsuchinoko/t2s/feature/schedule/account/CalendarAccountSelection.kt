@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tsuchinoko.t2s.core.designsystem.them.T2STheme
@@ -49,7 +50,7 @@ internal sealed interface CalendarAccountUiState {
         val targetCalendar: Calendar,
     ) : CalendarAccountUiState
 
-    data class Error(val message: String) : CalendarAccountUiState
+    data object Error : CalendarAccountUiState
     data class RecoverableIntentError(val intent: Intent) : CalendarAccountUiState
 }
 
@@ -139,7 +140,14 @@ internal fun CalendarAccountSelection(
             }
 
             is CalendarAccountUiState.Error -> {
-                Text(uiState.message)
+                Text(
+                    text = "アカウント情報の取得に失敗しました",
+                    textAlign = TextAlign.Start,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.CenterHorizontally),
+                )
             }
 
             is CalendarAccountUiState.RecoverableIntentError -> {
@@ -208,7 +216,7 @@ fun CalendarAccountSelectionPreview_Error() {
     T2STheme {
         Surface {
             CalendarAccountSelection(
-                uiState = CalendarAccountUiState.Error("アカウントの取得に失敗しました"),
+                uiState = CalendarAccountUiState.Error,
             )
         }
     }

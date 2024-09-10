@@ -69,7 +69,7 @@ class CalendarAccountViewModel @Inject constructor(
                         }
 
                         else -> {
-                            CalendarAccountUiState.Error(exception.message ?: "")
+                            CalendarAccountUiState.Error
                         }
                     }
                 }
