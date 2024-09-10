@@ -1,7 +1,9 @@
 package com.tsuchinoko.t2s.feature.schedule.gen
 
+import androidx.compose.runtime.Immutable
 import com.tsuchinoko.t2s.core.model.ScheduleEvent
 
+@Immutable
 internal sealed interface GeneratedEventsUiState {
     data object Loading : GeneratedEventsUiState
     data class Generated(val events: List<ScheduleEvent>) : GeneratedEventsUiState
